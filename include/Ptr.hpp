@@ -1,6 +1,8 @@
 #ifndef RILL_PTR
 #define RILL_PTR
 
+#include <cstddef>
+
 namespace Rill {
 
     namespace {
@@ -65,6 +67,7 @@ namespace Rill {
                 delete this->slot;
             this->slot = other.slot;
             this->slot->count++;
+            return *this;
         }
 
         bool operator== ( const Ptr<T> & other ) const {

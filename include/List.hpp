@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <initializer_list>
 
+#include "Error.hpp"
+
 using std::initializer_list;
 
 namespace Rill {
@@ -44,13 +46,13 @@ namespace Rill {
 
             const T & operator* () const {
                 if ( !this->curr )
-                    throw "Invalid List::Iter dereference.";
+                    throw InternalError( "Invalid List::Iter dereference." );
                 return *( this->curr->data );
             }
 
             const T * operator-> () const {
                 if ( !this->curr )
-                    throw "Invalid List::Iter dereference.";
+                    throw InternalError( "Invalid List::Iter dereference." );
                 return this->curr->data;
             }
 
@@ -117,13 +119,13 @@ namespace Rill {
 
             T & operator* () {
                 if ( !this->curr )
-                    throw "Invalid List::Iter dereference.";
+                    throw InternalError( "Invalid List::Iter dereference." );
                 return *( this->curr->data );
             }
 
             T * operator-> () {
                 if ( !this->curr )
-                    throw "Invalid List::Iter dereference.";
+                    throw InternalError( "Invalid List::Iter dereference." );
                 return this->curr->data;
             }
 
@@ -145,7 +147,7 @@ namespace Rill {
 
             Iter & insertBefore ( const T & other ) {
                 if ( !this->curr )
-                    throw "insertBefore() on dead List::Iter.";
+                    throw InternalError( "insertBefore() on dead List::Iter." );
                 ListNode * pre = new ListNode( other );
                 if ( this->curr == this->lst.head )
                     this->lst.head = pre;
@@ -161,7 +163,7 @@ namespace Rill {
 
             Iter & insertAfter ( const T & other ) {
                 if ( !this->curr )
-                    throw "insertAfter() on dead List::Iter.";
+                    throw InternalError( "insertAfter() on dead List::Iter." );
                 ListNode * post = new ListNode( other );
                 if ( this->curr == this->lst.tail )
                     this->lst.tail = post;
@@ -187,7 +189,7 @@ namespace Rill {
 
             Iter & slice () {
                 if ( !this->curr )
-                    throw "slice() on dead List::Iter.";
+                    throw InternalError( "slice() on dead List::Iter." );
                 if (
                     this->curr == this->lst.head &&
                     this->curr == this->lst.tail
@@ -294,31 +296,31 @@ namespace Rill {
 
         T & peekHead () {
             if ( !this->len )
-                throw "peekHead() on empty List.";
+                throw InternalError( "peekHead() on empty List." );
             return *( this->head->data );
         }
 
         T & peekTail () {
             if ( !this->len )
-                throw "peekTail() on empty List.";
+                throw InternalError( "peekTail() on empty List." );
             return *( this->tail->data );
         }
 
         const T & peekHead () const {
             if ( !this->len )
-                throw "peekHead() on empty List.";
+                throw InternalError( "peekHead() on empty List." );
             return *( this->head->data );
         }
 
         const T & peekTail () const {
             if ( !this->len )
-                throw "peekTail() on empty List.";
+                throw InternalError( "peekTail() on empty List." );
             return *( this->tail->data );
         }
 
         T pop () {
             if ( !this->len )
-                throw "pop() on empty List.";
+                throw InternalError( "pop() on empty List." );
             T copy = this->peekTail();
             this->end().slice();
             return copy;
@@ -326,7 +328,7 @@ namespace Rill {
 
         T shift () {
             if ( !this->len )
-                throw "shift() on empty List.";
+                throw InternalError( "shift() on empty List." );
             T copy = this->peekHead();
             this->begin().slice();
             return copy;

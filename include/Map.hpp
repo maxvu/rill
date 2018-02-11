@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstring>
 
+#include "Error.hpp"
 #include "String.hpp"
 
 namespace Rill {
@@ -179,13 +180,13 @@ namespace Rill {
 
             const T * operator-> () const {
                 if ( !*this )
-                    throw "Access on dead Map::ConstIter.";
+                    throw InternalError( "Access on dead Map::ConstIter." );
                 return this->bank->slots[ this->curr ]->val;
             }
 
             const String & getKey () const {
                 if ( !*this )
-                    throw "Key access on dead Map::ConstIter.";
+                    throw InternalError( "Key access on dead Map::ConstIter." );
                 return this->bank->slots[ this->curr ]->key;
             }
 
@@ -229,7 +230,7 @@ namespace Rill {
 
             Iter & slice () {
                 if ( !*this )
-                    throw "slice() on dead Map::Iter.";
+                    throw InternalError( "slice() on dead Map::Iter." );
                 MapSlotBank * bank = const_cast<MapSlotBank*>( this->bank );
                 delete bank->slots[ this->curr ];
                 bank->slots[ this->curr ] = nullptr;
@@ -341,7 +342,7 @@ namespace Rill {
                 return *( lo->val );
             if ( hi && hi->key == key )
                 return *( hi->val );
-            throw "peek() on non-existent Map key.";
+            throw InternalError( "peek() on non-existent Map key." );
         }
 
         T & operator[] ( const String & key ) {
@@ -351,7 +352,7 @@ namespace Rill {
                 return *( lo->val );
             if ( hi && hi->key == key )
                 return *( hi->val );
-            throw "peek() on non-existent Map key.";
+            throw InternalError( "peek() on non-existent Map key." );
         }
 
         Map<T> & set ( const String & key, const T & val ) {
@@ -403,9 +404,9 @@ namespace Rill {
                     this->resize( this->bank->cap * RILL_MAP_GROWTHFACTOR );
                     this->set( key, val );
                 }
-            } catch ( std::exception & ex ) {
+            } catch ( InternalError & err ) {
                 delete initial;
-                throw ex;
+                throw err;
             }
             return *this;
         }

@@ -2,80 +2,246 @@
 
 namespace Rill {
 
-    Val::Val ( Type type ) : type( type ) {
+    VRef & VRef::deref () {
+        if ( !this->val )
+            return *this;
+        if ( !( --*this->count ) ) {
+            delete this->val;
+            delete this->count;
+            this->val = nullptr;
+            this->count = nullptr;
+        }
+        return *this;
+    }
+
+    VRef & VRef::copy () {
+        if ( !this->val || ( *( this->count ) == 1 ) )
+            return *this;
+        Val * newVal = this->val->clone();
+        uint64_t * newCount = new uint64_t( 1 );
+        this->deref();
+        this->val = newVal;
+        this->count = newCount;
+        return *this;
+    }
+
+    VRef::VRef ( const Val & val ) : val( val.clone() ), count( new uint64_t( 1 ) ) {
 
     }
 
-    Val::Type Val::getType () const {
-        return this->type;
+    VRef::VRef ( const VRef & other ) : val( other.val ), count( other.count ) {
+        ( *this->count )++;
     }
 
-    IntVal::IntVal () : IntVal( 0 ) {
+    VRef::~VRef () {
+        this->deref();
+    }
+
+    I64Val & VRef::asI64 () {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::I64 )
+            throw InternalError( "Bad I64 cast." );
+        this->copy();
+        return *static_cast<I64Val*>( this->val );
+    }
+
+    DblVal & VRef::asDbl () {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::DBL )
+            throw InternalError( "Bad Dbl cast." );
+        this->copy();
+        return *static_cast<DblVal*>( this->val );
+    }
+
+    StrVal & VRef::asStr () {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::STR )
+            throw InternalError( "Bad Str cast." );
+        this->copy();
+        return *static_cast<StrVal*>( this->val );
+    }
+
+    LstVal & VRef::asLst () {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::LST )
+            throw InternalError( "Bad Lst cast." );
+        this->copy();
+        return *static_cast<LstVal*>( this->val );
+    }
+
+    MapVal & VRef::asMap () {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::MAP )
+            throw InternalError( "Bad Map cast." );
+        this->copy();
+        return *static_cast<MapVal*>( this->val );
+    }
+
+    const I64Val & VRef::asI64 () const {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::I64 )
+            throw InternalError( "Bad I64 cast." );
+        return *static_cast<I64Val*>( this->val );
+    }
+
+    const DblVal & VRef::asDbl () const {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::DBL )
+            throw InternalError( "Bad I64 cast." );
+        return *static_cast<DblVal*>( this->val );
+    }
+
+    const StrVal & VRef::asStr () const {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::STR )
+            throw InternalError( "Bad I64 cast." );
+        return *static_cast<StrVal*>( this->val );
+    }
+
+    const LstVal & VRef::asLst () const {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::LST )
+            throw InternalError( "Bad I64 cast." );
+        return *static_cast<LstVal*>( this->val );
+    }
+
+    const MapVal & VRef::asMap () const {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::MAP )
+            throw InternalError( "Bad Map cast." );
+        return *static_cast<MapVal*>( this->val );
+    }
+
+
+
+    Val * I64Val::clone () const {
+        return new I64Val( *this );
+    }
+
+    I64Val::I64Val () : i( 0 ) {
 
     }
 
-    IntVal::IntVal ( int64_t i ) : Val( Val::Type::INT ), i( i ) {
+    I64Val::I64Val ( int64_t i ) : i( i ) {
 
     }
 
-    IntVal::IntVal ( const IntVal & other ) : IntVal( other.i ) {
+    I64Val::I64Val ( const I64Val & other ) : i( other.i ) {
 
     }
 
-    int64_t & IntVal::operator()() {
+    I64Val::operator int64_t & () {
         return this->i;
     }
 
-    FltVal::FltVal () : FltVal( 0.0 ) {
+    Val::Type I64Val::getType () const {
+        return Val::Type::I64;
+    }
+
+    String I64Val::toString () const {
+        return ""; // TODO: not this
+    }
+
+    Val * DblVal::clone () const {
+        return new DblVal( *this );
+    }
+
+    DblVal::DblVal () : d( 0 ) {
 
     }
 
-    FltVal::FltVal ( double f ) : Val( Val::Type::FLT ), f( f ) {
+    DblVal::DblVal ( double d ) : d( d ) {
 
     }
 
-    FltVal::FltVal ( const FltVal & other ) : FltVal( other.f ) {
+    DblVal::DblVal ( const DblVal & other ) : d( other.d ) {
 
     }
 
-    double & FltVal::operator()() {
-        return this->f;
+    double & DblVal::operator()() {
+        return this->d;
     }
 
-    StrVal::StrVal () : Val( Val::Type::STR ), String() {
-
+    Val::Type DblVal::getType () const {
+        return Val::Type::DBL;
     }
 
-    StrVal::StrVal (
-        const String & other
-    ) : Val( Val::Type::STR ), String( other ) {
-
+    String DblVal::toString () const {
+        return ""; // TODO: not this
     }
 
-    StrVal::StrVal (
-        const char * cstr
-    ) : Val( Val::Type::STR ), String( cstr ) {
-
+    Val * StrVal::clone () const {
+        return new StrVal( *this );
     }
 
-    LstVal::LstVal () : Val( Val::Type::LST ), List<ValPtr>() {
+    StrVal::StrVal () : String() {
 
     }
 
-    LstVal::LstVal (
-        const List<ValPtr> & other
-    ) : Val( Val::Type::LST ), List<ValPtr>( other ) {
+    StrVal::StrVal ( const String & other ) : String( other ) {
 
     }
 
-    MapVal::MapVal () : Val( Val::Type::MAP ), Map<ValPtr>() {
+    StrVal::StrVal ( const char * cstr ) : String( cstr ) {
 
     }
 
-    MapVal::MapVal (
-        const Map<ValPtr> & other
-    ) : Val( Val::Type::MAP ), Map<ValPtr>( other ) {
+    Val::Type StrVal::getType () const {
+        return Val::Type::STR;
+    }
 
+    String StrVal::toString () const {
+        return *this;
+    }
+
+    Val * LstVal::clone () const {
+        return new LstVal( *this );
+    }
+
+    LstVal::LstVal () : List<VRef>() {
+
+    }
+
+    LstVal::LstVal ( const List<VRef> & other ) : List<VRef>( other ) {
+
+    }
+
+    Val::Type LstVal::getType () const {
+        return Val::Type::LST;
+    }
+
+    String LstVal::toString () const {
+        return ""; // TODO: not this
+    }
+
+    Val * MapVal::clone () const {
+        return new MapVal( *this );
+    }
+
+    MapVal::MapVal () : Map<VRef>() {
+
+    }
+
+    MapVal::MapVal ( const Map<VRef> & other ) : Map<VRef>( *this ) {
+
+    }
+
+    Val::Type MapVal::getType () const {
+        return Val::Type::MAP;
+    }
+
+    String MapVal::toString () const {
+        return ""; // TODO: not this
     }
 
 };

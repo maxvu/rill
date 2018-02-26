@@ -25,6 +25,10 @@ namespace Rill {
         return *this;
     }
 
+    VRef::VRef () : val( nullptr ), count( nullptr ) {
+
+    }
+
     VRef::VRef ( const Val & val ) : val( val.clone() ), count( new uint64_t( 1 ) ) {
 
     }
@@ -35,6 +39,46 @@ namespace Rill {
 
     VRef::~VRef () {
         this->deref();
+    }
+
+    VRef::operator bool () const {
+        return this->val;
+    }
+
+    VRef & VRef::operator= ( const VRef & other ) {
+        if ( this->val == other.val )
+            return *this;
+        this->deref();
+        if ( !other ) {
+            this->val = nullptr;
+            this->count = nullptr;
+        } else {
+            this->val = other.val;
+            this->count = other.count;
+            (*this->count)++;
+        }
+        return *this;
+    }
+
+    VRef & VRef::operator= ( const Val & other ) {
+        this->deref();
+        this->val = other.clone();
+        this->count = new size_t( 1 );
+        (*this->count)++;
+        return *this;
+    }
+
+    VRef & VRef::operator= ( const Val * other ) {
+        if ( this->val == other )
+            return *this;
+        this->deref();
+        if ( !other ) {
+            this->val = nullptr;
+            this->count = nullptr;
+        } else {
+            *this = *other;
+        }
+        return *this;
     }
 
     I64Val & VRef::asI64 () {

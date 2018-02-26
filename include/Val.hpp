@@ -30,9 +30,15 @@ namespace Rill {
 
         public:
 
+        VRef ();
         VRef ( const Val & val );
         VRef ( const VRef & other );
         ~VRef ();
+
+        operator bool () const;
+        VRef & operator= ( const VRef & other );
+        VRef & operator= ( const Val & other );
+        VRef & operator= ( const Val * other );
 
         I64Val & asI64 ();
         DblVal & asDbl ();

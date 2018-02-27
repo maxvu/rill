@@ -6,6 +6,7 @@
 
 #include "Error.hpp"
 #include "String.hpp"
+#include "Vector.hpp"
 #include "List.hpp"
 #include "Map.hpp"
 
@@ -15,6 +16,7 @@ namespace Rill {
     class I64Val;
     class DblVal;
     class StrVal;
+    class VecVal;
     class LstVal;
     class MapVal;
 
@@ -43,12 +45,14 @@ namespace Rill {
         I64Val & asI64 ();
         DblVal & asDbl ();
         StrVal & asStr ();
+        VecVal & asVec ();
         LstVal & asLst ();
         MapVal & asMap ();
 
         const I64Val & asI64 () const;
         const DblVal & asDbl () const;
         const StrVal & asStr () const;
+        const VecVal & asVec () const;
         const LstVal & asLst () const;
         const MapVal & asMap () const;
 
@@ -62,6 +66,7 @@ namespace Rill {
             I64,
             DBL,
             STR,
+            VEC,
             LST,
             MAP
         };
@@ -150,6 +155,22 @@ namespace Rill {
 
         LstVal ();
         LstVal ( const List<VRef> & other );
+
+        Type getType () const;
+        String toString () const;
+
+    };
+
+    class VecVal : public Val, public Vector<VRef> {
+
+        protected:
+
+        Val * clone () const;
+
+        public:
+
+        VecVal ();
+        VecVal ( const Vector<VRef> & other );
 
         Type getType () const;
         String toString () const;

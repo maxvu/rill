@@ -108,6 +108,15 @@ namespace Rill {
         return *static_cast<StrVal*>( this->val );
     }
 
+    VecVal & VRef::asVec () {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::VEC )
+            throw InternalError( "Bad Vec cast." );
+        this->copy();
+        return *static_cast<VecVal*>( this->val );
+    }
+
     LstVal & VRef::asLst () {
         if ( !this->val )
             throw InternalError( "Null VRef dereference." );
@@ -138,7 +147,7 @@ namespace Rill {
         if ( !this->val )
             throw InternalError( "Null VRef dereference." );
         if ( this->val->getType() != Val::Type::DBL )
-            throw InternalError( "Bad I64 cast." );
+            throw InternalError( "Bad Dbl cast." );
         return *static_cast<DblVal*>( this->val );
     }
 
@@ -146,15 +155,23 @@ namespace Rill {
         if ( !this->val )
             throw InternalError( "Null VRef dereference." );
         if ( this->val->getType() != Val::Type::STR )
-            throw InternalError( "Bad I64 cast." );
+            throw InternalError( "Bad Str cast." );
         return *static_cast<StrVal*>( this->val );
+    }
+
+    const VecVal & VRef::asVec () const {
+        if ( !this->val )
+            throw InternalError( "Null VRef dereference." );
+        if ( this->val->getType() != Val::Type::VEC )
+            throw InternalError( "Bad Vec cast." );
+        return *static_cast<VecVal*>( this->val );
     }
 
     const LstVal & VRef::asLst () const {
         if ( !this->val )
             throw InternalError( "Null VRef dereference." );
         if ( this->val->getType() != Val::Type::LST )
-            throw InternalError( "Bad I64 cast." );
+            throw InternalError( "Bad Lst cast." );
         return *static_cast<LstVal*>( this->val );
     }
 
@@ -165,8 +182,6 @@ namespace Rill {
             throw InternalError( "Bad Map cast." );
         return *static_cast<MapVal*>( this->val );
     }
-
-
 
     Val * I64Val::clone () const {
         return new I64Val( *this );
@@ -265,6 +280,26 @@ namespace Rill {
     }
 
     String LstVal::toString () const {
+        return ""; // TODO: not this
+    }
+
+    Val * VecVal::clone () const {
+        return new VecVal( *this );
+    }
+
+    VecVal::VecVal () : Vector<VRef>() {
+
+    }
+
+    VecVal::VecVal ( const Vector<VRef> & other ) : Vector<VRef>( other ) {
+
+    }
+
+    Val::Type VecVal::getType () const {
+        return Val::Type::VEC;
+    }
+
+    String VecVal::toString () const {
         return ""; // TODO: not this
     }
 

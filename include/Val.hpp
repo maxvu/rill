@@ -63,12 +63,12 @@ namespace Rill {
         public:
 
         enum class Type : uint8_t {
-            I64,
-            DBL,
-            STR,
-            VEC,
-            LST,
-            MAP
+            I64 = 1,
+            DBL = 2,
+            STR = 4,
+            VEC = 8,
+            LST = 16,
+            MAP = 32
         };
 
         protected:

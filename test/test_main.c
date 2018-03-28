@@ -1,24 +1,29 @@
-#include "minunit.h"
+#include "test.h"
 
 #include <stdio.h>
 
-int tests_run = 0;
 int num_asserts = 0;
+int num_success = 0;
 
-char * test_rvec ();
+// char * test_rvec ();
+char * test_rstr ();
+
+void assert ( char cond, const char * label ) {
+    num_asserts++;
+    if ( cond ) {
+        printf( "OK   %s\n", label );
+        num_success++;
+    } else {
+        printf( "FAIL %s\n", label );
+    }
+}
 
 int main ( int argc, char ** argv ) {
 
-    char * message;
-    if ( ( message = test_rvec() ) ) {
-        printf( "FAILED: %s\n", message );
-    } else {
-        printf( "OK\n" );
-    }
+    assert( 1 + 1 == 2, "1 + 1 == 2" );
 
-    printf( "%d tests run\n", tests_run );
-    printf( "%d assertions run\n", num_asserts );
+    test_rstr();
 
-    return message == NULL;
+    return 0;
 
 }

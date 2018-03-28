@@ -11,7 +11,7 @@ bin/rill : $(OBJECTS) $(ENTRY)
 	$(CC) $(CC_INCLUDE) $(ENTRY) $(CC_FLAGS) $(OBJECTS) -o $@
 
 bin/rill-tests : $(OBJECTS) $(TESTS)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) $(OBJECTS) $(TESTS) -o $@
+	$(CC) $(CC_INCLUDE) -I test/ $(CC_FLAGS) $(OBJECTS) $(TESTS) -o $@
 
 build/main.o : $(ENTRY)
 	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@

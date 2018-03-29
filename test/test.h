@@ -1,1 +1,1 @@
-void assert ( char cond, const char * label );
+void insist ( char cond, const char * label );

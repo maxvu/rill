@@ -35,6 +35,15 @@ int __rstr_cat ( RStr * str, const char * other, size_t other_len ) {
 RStr * rstr_create () {
     RStr * str = rmem_alloc( sizeof( RStr ) );
     if ( !str ) return NULL;
+    if ( !rstr_init( str ) ) {
+        rmem_free( str );
+        return NULL;
+    }
+    return str;
+}
+
+int rstr_init ( RStr * str ) {
+    if ( !str ) return NULL;
     str->buf = rmem_alloc( RILL_RSTR_DEFAULTSIZE + 1 );
     if ( !str->buf ) {
         rmem_free( str );
@@ -43,7 +52,7 @@ RStr * rstr_create () {
     str->cap = RILL_RSTR_DEFAULTSIZE;
     str->len = 0;
     str->buf[ 0 ] = 0;
-    return str;
+    return 1;
 }
 
 RStr * rstr_clone ( RStr * orig ) {
@@ -95,7 +104,12 @@ int rstr_cmp_cstr ( RStr * a, const char * b ) {
     return strcmp( a->buf, b );
 }
 
-void rstr_destroy ( RStr * str ) {
+void rstr_retire ( RStr * str ) {
+    if ( !str ) return;
     rmem_free( str->buf );
+}
+
+void rstr_destroy ( RStr * str ) {
+    rstr_retire( str );
     rmem_free( str );
 }

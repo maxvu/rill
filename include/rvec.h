@@ -16,7 +16,8 @@ typedef struct RVec {
     char * buf;
 } RVec;
 
-RVec * rvec_create ( size_t align );
+RVec * rvec_create ();
+int rvec_init ( RVec * vec, size_t align );
 RVec * rvec_clone ( RVec * orig );
 size_t rvec_len ( RVec * vec );
 int rvec_reserve ( RVec * vec, size_t new_cap );
@@ -29,6 +30,7 @@ int rvec_push ( RVec * vec, void * item );
 void rvec_pop ( RVec * vec );
 void rvec_fill ( RVec * vec, size_t n, void * item );
 void rvec_clear ( RVec * vec );
+void rvec_retire ( RVec * vec );
 void rvec_destroy ( RVec * vec );
 
 #endif

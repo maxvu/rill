@@ -45,6 +45,9 @@ void test_rstr () {
 
         insist( rstr_cmp( a, b ) == 0, "rstr_clone() works" );
 
+        rstr_destroy( a );
+        rstr_destroy( b );
+
     }
 
 }

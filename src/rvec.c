@@ -15,15 +15,21 @@ RVec * rvec_create ( size_t align ) {
     if ( !align ) return NULL;
     RVec * vec = rmem_alloc( sizeof( RVec ) );
     if ( !vec ) return NULL;
-    vec->len = 0;
-    vec->cap = RILL_RVEC_DEFAULTSIZE;
-    vec->align = align;
-    vec->buf = rmem_alloc( align * vec->cap );
-    if ( !vec->buf ) {
+    if ( !rvec_init( vec, align ) ) {
         rmem_free( vec );
         return NULL;
     }
     return vec;
+}
+
+int rvec_init ( RVec * vec, size_t align ) {
+    if ( !vec ) return 0;
+    vec->len = 0;
+    vec->cap = RILL_RVEC_DEFAULTSIZE;
+    vec->align = align;
+    vec->buf = rmem_alloc( align * vec->cap );
+    if ( !vec->buf ) return 0;
+    return 1;
 }
 
 RVec * rvec_clone ( RVec * orig ) {
@@ -99,8 +105,13 @@ void rvec_clear ( RVec * vec ) {
     vec->len = 0;
 }
 
-void rvec_destroy ( RVec * vec ) {
+void rvec_retire ( RVec * vec ) {
     if ( !vec ) return;
     rmem_free( vec->buf );
+}
+
+void rvec_destroy ( RVec * vec ) {
+    if ( !vec ) return;
+    rvec_retire( vec );
     rmem_free( vec );
 }

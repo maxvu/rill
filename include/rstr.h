@@ -13,6 +13,7 @@ typedef struct RStr {
 } RStr;
 
 RStr * rstr_create ();
+RStr * rstr_clone ( RStr * orig );
 size_t rstr_len ( RStr * str );
 int rstr_reserve ( RStr * str, size_t new_cap );
 int rstr_compact ( RStr * str );

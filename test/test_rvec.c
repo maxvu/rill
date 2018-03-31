@@ -46,4 +46,30 @@ void test_rvec () {
 
     }
 
+    {
+
+        RVec * vec = rvec_create( sizeof( int ) );
+
+        int i = 1;
+        rvec_push( vec, &i );
+        i++;
+        rvec_push( vec, &i );
+        i++;
+        rvec_push( vec, &i );
+
+        RVec * clone = rvec_clone( vec );
+
+        insist(
+            rvec_len( clone ) == 3 &&
+            *( ( int * ) rvec_get( clone, 0 ) ) == 1 &&
+            *( ( int * ) rvec_get( clone, 1 ) ) == 2 &&
+            *( ( int * ) rvec_get( clone, 2 ) ) == 3,
+            "rvec_clone works"
+        );
+
+        rvec_destroy( clone );
+        rvec_destroy( vec );
+
+    }
+
 }

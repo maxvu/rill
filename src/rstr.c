@@ -46,6 +46,18 @@ RStr * rstr_create () {
     return str;
 }
 
+RStr * rstr_clone ( RStr * orig ) {
+    if ( !orig ) return NULL;
+    RStr * clone = rstr_create();
+    if ( !clone ) return NULL;
+    if ( !rstr_reserve( clone, orig->len ) ) {
+        rstr_destroy( clone );
+        return NULL;
+    }
+    rstr_set( clone, orig );
+    return clone;
+}
+
 size_t rstr_len ( RStr * str ) {
     return str->len;
 }

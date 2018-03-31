@@ -26,6 +26,19 @@ RVec * rvec_create ( size_t align ) {
     return vec;
 }
 
+RVec * rvec_clone ( RVec * orig ) {
+    if ( !orig ) return NULL;
+    RVec * clone = rvec_create( orig->align );
+    if ( !clone ) return NULL;
+    if ( !rvec_reserve( clone, orig->len ) ) {
+        rvec_destroy( clone );
+        return NULL;
+    }
+    memcpy( clone->buf, orig->buf, orig->len * orig->align );
+    clone->len = orig->len;
+    return clone;
+}
+
 size_t rvec_len ( RVec * vec ) {
     if ( !vec ) return 0;
     return vec->len;
@@ -79,6 +92,11 @@ int rvec_push ( RVec * vec, void * item ) {
 void rvec_pop ( RVec * vec ) {
     if ( !vec || !vec->len ) return;
     vec->len--;
+}
+
+void rvec_clear ( RVec * vec ) {
+    if ( !vec ) return;
+    vec->len = 0;
 }
 
 void rvec_destroy ( RVec * vec ) {

@@ -17,7 +17,7 @@ typedef struct RVec {
 } RVec;
 
 RVec * rvec_create ();
-int rvec_init ( RVec * vec, size_t align );
+int rvec_init ( RVec * vec, size_t align, size_t cap );
 RVec * rvec_clone ( RVec * orig );
 size_t rvec_len ( RVec * vec );
 int rvec_reserve ( RVec * vec, size_t new_cap );

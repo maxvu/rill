@@ -15,19 +15,19 @@ RVec * rvec_create ( size_t align ) {
     if ( !align ) return NULL;
     RVec * vec = rmem_alloc( sizeof( RVec ) );
     if ( !vec ) return NULL;
-    if ( !rvec_init( vec, align ) ) {
+    if ( !rvec_init( vec, align, RILL_RVEC_DEFAULTSIZE ) ) {
         rmem_free( vec );
         return NULL;
     }
     return vec;
 }
 
-int rvec_init ( RVec * vec, size_t align ) {
+int rvec_init ( RVec * vec, size_t align, size_t cap ) {
     if ( !vec ) return 0;
     vec->len = 0;
-    vec->cap = RILL_RVEC_DEFAULTSIZE;
+    vec->cap = cap;
     vec->align = align;
-    vec->buf = rmem_alloc( align * vec->cap );
+    vec->buf = rmem_alloc( align * cap );
     if ( !vec->buf ) return 0;
     return 1;
 }

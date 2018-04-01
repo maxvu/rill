@@ -43,11 +43,11 @@ RStr * rstr_create () {
 }
 
 int rstr_init ( RStr * str ) {
-    if ( !str ) return NULL;
+    if ( !str ) return 0;
     str->buf = rmem_alloc( RILL_RSTR_DEFAULTSIZE + 1 );
     if ( !str->buf ) {
         rmem_free( str );
-        return NULL;
+        return 0;
     }
     str->cap = RILL_RSTR_DEFAULTSIZE;
     str->len = 0;

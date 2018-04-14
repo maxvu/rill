@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "rstr.h"
+#include "rval.h"
 
 int main ( int argc, char ** argv ) {
+    RVal val;
     printf( "OK\n" );
-    return 0;
 }

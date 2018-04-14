@@ -5,8 +5,7 @@
 int num_asserts = 0;
 int num_success = 0;
 
-char * test_rstr ();
-char * test_rvec ();
+char * test_rval ();
 
 void insist ( char cond, const char * label ) {
     num_asserts++;
@@ -22,8 +21,7 @@ int main ( int argc, char ** argv ) {
 
     insist( 1 + 1 == 2, "1 + 1 == 2" );
 
-    test_rstr();
-    test_rvec();
+    test_rval();
 
     return 0;
 

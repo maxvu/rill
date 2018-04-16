@@ -20,6 +20,7 @@ build/%.o : src/%.c include/%.h
 	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@
 
 tests : bin/rill-tests
+test  : tests
 
 clean :
 	rm -rf bin/*

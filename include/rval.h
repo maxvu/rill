@@ -1,6 +1,7 @@
 #ifndef RILL_RVAL
 #define RILL_RVAL
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +43,7 @@ typedef struct RVal {
         RStr *        str;
         RVec *        vec;
         RMap *        map;
-    } data;
+    };
 } RVal;
 
 typedef struct RStr {
@@ -50,7 +51,7 @@ typedef struct RStr {
     size_t len;
     size_t cap;
     char * buf;
-} RBuf;
+} RStr;
 
 typedef struct RVec {
     size_t ref;
@@ -71,32 +72,52 @@ typedef struct RMap {
     RMapSlot * slots;
 } RMap;
 
+/*
+    RVal generic functions.
+*/
+
 int rval_init ( RVal * val, RValType type );
 void rval_compact ( RVal * val );
-void rval_retire ( RVal * val );
 RValType rval_type ( RVal * val );
-
-void rval_ref ( RVal * dst, RVal * src );
 int rval_copy ( RVal * dst, RVal * src );
-int rval_exclude ( RVal * val );
+void rval_release ( RVal * val );
 
-void rval_uxx_init ( RVal * val, unsigned long u );
+/*
+    RVal generic functions - implementation.
+*/
+
+static int rval_exclude ( RVal * val );
+
+/*
+    UXX RVal functions.
+*/
+
+void rval_uxx_init ( RVal * val );
 unsigned long rval_uxx_get ( const RVal * uxx );
-void rval_uxx_set ( RVal * uxx, unsigned long u );
-void rval_uxx_ref ( RVal * dst, const RVal * src );
+void rval_uxx_set ( RVal * val, unsigned long u );
 void rval_uxx_copy ( RVal * dst, const RVal * src );
 
-void rval_ixx_init ( RVal * val, long i );
-long rval_ixx_get ( const RVal * ixx );
-void rval_ixx_set ( RVal * ixx, long i );
-void rval_ixx_ref ( RVal * dst, const RVal * src );
+/*
+    IXX RVal functions.
+*/
+
+void rval_ixx_init ( RVal * val );
+long rval_ixx_get ( const RVal * val );
+void rval_ixx_set ( RVal * val, long i );
 void rval_ixx_copy ( RVal * dst, const RVal * src );
 
-void rval_fxx_init ( RVal * val, double f );
+/*
+    FXX RVal functions.
+*/
+
+void rval_fxx_init ( RVal * val );
 double rval_fxx_get ( const RVal * val );
-void rval_fxx_set ( RVal * fxx, double f );
-void rval_fxx_ref ( RVal * dst, const RVal * src );
+void rval_fxx_set ( RVal * val, double f );
 void rval_fxx_copy ( RVal * dst, const RVal * src );
+
+/*
+    STR RVal functions.
+*/
 
 int rval_str_init ( RVal * val, size_t init_cap );
 size_t rval_str_len ( const RVal * val );
@@ -108,12 +129,18 @@ int rval_str_cmp ( const RVal * a, const RVal * b );
 int rval_str_setc ( RVal * val, const char * cstr );
 int rval_str_catc ( RVal * val, const char * cstr );
 int rval_str_cmpc  ( const RVal * val, const char * cstr );
-void rval_str_ref ( RVal * dst, const RVal * src );
-int rval_str_copy ( RVal * dst, const RVal * src );
 void rval_str_clear ( RVal * val );
-void rval_str_retire ( RVal * val );
+int rval_str_copy ( RVal * dst, const RVal * src );
+void rval_str_release ( RVal * val );
 
-int rval_vec_init ( RVal * val );
+static int rval_str_resize ( RVal * val, size_t new_cap );
+static int rval_str_exclude ( RVal * val );
+
+/*
+    VEC RVal functions.
+*/
+
+int rval_vec_init ( RVal * val, size_t init_cap );
 size_t rval_vec_len ( const RVal * vec );
 int rval_vec_reserve ( RVal * vec, size_t new_cap );
 int rval_vec_compact ( RVal * vec );
@@ -123,9 +150,15 @@ RVal * rval_vec_get ( RVal * vec );
 int rval_vec_set ( RVal * vec );
 int rval_vec_append ( RVal * dst, const RVal * src );
 void rval_vec_clear ( RVal * vec );
-void rval_vec_ref ( RVal * dst, const RVal * src );
 int rval_vec_copy ( RVal * dst, const RVal * src );
-void rval_vec_retire ( RVal * vec );
+void rval_vec_release ( RVal * vec );
+
+static int rval_vec_resize ( RVal * vec, size_t new_cap );
+static int rval_vec_exclude ( RVal * vec );
+
+/*
+    MAP RVal functions.
+*/
 
 int rval_map_init ( RVal * map );
 size_t rval_map_size ( const RVal * map );
@@ -144,8 +177,10 @@ const RVal * rval_map_iter_key ( void * iter );
 RVal * rval_map_iter_val ( void * iter );
 RVal * rval_map_iter_unset ( void * iter );
 void rval_map_clear ( RVal * map );
-void rval_map_ref ( RVal * dst, RVal * src );
 int rval_map_copy ( RVal * dst, RVal * src );
-void rval_map_retire ( RVal * map );
+void rval_map_release ( RVal * map );
+
+static int rval_map_resize ( RVal * vec, size_t new_cap );
+static int rval_map_exclude ( RVal * map );
 
 #endif

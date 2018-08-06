@@ -1,30 +1,21 @@
 CC = clang
-CC_FLAGS = -Wall -lstdc++ -std=c++11 -g
+CC_FLAGS = -Wall -std=c11 -g
+LD_FLAGS = -s
 CC_INCLUDE = -I include/ -I lib/
 
-ENTRY   = src/Main.cpp
-SOURCES = $(filter-out $(ENTRY), $(shell find src/*.cpp))
-OBJECTS = $(patsubst src/%.cpp, build/%.o, $(SOURCES))
-TESTS   = $(shell find test/*.cpp)
+build :
+	mkdir -p $@
 
-bin/rill : $(OBJECTS) $(ENTRY)
-	$(CC) $(CC_INCLUDE) $(ENTRY) $(CC_FLAGS) $(OBJECTS) -o $@
+build/val : build/
+	mkdir -p $@
+build/val/%.c: src/val/%.h
+	@echo
+build/val/%.o: src/val/%.c build/ build/val
+	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $^ -c -o $@
 
-bin/rill-tests : $(OBJECTS) $(TESTS)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) $(OBJECTS) $(TESTS) -o $@
-
-build/Main.o : $(ENTRY)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@
-
-build/%.o : src/%.cpp include/%.hpp
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@
-
-tests : bin/rill-tests
-
-clean :
-	rm -rf bin/*
-	rm -rf build/*
-
-dbg :
-	@echo SOURCES: $(SOURCES)
-	@echo OBJECTS: $(OBJECTS)
+build/vm : build/
+	mkdir -p $@
+build/vm/%.c: src/vm/%.h
+	@echo
+build/vm/%.o: src/vm/%.c build/ build/vm
+	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $^ -c -o $@

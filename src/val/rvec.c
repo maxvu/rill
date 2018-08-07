@@ -7,7 +7,7 @@
 
 /* Implementation-specific */
 
-int __resize ( RVec * vec, size_t new_cap ) {
+static int __resize ( RVec * vec, size_t new_cap ) {
     assert( vec != NULL );
     assert( new_cap >= RILL_VAL_RVEC_DEFAULTLEN );
     assert( new_cap >= vec->len );
@@ -94,7 +94,15 @@ int rvec_release ( RVec * vec ) {
 }
 
 int rvec_exclude ( RVec * vec ) {
-
+    assert( vec != NULL );
+    if ( vec->refcount == 1 )
+        return 1;
+    RVec tmp;
+    if ( !rvec_clone( &tmp, vec ) )
+        return 0;
+    rvec_release( vec );
+    memcpy( vec, &tmp, sizeof( RVec ) );
+    return 1;
 }
 
 /* Length and capacity */

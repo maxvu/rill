@@ -1,4 +1,4 @@
-#include "rmap.c"
+#include "val/rmap.h"
 
 /* Construction, destruction */
 

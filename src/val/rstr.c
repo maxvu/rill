@@ -6,7 +6,7 @@
 
 /* Implementation-specific */
 
-int __cat ( RStr * str, const char * sfx, size_t sfx_len ) {
+static int __cat ( RStr * str, const char * sfx, size_t sfx_len ) {
     assert( str != NULL );
     assert( sfx != NULL );
     if ( sfx_len == 0 )
@@ -21,7 +21,7 @@ int __cat ( RStr * str, const char * sfx, size_t sfx_len ) {
     return 1;
 }
 
-int __resize ( RStr * str, size_t new_cap ) {
+static int __resize ( RStr * str, size_t new_cap ) {
     assert( str != NULL );
     assert( new_cap >= RILL_VAL_RSTR_DEFAULTLEN );
     assert( new_cap >= str->len );

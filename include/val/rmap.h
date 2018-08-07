@@ -1,5 +1,5 @@
-#ifndef RILL_VAL_RVEC
-#define RILL_VAL_RVEC
+#ifndef RILL_VAL_RMAP
+#define RILL_VAL_RMAP
 
 #include <stddef.h>
 

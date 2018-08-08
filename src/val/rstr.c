@@ -58,7 +58,6 @@ int rstr_init ( RStr * str, size_t init_cap ) {
 void rstr_retire ( RStr * str ) {
     assert( str != NULL );
     assert( str->buf != NULL );
-    assert( str->refcount == 1 );
     free( str->buf );
     str->buf = NULL;
     str->len = 0;
@@ -94,7 +93,6 @@ int rstr_lease ( RStr * str ) {
 int rstr_release ( RStr * str ) {
     assert( str != NULL );
     assert( str->refcount != 0 );
-    str->refcount--;
     if ( --str->refcount == 0 )
         rstr_retire( str );
     return 1;
@@ -126,7 +124,7 @@ int rstr_reserve ( RStr * str, size_t new_cap ) {
 
 int rstr_compact ( RStr * str ) {
     assert( str != NULL );
-    if ( str->len <= RILL_VAL_RSTR_GROWTHCOEF )
+    if ( str->len <= RILL_VAL_RSTR_DEFAULTLEN )
         return 1;
     return __resize( str, str->len );
 }

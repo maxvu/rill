@@ -14,7 +14,7 @@ static int __resize ( RVec * vec, size_t new_cap ) {
     RVal * new_vals = ( RVal * ) calloc( new_cap, sizeof( RVal ) );
     if ( new_vals == NULL )
         return 0;
-    memcpy( new_vals, vec->vals, vec->len );
+    memcpy( new_vals, vec->vals, sizeof( RVal ) * vec->len );
     free( vec->vals );
     vec->vals = new_vals;
     vec->cap = new_cap;
@@ -31,6 +31,7 @@ int rvec_init ( RVec * vec, size_t init_cap ) {
     if ( vals == NULL ) {
         return 0;
     }
+    vec->vals = vals;
     vec->len = 0;
     vec->cap = init_cap;
     vec->refcount = 1;
@@ -39,7 +40,8 @@ int rvec_init ( RVec * vec, size_t init_cap ) {
 
 void rvec_retire ( RVec * vec ) {
     assert( vec != NULL );
-    assert( vec->refcount == 1 );
+    assert( vec->refcount < 2 );
+    rvec_clear( vec );
     free( vec->vals );
 }
 
@@ -63,7 +65,7 @@ void rvec_destroy ( RVec * vec ) {
 /* RVal-generic */
 
 int rvec_contains ( RVec * vec, RVal * val ) {
-    return 0;
+    return 0; // TODO: implement
 }
 
 int rvec_clone ( RVec * dst, RVec * src ) {

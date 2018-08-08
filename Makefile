@@ -25,5 +25,5 @@ OBJECTS = $(OBJ_VAL)
 
 # Tests
 bin/rill-test : $(OBJECTS) test/*.c
-	$(CC) $(LD_FLAGS) $(CC_INCLUDE) $(OBJ_ALL) $^ -o $@
+	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $(OBJ_ALL) $^ -o $@
 test : bin/rill-test

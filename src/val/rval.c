@@ -59,6 +59,7 @@ int rval_copy ( RVal * dst, RVal * src ) {
             rvec_lease( dst->vec );
         break;
     }
+    dst->type = src->type;
     return 1;
 }
 

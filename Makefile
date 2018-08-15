@@ -1,29 +1,28 @@
 CC = clang
 CC_FLAGS = -Wall -std=c11 -g
 LD_FLAGS =
-CC_INCLUDE = -I include/ -I lib/
+CC_INCLUDE = -I ./
 
-build :
+bin/ :
 	mkdir -p $@
 
-build/val/ : build/
+RILL_VM := $(patsubst vm/include/%.h, vm/build/%.o, $(wildcard vm/include/*.h))
+vm/build/ :
 	mkdir -p $@
-build/val/rstr.o : src/val/rstr.c include/val/rstr.h build/val/
-	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $< -c -o $@
-build/val/rvec.o : src/val/rvec.c include/val/rvec.h build/val/
-	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $< -c -o $@
-build/val/rval.o : src/val/rval.c include/val/rval.h build/val/
-	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $< -c -o $@
-build/val/rmap.o : src/val/rmap.c include/val/rmap.h build/val/
-	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $< -c -o $@
-OBJ_VAL =  build/val/rstr.o
-OBJ_VAL += build/val/rvec.o
-OBJ_VAL += build/val/rval.o
-OBJ_VAL += build/val/rmap.o
+vm/build/%.o: vm/src/%.c
+	$(CC) $(CC_FLAGS) -I vm/include/ $(CC_INCLUDE) $< -c -o $@
+vm : RILL_VM
 
-OBJECTS = $(OBJ_VAL)
+RILL_LANG := $(patsubst lang/include/%.h, lang/build/%.o, $(wildcard lang/include/*.h))
+lang/build/ :
+	mkdir -p $@
+lang/build/%.o: lang/src/%.c
+	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $< -c -o $@
+lang : RILL_LANG
 
-# Tests
-bin/rill-test : $(OBJECTS) test/*.c
-	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $(OBJ_ALL) $^ -o $@
-test : bin/rill-test
+bin/rill-test : bin/ $(RILL_VM) $(RILL_LANG)
+	$(CC) $(CC_FLAGS) -I tests/include/ $(CC_INCLUDE)  $(wildcard tests/src/*.c) -o $@
+tests : bin/rill-test
+
+clean :
+	rm -rf bin/* vm/build/* lang/build/*

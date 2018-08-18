@@ -14,8 +14,8 @@ int __resize ( RStr * str, size_t new_cap ) {
         return 0;
     new_buf[ str->len ] = 0;
     if ( str->buf != NULL ) {
-        free( str->buf );
         memcpy( new_buf, str->buf, str->len );
+        free( str->buf );
     }
     str->buf = new_buf;
     str->cap = new_cap;

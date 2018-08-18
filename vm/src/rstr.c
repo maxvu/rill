@@ -25,12 +25,12 @@ int __resize ( RStr * str, size_t new_cap ) {
 int __cat ( RStr * str, const char * cstr, size_t cstr_len ) {
     assert( str != NULL );
     assert( cstr != NULL );
-    assert( str->len + cstr_len >= str->cap );
+    assert( str->len + cstr_len <= str->cap );
     if ( !cstr_len )
         return 1;
     memcpy( str->buf + str->len, cstr, cstr_len );
-    str->buf[ str->len ] = 0;
     str->len += cstr_len;
+    str->buf[ str->len ] = 0;
     return 1;
 }
 

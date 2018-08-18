@@ -20,9 +20,24 @@ lang/build/%.o: lang/src/%.c
 	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $< -c -o $@
 lang : RILL_LANG
 
-bin/rill-test : bin/ $(RILL_VM) $(RILL_LANG)
-	$(CC) $(CC_FLAGS) -I tests/include/ $(CC_INCLUDE)  $(wildcard tests/src/*.c) -o $@
+RILL_ALL = $(RILL_VM) $(RILL_LANG)
+
+TEST_FILES = $(shell find ./ -maxdepth 3 -regex .*/tests/.*_test\.c | sort)
+bin/rill-test : bin/ test/include/manifest.h test/src/main.c $(RILL_ALL)
+	echo "TEST FILES: $(TEST_FILES)"
+	$(CC) $(CC_FLAGS) -I test/include/ $(CC_INCLUDE) \
+	$(RILL_ALL) \
+	$(TEST_FILES) \
+	test/src/main.c \
+	test/src/manifest.c -o $@
 tests : bin/rill-test
+
+test : bin/rill-test
+
+test/include/manifest.h : $(TEST_FILES) test/generate-manifest.sh
+	test/generate-manifest.sh
 
 clean :
 	rm -rf bin/* vm/build/* lang/build/*
+	rm test/include/manifest.h
+	rm test/src/manifest.c

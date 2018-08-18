@@ -1,16 +1,12 @@
 #include "test.h"
+#include "manifest.h"
 
 int main ( int argc, char ** argv ) {
-    test( "sanity check, fail", {
-        insist( strcmp( "OK", "OK" ) == 0 );
-        insist( 1 + 1 == 3 );
+    test( "sanity check", {
+        insist( 1 + 1 == 2 );
     } );
 
-    test( "sanity check, pass", {
-        insist( strcmp( "OK", "OK" ) == 0 );
-        insist( 1 + 1 == 2 );
-        insist( 2 + 2 == 4 );
-    } );
+    __run_all_tests();
 
     printf( "\n" );
     if ( ___tests_count == ___tests_passed ) {

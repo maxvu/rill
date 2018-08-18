@@ -4,13 +4,34 @@
 #include "rval.h"
 #include "rstr.h"
 
-void rval_zero ( RVal * val );
+void rval_zero ( RVal * val ) {
+    assert( val != NULL );
+    val->type = NIL;
+    val->uxx = 0;
+}
+
 enum RValType rval_type ( RVal * val ) {
     assert( val != NULL );
     return val->type;
 }
 int rval_lease ( RVal * val );
-void rval_clear ( RVal * val );
+
+void rval_clear ( RVal * val ) {
+    switch ( rval_type( val ) ) {
+        case NIL:
+        case UXX:
+        case IXX:
+        case DBL:
+            break;
+        case STR:
+            if ( !--val->str->refcount )
+                rstr_retire( val );
+        break;
+        // TODO: map, vec
+    }
+    rval_zero( val );
+}
+
 int rval_compact ( RVal * val );
 
 int __exclude_str ( RVal * str ) {

@@ -4,7 +4,7 @@
 #define CONSOLE_GREEN "\033[1;32m"
 #define CONSOLE_RED "\033[1;31m"
 #define CONSOLE_RESET "\033[0m"
-#define MSG_BUF_CAP 200
+#define MSG_BUF_CAP 300
 
 unsigned int ___test_options;
 unsigned int ___assertions_count;

@@ -1,3 +1,5 @@
 bin/*
 build/*
 *.o
+test/include/manifest.h
+test/src/manifest.c

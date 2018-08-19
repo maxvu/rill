@@ -36,7 +36,7 @@ int __cat ( RStr * str, const char * cstr, size_t cstr_len ) {
 
 int rstr_init ( RVal * val, size_t init_cap ) {
     assert( val != NULL );
-    assert( rval_type( val ) == NIL );
+    rval_clear( val );
     RStr * str = ( RStr * ) malloc( sizeof( RStr ) );
     if ( !str )
         return 0;
@@ -102,6 +102,8 @@ int rstr_set ( RVal * val, RVal * other ) {
     assert( other != NULL );
     assert( rval_type( other ) == STR );
     assert( other->str != NULL );
+    if ( !rval_exclude( val ) )
+        return 0;
     if ( !rstr_reserve( val, rstr_len( other ) ) )
         return 0;
     val->str->len = 0;
@@ -115,9 +117,9 @@ int rstr_cat ( RVal * val, RVal * other ) {
     assert( other != NULL );
     assert( rval_type( other ) == STR );
     assert( other->str != NULL );
-    if ( !rstr_reserve( val, rstr_len( other ) ) )
-        return 0;
     if ( !rval_exclude( val ) )
+        return 0;
+    if ( !rstr_reserve( val, rstr_len( val ) + rstr_len( other ) ) )
         return 0;
     return __cat( val->str, rstr_cstr( other ), rstr_len( other ) );
 }
@@ -144,9 +146,9 @@ int rstr_setc ( RVal * val, const char * cstr ) {
     assert( val->str != NULL );
     assert( cstr != NULL );
     size_t cstr_len = strlen( cstr );
-    if ( !rstr_reserve( val, rstr_len( val ) + cstr_len ) )
-        return 0;
     if ( !rval_exclude( val ) )
+        return 0;
+    if ( !rstr_reserve( val, cstr_len ) )
         return 0;
     val->str->len = 0;
     return __cat( val->str, cstr, cstr_len );
@@ -160,9 +162,9 @@ int rstr_catc ( RVal * val, const char * cstr ) {
     size_t cstr_len = strlen( cstr );
     if ( cstr_len == 0 )
         return 1;
-    if ( !rstr_reserve( val, rstr_len( val ) + cstr_len ) )
-        return 0;
     if ( !rval_exclude( val ) )
+        return 0;
+    if ( !rstr_reserve( val, rstr_len( val ) + cstr_len ) )
         return 0;
     return __cat( val->str, cstr, cstr_len );
 }
@@ -171,10 +173,12 @@ int rstr_cmpc ( RVal * val, const char * cstr ) {
     return memcmp( val->str->buf, cstr, val->str->len );
 }
 
-void rstr_clear ( RVal * val ) {
+int rstr_clear ( RVal * val ) {
     assert( val != NULL );
     assert( rval_type( val ) == STR );
     assert( val->str != NULL );
+    if ( !rval_exclude( val ) )
+        return 0;
     val->str->len = 0;
     val->str->buf[ 0 ] = 0;
 }

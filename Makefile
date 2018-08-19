@@ -1,5 +1,5 @@
 CC = clang
-CC_FLAGS = -Wall -std=c11 -g
+CC_FLAGS = -Wall -std=c11 -g3
 LD_FLAGS =
 CC_INCLUDE = -I ./
 
@@ -29,15 +29,15 @@ bin/rill-test : bin/ test/include/manifest.h test/src/main.c $(RILL_ALL)
 	$(RILL_ALL) \
 	$(TEST_FILES) \
 	test/src/main.c \
+	test/src/test.c \
 	test/src/manifest.c -o $@
 tests : bin/rill-test
-
-test : bin/rill-test
+test  : bin/rill-test
 
 test/include/manifest.h : $(TEST_FILES) test/generate-manifest.sh
 	test/generate-manifest.sh
 
 clean :
 	rm -rf bin/* vm/build/* lang/build/*
-	rm test/include/manifest.h
-	rm test/src/manifest.c
+	rm -f test/include/manifest.h
+	rm -f test/src/manifest.c

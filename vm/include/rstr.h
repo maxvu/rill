@@ -27,6 +27,6 @@ int rstr_cmp ( RVal * val, RVal * other );
 int rstr_setc ( RVal * val, const char * cstr );
 int rstr_catc ( RVal * val, const char * cstr );
 int rstr_cmpc ( RVal * val, const char * cstr );
-void rstr_clear ( RVal * val );
+int rstr_clear ( RVal * val );
 
 #endif

@@ -11,10 +11,14 @@ INVOCATIONS=$(echo $TESTS | sed -E 's/^.*$/\0();/g')
 MANIFEST_HEADER=$(dirname "$0")/include/manifest.h
 MANIFEST_SOURCE=$(dirname "$0")/src/manifest.c
 
+echo -e "#ifndef MANIFEST_H" >  $MANIFEST_HEADER
+echo -e "#define MANIFEST_H" >> $MANIFEST_HEADER
 
-echo -e "void __run_all_tests ();\n" > $MANIFEST_HEADER
+echo -e "void __run_all_tests ();\n" >> $MANIFEST_HEADER
 echo $DECLARATIONS >> $MANIFEST_HEADER
 echo -e "\n" >> $MANIFEST_HEADER
+
+echo -e "#endif" >> $MANIFEST_HEADER
 
 echo -e '#include "manifest.h"\n' > $MANIFEST_SOURCE
 echo -e "void __run_all_tests () {\n" >> $MANIFEST_SOURCE

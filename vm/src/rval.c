@@ -17,19 +17,23 @@ enum RValType rval_type ( RVal * val ) {
 int rval_lease ( RVal * val );
 
 void rval_clear ( RVal * val ) {
+    assert( val != NULL );
     switch ( rval_type( val ) ) {
         case NIL:
         case UXX:
         case IXX:
         case DBL:
+            rval_zero( val );
             break;
         case STR:
+            assert( val->str != NULL );
             if ( !--val->str->refcount )
                 rstr_retire( val );
+            rval_zero( val );
+            return;
         break;
         // TODO: map, vec
     }
-    rval_zero( val );
 }
 
 int rval_compact ( RVal * val );
@@ -77,6 +81,36 @@ int rval_exclude ( RVal * val ) {
     }
     return 1;
 }
-int rval_copy ( RVal * dst, RVal * src );
+
+int rval_copy ( RVal * dst, RVal * src ) {
+    assert( dst != NULL );
+    assert( src != NULL );
+    rval_clear( dst );
+    switch ( rval_type( src ) ) {
+        case NIL:
+            dst->type = NIL;
+        break;
+        case UXX:
+            dst->type = UXX;
+            dst->uxx = src->uxx;
+        break;
+        case IXX:
+            dst->type = IXX;
+            dst->ixx = src->ixx;
+        break;
+        case DBL:
+            dst->type = DBL;
+            dst->dbl = src->dbl;
+        break;
+        case STR:
+            dst->type = STR;
+            dst->str = src->str;
+            dst->str->refcount++;
+        break;
+        // TODO: vec, map
+    }
+    return 1;
+}
+
 int rval_clone ( RVal * dst, RVal * src );
 int rval_descends ( RVal * needle, RVal * haystack );

@@ -4,7 +4,7 @@
 #define CONSOLE_GREEN "\033[1;32m"
 #define CONSOLE_RED "\033[1;31m"
 #define CONSOLE_RESET "\033[0m"
-#define MSG_BUF_CAP 300
+#define MSG_BUF_CAP 700
 
 unsigned int ___test_options;
 unsigned int ___assertions_count;
@@ -23,7 +23,7 @@ unsigned int ___tests_passed;
         ___msg_buf_len += snprintf( \
             ___msg_buf + ___msg_buf_len, \
             MSG_BUF_CAP - ___msg_buf_len, \
-            "  " CONSOLE_RED "%s" CONSOLE_RESET " %s:%d\n", \
+            "  " MAKE_RED( "%s" ) " %s:%d\n", \
             #CONDITION, \
             __FILE__, \
             __LINE__ \
@@ -40,9 +40,12 @@ unsigned int ___tests_passed;
     ___tests_count++; \
     if ( ___passed ) { \
         ___tests_passed++; \
-        printf( MAKE_GREEN( "%s\n" ), NAME ); \
+        printf( MAKE_GREEN( "%s" ) "\n", NAME ); \
     } else { \
-        printf( MAKE_RED( "%s\n" ), NAME ); \
-        printf( MAKE_RED( "%s\n" ), ___msg_buf ); \
+        printf( MAKE_RED( "%s" ) "\n", NAME ); \
+        printf( MAKE_RED( "%s" ) "\n", ___msg_buf ); \
     } \
 } while ( 0 );
+
+void ___debug ();
+#define debug ___debug();

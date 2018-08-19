@@ -1,6 +1,8 @@
 #include "test.h"
 #include "vm/include/rstr.h"
 
+#include <signal.h>
+
 void __test_vm_rstr () {
 
     test( "rstr initializes properly", ({
@@ -37,7 +39,7 @@ void __test_vm_rstr () {
         rval_clear( &msg );
     }) )
 
-    test( "rstr set(), cat(), cmp()", ({
+    test( "rstr set(), cat(), cmp(), clear()", ({
         RVal a, b;
         rval_zero( &a );
         rval_zero( &b );
@@ -50,9 +52,61 @@ void __test_vm_rstr () {
         insist( rstr_cmp( &a, &b ) == 1 );
         insist( rstr_cat( &a, &b ) );
         insist( rstr_cmpc( &a, "hello world!" ) == 0 );
+
+        rstr_clear( &a );
+        insist( rstr_len( &a ) == 0 );
+        insist( rstr_cmpc( &a, "" ) == 0 );
+
         rval_clear( &a );
         rval_clear( &b );
     }) )
 
+    test( "rstr refcounts over copy() and clear()", ({
+
+        RVal a, b;
+        rval_zero( &a );
+        rval_zero( &b );
+        insist( rstr_init( &a, 20 ) );
+        insist( rstr_init( &b, 20 ) );
+        insist( rstr_setc( &a, "hello" ) );
+        insist( rstr_setc( &b, "world" ) );
+
+        insist( rval_copy( &a, &b ) );
+        insist( a.str == b.str );
+        insist( a.str->refcount == 2 );
+
+        rval_clear( &a );
+        insist( rval_type( &a ) == NIL );
+        insist( b.str->refcount == 1 );
+
+        rval_clear( &b );
+
+    }) )
+
+    test( "rstr refcounts over copy() and exclude()", ({
+
+        RVal a, b;
+        rval_zero( &a );
+        rval_zero( &b );
+        insist( rstr_init( &a, 20 ) );
+        insist( rstr_setc( &a, "hello world!" ) );
+        insist( rval_copy( &b, &a ) );
+
+        insist( b.str == a.str );
+        insist( b.str->refcount == 2 );
+
+        debug;
+        insist( rstr_catc( &a, "!!!" ) );
+
+        insist( b.str != a.str );
+        insist( a.str->refcount == 1 );
+        insist( b.str->refcount == 1 );
+        insist( rstr_cmpc( &a, "hello world!!!!" ) == 0 );
+        insist( rstr_cmpc( &b, "hello world!" ) == 0 );
+
+        rval_clear( &a );
+        rval_clear( &b );
+
+    }) )
 
 }

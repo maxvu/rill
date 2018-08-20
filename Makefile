@@ -1,30 +1,37 @@
 CC = clang
-CC_FLAGS = -Wall -lstdc++ -std=c++11 -g
-CC_INCLUDE = -I include/ -I lib/
+CC_FLAGS = -Wall -std=c11 -g3
+LD_FLAGS =
+CC_INCLUDE = -I ./
 
-ENTRY   = src/Main.cpp
-SOURCES = $(filter-out $(ENTRY), $(shell find src/*.cpp))
-OBJECTS = $(patsubst src/%.cpp, build/%.o, $(SOURCES))
-TESTS   = $(shell find test/*.cpp)
+bin/ :
+	mkdir -p $@
+build/ :
+	mkdir -p $@
+build/rval/ : build/
+	mkdir -p $@
 
-bin/rill : $(OBJECTS) $(ENTRY)
-	$(CC) $(CC_INCLUDE) $(ENTRY) $(CC_FLAGS) $(OBJECTS) -o $@
+RVAL_SRC := $(wildcard rval/*.c)
+RVAL_INC := $(patsubst rval/%.c, rval/%.h, $(RVAL_SRC))
+RVAL_OBJ := $(patsubst rval/%.c, build/rval/%.o, $(wildcard rval/*.c))
+build/rval/%.o : rval/%.c rval/%.h build/rval/
+	$(CC) $(CC_FLAGS) $(CC_INCLUDE) $< -c -o $@
+rval : $(RVAL_OBJ)
 
-bin/rill-tests : $(OBJECTS) $(TESTS)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) $(OBJECTS) $(TESTS) -o $@
+RILL_OBJ := $(RVAL_OBJ)
 
-build/Main.o : $(ENTRY)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@
-
-build/%.o : src/%.cpp include/%.hpp
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@
-
+RILL_TESTS := $(shell find test/tests/ -regex .*\.c)
+test/manifest.h : $(RILL_TESTS)
+	test/generate.sh
+bin/rill-test : $(RILL_OBJ) test/manifest.h
+	$(CC) $(CC_FLAGS) $(CC_INCLUDE) \
+		$(RILL_OBJ) \
+		$(RILL_TESTS) \
+		test/main.c \
+		test/manifest.c \
+		-o $@
+test  : bin/rill-test
 tests : bin/rill-tests
 
 clean :
-	rm -rf bin/*
 	rm -rf build/*
-
-dbg :
-	@echo SOURCES: $(SOURCES)
-	@echo OBJECTS: $(OBJECTS)
+	rm -rf bin/*

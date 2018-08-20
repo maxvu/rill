@@ -3,6 +3,7 @@
 
 #include "rval.h"
 #include "rstr.h"
+#include "rvec.h"
 
 void rval_zero ( RVal * val ) {
     assert( val != NULL );
@@ -26,13 +27,20 @@ void rval_clear ( RVal * val ) {
             rval_zero( val );
             break;
         case STR:
-            assert( val->str != NULL );
-            if ( !--val->str->refcount )
-                rstr_retire( val );
-            rval_zero( val );
-            return;
+        assert( val->str != NULL );
+        if ( !--val->str->refcount )
+            rstr_retire( val );
+        rval_zero( val );
+        return;
         break;
-        // TODO: map, vec
+        case VEC:
+        assert( val->vec != NULL );
+        if ( !--val->vec->refcount )
+            rvec_retire( val );
+        rval_zero( val );
+        return;
+        break;
+        // TODO: map
     }
 }
 
@@ -56,7 +64,22 @@ int __exclude_str ( RVal * str ) {
 }
 
 int __exclude_vec ( RVal * vec ) {
-    // TODO: implement
+    assert( vec != NULL );
+    assert( rval_type( vec ) == VEC );
+    if ( vec->vec->refcount == 1 )
+        return 1;
+    RVal tmp;
+    if ( !rvec_init( &tmp, rvec_len( vec ) ) )
+        return 0;
+    size_t len = rvec_len( vec );
+    for ( size_t i = 0; i < len; i++ ) {
+        if ( !rvec_push( &tmp, rvec_get( vec, i ) ) ) {
+            rvec_retire( &tmp );
+            return 0;
+        }
+    }
+    rval_clear( vec );
+    memcpy( vec, &tmp, sizeof( RVal ) );
     return 1;
 }
 
@@ -77,6 +100,8 @@ int rval_exclude ( RVal * val ) {
         case STR:
             return __exclude_str( val );
             break;
+        case VEC:
+            return __exclude_vec( val );
         // TODO: vec, map
     }
     return 1;

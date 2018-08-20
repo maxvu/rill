@@ -5,7 +5,7 @@
 #include "rstr.h"
 #include "rval.h"
 
-int __resize ( RStr * str, size_t new_cap ) {
+static int __resize ( RStr * str, size_t new_cap ) {
     assert( str != NULL );
     assert( new_cap >= RILL_VM_RSTR_MINSIZE );
     assert( new_cap >= str->len );
@@ -44,11 +44,11 @@ int rstr_init ( RVal * val, size_t init_cap ) {
         init_cap = RILL_VM_RSTR_MINSIZE;
     str->buf = NULL;
     str->len = 0;
+    str->refcount = 1;
     if ( !__resize( str, init_cap ) ) {
         free( str );
         return 0;
     }
-    str->refcount = 1;
     val->str = str;
     val->type = STR;
     return 1;
@@ -70,7 +70,7 @@ int rstr_reserve ( RVal * val, size_t new_cap ) {
     assert( str != NULL );
     if ( new_cap <= str->cap )
         return 1;
-    return __resize( str, new_cap );
+    return __resize( str, new_cap * RILL_VM_RSTR_GROWTHCOEFF );
 }
 
 int rstr_compact ( RVal * val ) {

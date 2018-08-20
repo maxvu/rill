@@ -1,8 +1,6 @@
 #include "test.h"
 #include "vm/include/rstr.h"
 
-#include <signal.h>
-
 void __test_vm_rstr () {
 
     test( "rstr initializes properly", ({

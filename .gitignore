@@ -1,2 +1,4 @@
 bin/*
 build/*
+test/manifest.h
+test/manifest.c

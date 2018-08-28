@@ -35,3 +35,5 @@ tests : bin/rill-tests
 clean :
 	rm -rf build/*
 	rm -rf bin/*
+	rm -f test/manifest.c
+	rm -f test/manifest.h

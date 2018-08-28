@@ -1,10 +1,16 @@
 #ifndef RILL_RVAL_RBUF
 #define RILL_RVAL_RBUF
 
+typedef struct RCtx RCtx;
+typedef struct RVal RVal;
+
 /*
     Combination byte-buffer / C-string.
     Will ensure null-termination.
 */
+
+#define RILL_VM_RBUF_MINSIZE 8
+#define RILL_VM_RBUF_GROWTHCOEFF 1.6
 
 typedef struct RBuf {
     uint8_t * buf;
@@ -14,16 +20,18 @@ typedef struct RBuf {
 
 int __rbuf_resize ( RBuf * buf, size_t new_cap );
 
-int rbuf_init ( RBuf * buf, size_t init_cap );
-size_t rbuf_len ( RBuf * buf );
-int rbuf_reserve ( RBuf * buf, size_t new_cap );
-int rbuf_compact ( RBuf * buf );
-uint8_t * rbuf_get ( RBuf * buf );
-char * rbuf_getc ( RBuf * buf );
-int rbuf_set ( RBuf * buf, const uint8_t * cts, size_t cts_len );
-int rbuf_concat ( RBuf * buf, const uint8_t * sfx, size_t sfx_len );
-int rbuf_cmp ( RBuf * buf, const uint8_t * cts, size_t cts_len );
-void rbuf_clear ( RBuf * buf );
-void rbuf_retire ( RBuf * buf, size_t init_cap );
+int rbuf_init ( RCtx * ctx, RVal * buf, size_t init_cap );
+int rbuf_reserve ( RCtx * ctx, RVal * buf, size_t new_cap );
+int rbuf_compact ( RCtx * ctx, RVal * buf );
+size_t rbuf_len ( RCtx * ctx, RVal * buf );
+uint8_t * rbuf_get ( RCtx * ctx, RVal * buf );
+char * rbuf_cstr ( RCtx * ctx, RVal * buf );
+int rbuf_set ( RCtx * ctx, RVal * buf, RVal * other );
+int rbuf_cat ( RCtx * ctx, RVal * buf, RVal * other );
+int rbuf_cmp ( RCtx * ctx, RVal * buf, RVal * other );
+int rbuf_setc ( RCtx * ctx, RVal * buf, const char * cstr, size_t cstr_len );
+int rbuf_catc ( RCtx * ctx, RVal * buf, const char * cstr, size_t cstr_len );
+int rbuf_cmpc ( RCtx * ctx, RVal * buf, const char * cstr, size_t cstr_len );
+int rbuf_clear ( RCtx * ctx, RVal * buf );
 
 #endif

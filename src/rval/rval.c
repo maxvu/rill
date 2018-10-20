@@ -1,33 +1,31 @@
-#include <assert.h>
-
-#include "rval/rctx.h"
 #include "rval/rval.h"
 
 void rval_fzero ( RVal * val ) {
-
+    assert( val );
+    val->uxx = 0;
 }
 
 RValType rval_type ( RVal * val ) {
-    assert( val != NULL );
+    assert( val );
     return val->type;
 }
 
-int rval_copy ( RCtx * ctx, RVal * dst, RVal * src ) {
+int rval_copy ( RVal * dst, RVal * src ) {
 
 }
 
-int rval_clone ( RCtx * ctx, RVal * dst, RVal * src ) {
+int rval_clone ( RVal * dst, RVal * src ) {
 
 }
 
-int rval_compact ( RCtx * ctx, RVal * val ) {
+int rval_compact ( RVal * val ) {
 
 }
 
-int rval_lease ( RCtx * ctx, RVal * val ) {
+int rval_lease ( RVal * val ) {
 
 }
 
-int rval_clear ( RCtx * ctx, RVal * val ) {
-
+int rval_zero ( RVal * val ) {
+    
 }

@@ -1,17 +1,15 @@
 #include "rval/rval.h"
-#include "rval/rfxx.h"
+#include "rval/ruxx.h"
 
-#include <assert.h>
-#include <stddef.h>
-
-long rfxx_get ( RVal * val ) {
-    assert( val != NULL );
-    assert( rval_type( val ) );
+double rfxx_get ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_FXX );
     return val->fxx;
 }
 
-void rfxx_set ( RVal * val, double f ) {
-    assert( val != NULL );
-    assert( rval_type( val ) );
-    val->fxx = f;
+void rfxx_set ( RVal * val, double u ) {
+    assert( val );
+    if ( rval_type( val ) != RVT_FXX )
+        rval_zero( val );
+    val->fxx = u;
 }

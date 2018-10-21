@@ -37,7 +37,7 @@ int __rstr_reserve ( RStr * str, size_t new_cap ) {
         return 1;
     if ( new_cap < RILL_VM_RBUF_MINSIZE )
         new_cap = RILL_VM_RBUF_MINSIZE;
-    return __rstr_resize( str, new_cap );
+    return __rstr_resize( str, (double) new_cap * RILL_VM_RBUF_GROWTHCOEFF );
 }
 
 int __rstr_cat ( RStr * str, const char * src, size_t src_len ) {
@@ -145,10 +145,11 @@ int rstr_cmp ( RVal * a, RVal * b ) {
     assert( b );
     assert( rval_type( b ) == RVT_STR );
     assert( b->str );
-    size_t n = a->str->len < b->str->len
-        ? a->str->len
-        : b->str->len;
-    return memcmp( a->str->buffer, b->str->buffer, n );
+    if ( a->str->len > b->str->len )
+        return 1;
+    else if ( a->str->len < b->str->len )
+        return -1;
+    return memcmp( a->str->buffer, b->str->buffer, a->str->len );
 }
 
 void rstr_clear ( RVal * val ) {
@@ -180,8 +181,9 @@ int rstr_cmpc ( RVal * a, const char * b, size_t b_len ) {
     assert( rval_type( a ) == RVT_STR );
     assert( a->str );
     assert( b );
-    size_t n = a->str->len < b_len
-        ? a->str->len
-        : b_len;
-    return memcmp( a->str->buffer, b, n );
+    if ( b_len > a->str->len )
+        return -1;
+    else if ( b_len > a->str->len )
+        return 1;
+    return memcmp( a->str->buffer, b, a->str->len );
 }

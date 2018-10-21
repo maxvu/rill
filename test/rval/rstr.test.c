@@ -9,9 +9,22 @@ void test_rval_rstr () {
         rval_fzero( &a );
         rstr_init( &a, 20 );
         rstr_setc( &a, "hello", 5 );
+        rstr_catc( &a, " world", 6 );
+        insist( rstr_len( &a ) == 11 );
+        insist( rstr_cmpc( &a, "hello world", 11 ) == 0 );
 
-        insist( rstr_cmpc( &a, "hello", 5 ) == 0 );
-        insist( rstr_cmpc( &a, "goodbye", 7 ) == 1 );
+        RVal b;
+        rval_fzero( &b );
+        rstr_init( &b, 11 );
+        rstr_set( &b, &a );
+        insist( rstr_len( &b ) == 11 );
+        insist( rstr_cmp( &a, &b ) == 0 );
+
+        rstr_catc( &b, "!!", 2 );
+        insist( rstr_cmp( &a, &b ) == -1 );
+
+        rstr_release( &a );
+        rstr_release( &b );
     });
 
 }

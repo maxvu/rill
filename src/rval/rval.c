@@ -2,6 +2,7 @@
 
 void rval_fzero ( RVal * val ) {
     assert( val );
+    val->type = RVT_NIL;
     val->uxx = 0;
 }
 
@@ -27,5 +28,5 @@ int rval_lease ( RVal * val ) {
 }
 
 int rval_zero ( RVal * val ) {
-    
+
 }

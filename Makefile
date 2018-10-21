@@ -17,11 +17,24 @@ RVAL = build/rval/rval.o \
 build/rval/%.o : src/rval/%.c build/rval/
 	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c -o $@ $<
 
+RILL_ALL = $(RVAL)
+
 bin/rill : src/main.c $(RVAL)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -o $@ src/main.c $(RVAL)
+	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -o $@ src/main.c $(RILL_ALL)
+
+TEST_ALL := $(shell find test/ -regex .*\.test.c)
+tests : bin/rill-tests
+test : tests
+bin/rill-tests : test/manifest.c $(RILL_ALL) $(TEST_ALL)
+	$(CC) $(CC_INCLUDE) -I test/ $(CC_FLAGS) -o $@ $< $(RILL_ALL) $(TEST_ALL)
+
+test/manifest.c : $(TEST_ALL) test/generate.sh
+	test/generate.sh
 
 # "release" with NDEBUG
 
 clean :
 	rm -rf build/*
 	rm -rf bin/*
+	rm -f test/manifest.c
+	rm -f test/manifest.h

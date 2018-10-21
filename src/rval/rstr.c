@@ -155,7 +155,7 @@ void rstr_clear ( RVal * val ) {
     assert( val );
     assert( rval_type( val ) == RVT_STR );
     assert( val->str );
-    memset( val->str, 0, val->str->cap + 1 );
+    memset( val->str->buffer, 0, val->str->cap + 1 );
 }
 
 int rstr_setc ( RVal * dst, const char * src, size_t src_len ) {

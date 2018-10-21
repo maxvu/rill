@@ -3,7 +3,7 @@
 
 typedef struct RVal RVal;
 
-long rfxx_get ( RVal * val );
+double rfxx_get ( RVal * val );
 void rfxx_set ( RVal * val, double f );
 
 #endif

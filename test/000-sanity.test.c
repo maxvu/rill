@@ -1,4 +1,4 @@
-#include "test.h"
+#include "rtest.h"
 
 void test_sanity () {
 

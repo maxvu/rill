@@ -25,12 +25,9 @@ bin/rill : src/main.c $(RVAL)
 TEST_ALL := $(shell find test/ -regex .*\.test.c)
 tests : bin/rill-tests
 test : tests
-bin/rill-tests : test/manifest.c $(RILL_ALL) $(TEST_ALL)
-	$(CC) $(CC_INCLUDE) -I test/ $(CC_FLAGS) -o $@ $< $(RILL_ALL) $(TEST_ALL)
-
-test/manifest.c : $(TEST_ALL) test/generate.sh
-	test/generate.sh
-
+bin/rill-tests : test/main.c $(RILL_ALL) $(TEST_ALL)
+	$(CC) $(CC_INCLUDE) -I ./ $(CC_FLAGS) -o $@ $< \
+	$(RILL_ALL) $(TEST_ALL)
 # "release" with NDEBUG
 
 clean :

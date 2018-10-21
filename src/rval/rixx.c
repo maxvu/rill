@@ -7,9 +7,10 @@ long rixx_get ( RVal * val ) {
     return val->ixx;
 }
 
-void rixx_set ( RVal * val, long u ) {
+void rixx_set ( RVal * val, long i ) {
     assert( val );
     if ( rval_type( val ) != RVT_IXX )
         rval_zero( val );
-    val->ixx = u;
+    val->type = RVT_IXX;
+    val->ixx = i;
 }

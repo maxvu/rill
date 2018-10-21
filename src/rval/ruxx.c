@@ -11,5 +11,6 @@ void ruxx_set ( RVal * val, unsigned long u ) {
     assert( val );
     if ( rval_type( val ) != RVT_UXX )
         rval_zero( val );
+    val->type = RVT_UXX;
     val->uxx = u;
 }

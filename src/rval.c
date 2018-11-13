@@ -12,7 +12,34 @@ RValType rval_type ( RVal * val ) {
 }
 
 int rval_copy ( RVal * dst, RVal * src ) {
-
+    assert( dst );
+    assert( src );
+    if ( dst == src )
+        return 1;
+    rval_zero( dst );
+    switch ( rval_type( src ) ) {
+        case RVT_NIL:
+        break;
+        case RVT_UXX:
+            ruxx_set( dst, ruxx_get( src ) );
+        break;
+        case RVT_IXX:
+            rixx_set( dst, rixx_get( src ) );
+        break;
+        case RVT_FXX:
+            rfxx_set( dst, rfxx_get( src ) );
+        break;
+        case RVT_STR:
+            return rstr_set( dst, src );
+        break;
+        case RVT_VEC:
+            /* ... */
+        break;
+        case RVT_MAP:
+            /* ... */
+        break;
+    }
+    return 1;
 }
 
 int rval_clone ( RVal * dst, RVal * src ) {
@@ -78,8 +105,8 @@ RStr * __rstr_create ( size_t cap ) {
     RStr * str = malloc( sizeof( RStr ) );
     if ( !str )
         return NULL;
-    if ( cap < RILL_VM_RBUF_MINSIZE )
-        cap = RILL_VM_RBUF_MINSIZE;
+    if ( cap < RILL_RSTR_MINSIZE )
+        cap = RILL_RSTR_MINSIZE;
     str->buffer = malloc( sizeof( char ) * cap + 1 );
     if ( !str->buffer ) {
         free( str );
@@ -95,6 +122,8 @@ int __rstr_resize ( RStr * str, size_t new_cap ) {
     assert( str );
     assert( str->buffer );
     assert( new_cap >= str->len );
+    if ( new_cap < RILL_RSTR_MINSIZE )
+        new_cap = RILL_RSTR_MINSIZE;
     char * new_buffer = malloc( sizeof( char ) * new_cap + 1 );
     if ( !new_buffer )
         return 0;
@@ -108,9 +137,9 @@ int __rstr_resize ( RStr * str, size_t new_cap ) {
 int __rstr_reserve ( RStr * str, size_t new_cap ) {
     if ( new_cap <= str->cap )
         return 1;
-    if ( new_cap < RILL_VM_RBUF_MINSIZE )
-        new_cap = RILL_VM_RBUF_MINSIZE;
-    return __rstr_resize( str, (double) new_cap * RILL_VM_RBUF_GROWTHCOEFF );
+    if ( new_cap < RILL_RSTR_MINSIZE )
+        new_cap = RILL_RSTR_MINSIZE;
+    return __rstr_resize( str, (double) new_cap * RILL_RSTR_GROWTHCOEFF );
 }
 
 int __rstr_cat ( RStr * str, const char * src, size_t src_len ) {
@@ -171,8 +200,8 @@ int rstr_compact ( RVal * val ) {
     assert( rval_type( val ) == RVT_STR );
     assert( val->str );
     size_t target = rstr_len( val );
-    if ( target < RILL_VM_RBUF_MINSIZE )
-        target = RILL_VM_RBUF_MINSIZE;
+    if ( target < RILL_RSTR_MINSIZE )
+        target = RILL_RSTR_MINSIZE;
     return __rstr_resize( val->str, target );
 }
 
@@ -197,8 +226,9 @@ int rstr_set ( RVal * dst, RVal * src ) {
     assert( src );
     assert( rval_type( src ) == RVT_STR );
     assert( src->str );
-    rstr_clear( dst );
-    return __rstr_cat( dst->str, src->str->buffer, src->str->len );
+    rval_zero( dst );
+    dst->str = src->str;
+    dst->str->refcount++;
 }
 
 int rstr_cat ( RVal * dst, RVal * src ) {
@@ -259,4 +289,109 @@ int rstr_cmpc ( RVal * a, const char * b, size_t b_len ) {
     else if ( b_len > a->str->len )
         return 1;
     return memcmp( a->str->buffer, b, a->str->len );
+}
+
+RVec * __rvec_create ( size_t cap ) {
+    if ( cap < RILL_RVEC_MINSIZE )
+        cap = RILL_RVEC_MINSIZE;
+    RVec * vec = malloc( sizeof( RVec ) );
+    if ( !vec )
+        return NULL;
+    RVal * vals = malloc( sizeof( RVal ) * cap );
+    if ( !vals ) {
+        free( vec );
+        return NULL;
+    }
+    vec->vals = vals;
+    vec->refcount = 1;
+    vec->len = 0;
+    vec->cap = cap;
+    return vec;
+}
+
+int __rvec_resize ( RVec * vec, size_t new_cap ) {
+    assert( vec );
+    assert( new_cap >= vec->len );
+    if ( new_cap < RILL_RVEC_MINSIZE )
+        new_cap = RILL_RVEC_MINSIZE;
+    RVal * new_vals = malloc( sizeof( RVal ) * new_cap );
+    if ( !new_vals )
+        return 0;
+    memcpy( new_vals, vec->vals, vec->len );
+    free( vec->vals );
+    vec->vals = new_vals;
+    vec->cap = new_cap;
+    return 1;
+}
+
+int __rvec_reserve ( RVec * vec, size_t new_cap ) {
+    if ( new_cap <= vec->cap )
+        return 1;
+    if ( new_cap <= RILL_RVEC_MINSIZE )
+        new_cap = RILL_RVEC_MINSIZE;
+    return __rvec_resize( vec, (double) new_cap * RILL_RVEC_GROWTHCOEFF );
+}
+
+void __rvec_destroy ( RVec * vec ) {
+    assert( vec );
+    assert( vec->vals );
+    for ( size_t i = 0; i < vec->len; i++ )
+        rval_zero( vec->vals + i );
+    free( vec->vals );
+    free( vec );
+}
+
+int rvec_init ( RVal * val, size_t init_cap ) {
+
+}
+
+void rvec_lease ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+void rvec_release ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+int rvec_compact ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+size_t rvec_len ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+int rvec_get ( RVal * val, size_t index ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+int rvec_set ( RVal * val, RVal * item, size_t index ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+int rvec_push ( RVal * val, RVal * item ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+int rvec_pop ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+}
+
+int rvec_concat ( RVal * dst, RVal * src ) {
+    assert( dst );
+    assert( rval_type( dst ) == RVT_VEC );
+    assert( src );
+    assert( rval_type( src ) == RVT_VEC );
+}
+
+int rvec_clear ( RVal * val ) {
+
 }

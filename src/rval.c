@@ -16,7 +16,7 @@ int rval_copy ( RVal * dst, RVal * src ) {
     assert( src );
     if ( dst == src )
         return 1;
-    rval_zero( dst );
+    rval_release( dst );
     switch ( rval_type( src ) ) {
         case RVT_NIL:
         break;
@@ -46,6 +46,45 @@ int rval_clone ( RVal * dst, RVal * src ) {
 
 }
 
+int rval_exclude ( RVal * val ) {
+    RVal tmp;
+    rval_fzero( &tmp );
+    if ( !rval_clone( &tmp, val ) )
+        return 0;
+    if ( !rval_copy( val, &tmp ) )
+        return 0;
+    return 1;
+}
+
+int rval_contains ( RVal * haystack, RVal * needle ) {
+    switch ( rval_type( haystack ) ) {
+        case RVT_NIL:
+            return 0;
+        break;
+        case RVT_UXX:
+            return 0;
+        break;
+        case RVT_IXX:
+            return 0;
+        break;
+        case RVT_FXX:
+            return 0;
+        break;
+        case RVT_STR:
+            return 0;
+        break;
+        case RVT_VEC: {
+            for ( size_t i = 0; i < rvec_len( haystack ); i++ )
+                if ( rval_contains( rvec_get( haystack, i ), needle ) )
+                    return 1;
+            return 0;
+        } break;
+        case RVT_MAP:
+            /* ... */
+        break;
+    }
+}
+
 int rval_compact ( RVal * val ) {
 
 }
@@ -54,7 +93,7 @@ int rval_lease ( RVal * val ) {
 
 }
 
-int rval_zero ( RVal * val ) {
+int rval_release ( RVal * val ) {
 
 }
 
@@ -67,7 +106,7 @@ unsigned long ruxx_get ( RVal * val ) {
 void ruxx_set ( RVal * val, unsigned long u ) {
     assert( val );
     if ( rval_type( val ) != RVT_UXX )
-        rval_zero( val );
+        rval_release( val );
     val->type = RVT_UXX;
     val->uxx = u;
 }
@@ -81,7 +120,7 @@ long rixx_get ( RVal * val ) {
 void rixx_set ( RVal * val, long i ) {
     assert( val );
     if ( rval_type( val ) != RVT_IXX )
-        rval_zero( val );
+        rval_release( val );
     val->type = RVT_IXX;
     val->ixx = i;
 }
@@ -95,7 +134,7 @@ double rfxx_get ( RVal * val ) {
 void rfxx_set ( RVal * val, double u ) {
     assert( val );
     if ( rval_type( val ) != RVT_FXX )
-        rval_zero( val );
+        rval_release( val );
     val->type = RVT_FXX;
     val->fxx = u;
 }
@@ -167,7 +206,7 @@ int rstr_init ( RVal * val, size_t init_cap ) {
     RStr * str = __rstr_create( init_cap );
     if ( !str )
         return 0;
-    rval_zero( val );
+    rval_release( val );
     val->type = RVT_STR;
     val->str = str;
     return 1;
@@ -184,8 +223,7 @@ void rstr_release ( RVal * val ) {
     assert( rval_type( val ) == RVT_STR );
     if ( --val->str->refcount )
         __rstr_destroy( val->str );
-    val->type = RVT_NIL;
-    val->str = NULL;
+    rval_release( val );
 }
 
 int rstr_reserve ( RVal * val, size_t new_cap ) {
@@ -226,7 +264,7 @@ int rstr_set ( RVal * dst, RVal * src ) {
     assert( src );
     assert( rval_type( src ) == RVT_STR );
     assert( src->str );
-    rval_zero( dst );
+    rval_release( dst );
     dst->str = src->str;
     dst->str->refcount++;
 }
@@ -336,53 +374,101 @@ void __rvec_destroy ( RVec * vec ) {
     assert( vec );
     assert( vec->vals );
     for ( size_t i = 0; i < vec->len; i++ )
-        rval_zero( vec->vals + i );
+        rval_release( vec->vals + i );
     free( vec->vals );
     free( vec );
 }
 
 int rvec_init ( RVal * val, size_t init_cap ) {
-
+    assert( val );
+    RVec * vec = __rvec_create( init_cap );
+    if ( !vec )
+        return 0;
+    rval_release( val );
+    val->type = RVT_VEC;
+    val->vec = vec;
+    return 1;
 }
 
 void rvec_lease ( RVal * val ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
+    val->vec->refcount++;
 }
 
 void rvec_release ( RVal * val ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
+    if ( !--val->vec->refcount )
+        __rvec_destroy( val->vec );
+    rval_release( val );
+}
+
+int rvec_reserve ( RVal * val, size_t new_cap ) {
+    return __rvec_reserve( val, new_cap );
 }
 
 int rvec_compact ( RVal * val ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
+    size_t target = rvec_len( val );
+    if ( target < RILL_RVEC_MINSIZE )
+        target = RILL_RVEC_MINSIZE;
+    return __rvec_resize( val, target );
+}
+
+int rvec_clone ( RVal * dst, RVal * src ) {
+    // CASE: dst == src
 }
 
 size_t rvec_len ( RVal * val ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
+    return val->vec->len;
 }
 
-int rvec_get ( RVal * val, size_t index ) {
+RVal * rvec_get ( RVal * val, size_t index ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
+    if ( rvec_len( val ) >= index )
+        return NULL;
+    return val->vec->vals + index;
 }
 
-int rvec_set ( RVal * val, RVal * item, size_t index ) {
+int rvec_set ( RVal * val, size_t index, RVal * item ) {
     assert( val );
-    assert( rval_type( val ) == RVT_VEC );
+    assert( item );
+    if ( rvec_len( val ) <= index )
+        return 0;
+    if ( rval_contains( item, val ) && !rval_exclude( item ) ) {
+        return 0;
+    }
+    rval_release( val->vec->vals + index );
+    rval_copy( val->vec->vals + index, item );
+    rval_release( item );
+    return 1;
 }
 
 int rvec_push ( RVal * val, RVal * item ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
+    if ( !rvec_reserve( val, rvec_len( val ) + 1 ) )
+        return 0;
+    rval_fzero( val->vec->vals + val->vec->len );
+    if ( !rvec_set( val, rvec_len( val ), item ) )
+        return 0;
+    val->vec->len++;
+    return 1;
 }
 
 int rvec_pop ( RVal * val ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
+    if ( !rvec_len( val ) )
+        return 0;
+    val->vec->len--;
+    rval_release( val->vec->vals + val->vec->len );
+    return 1;
 }
 
 int rvec_concat ( RVal * dst, RVal * src ) {
@@ -390,8 +476,29 @@ int rvec_concat ( RVal * dst, RVal * src ) {
     assert( rval_type( dst ) == RVT_VEC );
     assert( src );
     assert( rval_type( src ) == RVT_VEC );
+    if ( !rvec_reserve( dst, rvec_len( dst ) + rvec_len( src ) ) )
+        return 0;
+    for ( size_t i = 0; i < rvec_len( src ); i++ ) {
+        if ( !rvec_push( dst, rvec_get( src, i ) ) )
+            return 0;
+    }
+    return 1;
+}
+
+int rvec_fill ( RVal * dst, size_t n, RVal * item ) {
+    assert( dst );
+    assert( rval_type( dst ) == RVT_VEC );
+    if ( !rvec_reserve( dst, n ) )
+        return 0;
+    for ( size_t i = 0; i < rvec_len( dst ); i++ ) {
+        if ( !rvec_push( dst, item ) )
+            return 0;
+    }
+    return 1;
 }
 
 int rvec_clear ( RVal * val ) {
-
+    for ( size_t i = 0; i < rvec_len( val ); i++ )
+        rval_release( val->vec->vals + i );
+    val->vec->len = 0;
 }

@@ -36,9 +36,11 @@ void rval_fzero ( RVal * val );
 RValType rval_type ( RVal * val );
 int rval_copy ( RVal * dst, RVal * src );
 int rval_clone ( RVal * dst, RVal * src );
+int rval_exclude ( RVal * val );
+int rval_contains ( RVal * haystack, RVal * needle );
 int rval_compact ( RVal * val );
 int rval_lease ( RVal * val );
-int rval_zero ( RVal * val );
+int rval_release ( RVal * val );
 
 unsigned long ruxx_get ( RVal * val );
 void ruxx_set ( RVal * val, unsigned long u );
@@ -93,19 +95,22 @@ typedef struct RVec {
 RVec * __rvec_create ( size_t cap );
 int __rvec_resize ( RVec * vec, size_t new_cap );
 int __rvec_reserve ( RVec * vec, size_t new_cap );
+int __rvec_set ( RVec * vec, size_t index, RVal * item );
 void __rvec_destroy ( RVec * vec );
 
 int rvec_init ( RVal * val, size_t init_cap );
 void rvec_lease ( RVal * val );
 void rvec_release ( RVal * val );
+int rvec_reserve ( RVal * val, size_t new_cap );
 int rvec_compact ( RVal * val );
+int rvec_clone ( RVal * dst, RVal * src );
 size_t rvec_len ( RVal * val );
-int rvec_get ( RVal * val, size_t index );
-int rvec_set ( RVal * val, RVal * item, size_t index );
+RVal * rvec_get ( RVal * val, size_t index );
+int rvec_set ( RVal * val, size_t index, RVal * item );
 int rvec_push ( RVal * val, RVal * item );
 int rvec_pop ( RVal * val );
 int rvec_concat ( RVal * dst, RVal * src );
-int rvec_repeat ( RVal * dst, size_t times );
+int rvec_fill ( RVal * dst, size_t n, RVal * item );
 int rvec_clear ( RVal * val );
 
 #endif

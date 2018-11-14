@@ -405,7 +405,9 @@ void rvec_release ( RVal * val ) {
 }
 
 int rvec_reserve ( RVal * val, size_t new_cap ) {
-    return __rvec_reserve( val, new_cap );
+    assert( val );
+    assert( rval_type( val ) == RVT_VEC );
+    return __rvec_reserve( val->vec, new_cap );
 }
 
 int rvec_compact ( RVal * val ) {
@@ -414,7 +416,7 @@ int rvec_compact ( RVal * val ) {
     size_t target = rvec_len( val );
     if ( target < RILL_RVEC_MINSIZE )
         target = RILL_RVEC_MINSIZE;
-    return __rvec_resize( val, target );
+    return __rvec_resize( val->vec, target );
 }
 
 int rvec_clone ( RVal * dst, RVal * src ) {

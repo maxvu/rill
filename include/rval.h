@@ -103,7 +103,6 @@ void rvec_lease ( RVal * val );
 void rvec_release ( RVal * val );
 int rvec_reserve ( RVal * val, size_t new_cap );
 int rvec_compact ( RVal * val );
-int rvec_clone ( RVal * dst, RVal * src );
 size_t rvec_len ( RVal * val );
 RVal * rvec_get ( RVal * val, size_t index );
 int rvec_set ( RVal * val, size_t index, RVal * item );
@@ -112,5 +111,45 @@ int rvec_pop ( RVal * val );
 int rvec_concat ( RVal * dst, RVal * src );
 int rvec_fill ( RVal * dst, size_t n, RVal * item );
 int rvec_clear ( RVal * val );
+
+
+#define RILL_RMAP_MINCAP 8
+#define RILL_RMAP_MAXLOAD 0.85
+#define RILL_RMAP_GROWTHCOEFF 2.0
+
+typedef struct RMapSlot {
+    Rval * key;
+    RVal * val;
+} RMapSlot;
+
+int rmapslot_set( RStr * key, RVal * val );
+
+typedef struct RMap {
+    RMapSlot * vals;
+    size_t refcount;
+    size_t len;
+    size_t cap;
+} RMap;
+
+size_t __map_hash_a ( const char * key );
+size_t __map_hash_b ( const char * key );
+
+RMap * __map_create ( size_t cap );
+int __rmap_resize ( RMap * map, size_t new_cap );
+int __rmap_reserve ( RMap * map, size_t new_cap );
+size_t __rmap_peek_a ( RMap * map, RStr * key );
+size_t __rmap_peek_b ( RMap * map, RStr * key );
+void __rmap_destroy ( RMap * map );
+
+int rmap_init ( RVal * val, size_t init_cap );
+int rmap_lease ( RVal * val );
+int rmap_release ( RVal * val );
+int rmap_reserve ( RVal * val, size_t init_cap );
+int rmap_compact ( RVal * val );
+size_t rmap_size ( RVal * val );
+RVal * rmap_get ( RVal * val, RVal * key );
+int rmap_set ( RVal * val, RVal * key, RVal * item );
+int rmap_unset ( RVal * val, RVal * key );
+int rmap_clear ( RVal * val );
 
 #endif

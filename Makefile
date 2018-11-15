@@ -10,9 +10,16 @@ TESTS = $(wildcard ./test/*.test.c)
 bin/rill : bin/ $(OBJECTS) $(RILL_MAIN)
 	$(CC) $(CC_FLAGS) $(CC_INCLUDE) -o $@ $(SOURCES) $(RILL_MAIN)
 
-bin/rill-tests : bin/ $(OBJECTS) $(TESTS)
+bin/rill-tests : bin/ $(SOURCES) $(TESTS)
 	$(CC) $(CC_FLAGS) $(CC_INCLUDE) -I test/ -o $@ \
-	$(OBJECTS) $(TESTS) test/main.c
+	-fprofile-arcs -ftest-coverage \
+	$(SOURCES) $(TESTS) test/main.c
+
+coverage : coverage/ bin/rill-tests
+	gcov *.gcno
+	rm -f *.gcno
+	rm -f *.gcda
+	mv *.gcov coverage/
 
 test : bin/rill-tests
 tests : bin/rill-tests
@@ -21,6 +28,8 @@ bin/ :
 	mkdir -p $@
 build/ :
 	mkdir -p $@
+coverage/ :
+	mkdir -p $@
 
 build/%.o : src/%.c build/
 	$(CC) $(CC_FLAGS) $(CC_INCLUDE) -c $< -o $@
@@ -28,3 +37,6 @@ build/%.o : src/%.c build/
 clean :
 	rm -rf bin/
 	rm -rf build/
+	rm -rf coverage/
+	rm *.gcno
+	rm *.gcda

@@ -118,7 +118,7 @@ int rvec_clear ( RVal * val );
 #define RILL_RMAP_GROWTHCOEFF 2.0
 
 typedef struct RMapSlot {
-    Rval * key;
+    RVal * key;
     RVal * val;
 } RMapSlot;
 

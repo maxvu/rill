@@ -10,19 +10,27 @@ TESTS = $(wildcard ./test/*.test.c)
 bin/rill : bin/ $(OBJECTS) $(RILL_MAIN)
 	$(CC) $(CC_FLAGS) $(CC_INCLUDE) -o $@ $(SOURCES) $(RILL_MAIN)
 
-bin/rill-tests : bin/ $(SOURCES) $(TESTS)
+bin/rill-tests : bin/ $(OBJECTS) $(TESTS)
 	$(CC) $(CC_FLAGS) $(CC_INCLUDE) -I test/ -o $@ \
-	-fprofile-arcs -ftest-coverage \
+	$(OBJECTS) $(TESTS) test/main.c
+
+bin/rill-tests+coverage : bin/ $(SOURCES) $(TESTS)
+	$(CC) $(CC_FLAGS) $(CC_INCLUDE) -I test/ -o $@ \
+	-O0 -ftest-coverage -fprofile-arcs -fprofile-dir=coverage/ \
 	$(SOURCES) $(TESTS) test/main.c
 
-coverage : coverage/ bin/rill-tests
-	gcov *.gcno
-	rm -f *.gcno
-	rm -f *.gcda
+COVERAGE := $(patsubst src/%.c, coverage/%.c.gcov, $(SOURCES))
+$(COVERAGE) : $(SOURCES) coverage/ bin/rill-tests+coverage
+	mv *.gcno coverage/
+	bin/rill-tests+coverage
+	gcov --object-directory coverage/ coverage/*.gcno
 	mv *.gcov coverage/
+	cd coverage/ ; lcov --capture --directory ./ --output-file coverage.info
+	cd coverage/ ; genhtml coverage.info --output-directory html
 
 test : bin/rill-tests
 tests : bin/rill-tests
+test-coverage: $(COVERAGE)
 
 bin/ :
 	mkdir -p $@
@@ -38,5 +46,5 @@ clean :
 	rm -rf bin/
 	rm -rf build/
 	rm -rf coverage/
-	rm *.gcno
-	rm *.gcda
+	rm -f *.gcno
+	rm -f *.gcda

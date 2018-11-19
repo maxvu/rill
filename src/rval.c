@@ -16,7 +16,6 @@ int rval_copy ( RVal * dst, RVal * src ) {
     assert( src );
     if ( dst == src )
         return 1;
-    rval_release( dst );
     switch ( rval_type( src ) ) {
         case RVT_NIL:
         break;
@@ -197,11 +196,21 @@ void rval_dump ( RVal * val ) {
         case RVT_FXX: printf( "RVal(FXX) %lf", rfxx_get( val ) ); break;
         break;
         case RVT_STR:
-            printf( "RVal(STR, len %lu, []) ", rstr_len( val ), rstr_get( val ) );
+            printf(
+                "RVal(STR, len %lu, ref %lu [%s]) ",
+                rstr_len( val ),
+                val->str->refcount,
+                rstr_get( val )
+            );
             break;
         break;
         case RVT_VEC: {
-            printf( "RVal(VEC, len %lu, cap %lu [ ", rvec_len( val ), val->vec->cap );
+            printf(
+                "RVal(VEC, len %lu, ref %lu, cap %lu [ ",
+                rvec_len( val ),
+                val->vec->refcount,
+                val->vec->cap
+            );
             for ( size_t i = 0; i < rvec_len( val ); i++ ) {
                 rval_dump( rvec_get( val, i ) );
                 printf( " " );
@@ -489,8 +498,7 @@ int __rvec_resize ( RVec * vec, size_t new_cap ) {
     RVal * new_vals = ( RVal * ) malloc( sizeof( RVal ) * new_cap );
     if ( !new_vals )
         return 0;
-    // memset( new_vals, 0, sizeof( RVal ) * new_cap );
-    memcpy( new_vals, vec->vals, vec->len );
+    memcpy( new_vals, vec->vals, sizeof( RVal ) * vec->len );
     free( vec->vals );
     vec->vals = new_vals;
     vec->cap = new_cap;
@@ -527,7 +535,7 @@ int rvec_init ( RVal * val, size_t init_cap ) {
     return 1;
 }
 
-void rvec_lease ( RVal * val ) {int rvec_copy ( RVal * dst, RVal * src );
+void rvec_lease ( RVal * val ) {
     assert( val );
     assert( rval_type( val ) == RVT_VEC );
     val->vec->refcount++;

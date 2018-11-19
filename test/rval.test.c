@@ -157,51 +157,76 @@ void test_rval_vec () {
         INSIST( rvec_concat( &v1, &v2 ) );
         INSIST( rvec_len( &v1 ) == 10 );
 
-        rval_dump( &v1 );
-        rval_dump( &v2 );
-
-        hiya: 1;
         rval_release( &v1 );
         rval_release( &v2 );
     }) );
 
-    // RILL_TEST( "rval / fill", ({
-    //     RVal a;
-    //     RVal v1;
-    //     rval_fzero( &a );
-    //     rval_fzero( &v1 );
-    //     ruxx_set( &a, 10 );
-    //
-    //     INSIST( rvec_init( &v1, 10 ) );
-    //     INSIST( rvec_fill( &v1, 10, &a ) );
-    //     INSIST( rvec_len( &v1 ) == 10 );
-    //
-    //     ruxx_set( &a, 1 );
-    //     INSIST( rvec_set( &v1, 6, &a ) );
-    //
-    //     size_t sum = 0;
-    //     for ( size_t i = 0; i < 10; i++ ) {
-    //         RVal * item = rvec_get( &v1, i );
-    //         sum += ruxx_get( item );
-    //     }
-    //     INSIST( sum == 91 );
-    //     rvec_release( &v1 );
-    // }) );
+    RILL_TEST( "rval / fill", ({
+        RVal a;
+        RVal v1;
+        rval_fzero( &a );
+        rval_fzero( &v1 );
+        ruxx_set( &a, 10 );
+
+        INSIST( rvec_init( &v1, 10 ) );
+        INSIST( rvec_fill( &v1, 10, &a ) );
+        INSIST( rvec_len( &v1 ) == 10 );
+
+        ruxx_set( &a, 1 );
+        INSIST( rvec_set( &v1, 6, &a ) );
+
+        size_t sum = 0;
+        for ( size_t i = 0; i < 10; i++ ) {
+            RVal * item = rvec_get( &v1, i );
+            sum += ruxx_get( item );
+        }
+        INSIST( sum == 91 );
+        rvec_release( &v1 );
+    }) );
 
     RILL_TEST( "rval / shared access", ({
 
-        RVal outer, inner;
+        RVal outer, inner, a;
+        rval_fzero( &outer );
+        rval_fzero( &inner );
+        rval_fzero( &a );
 
+        ruxx_set( &a, 1 );
+        rvec_push( &inner, &a );
+        rvec_push( &outer, &inner );
+
+        rval_release( &outer );
+        rval_release( &inner );
 
     }) );
-    //
-    // RILL_TEST( "vec resizing", ({
-    //     INSIST( 0 );
-    // }) );
-    //
-    // RILL_TEST( "vec edge cases", ({
-    //     INSIST( 0 );
-    // }) );
+
+    RILL_TEST( "vec resizing", ({
+        RVal vec;
+        rval_fzero( &vec );
+
+        RVal tmp;
+        rval_fzero( &tmp );
+        for ( size_t i = 1; i <= 100; i++ ) {
+            ruxx_set( &tmp, i );
+            INSIST( rvec_push( &vec, &tmp ) );
+        }
+
+        INSIST( rvec_len( &vec ) == 100 );
+        INSIST( ruxx_get( rvec_get( &vec, 72 ) ) == 73 );
+
+        rvec_reserve( &vec, 1000 );
+        rvec_compact( &vec );
+
+        size_t sum = 0;
+        for ( size_t i = 0; i < 100; i++ ) {
+            sum += ruxx_get( rvec_get( &vec, i ) );
+        }
+        printf( "%lu\n", sum );
+
+        INSIST( sum == 5050 );
+        rval_release( &vec );
+    }) );
+
 }
 
 void test_rval_map () {

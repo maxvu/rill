@@ -1,5 +1,5 @@
-CC := g++
-CC_FLAGS := -g -Wall
+CC := gcc
+CC_FLAGS := -g -Wall -std=c11 -DRILL_WORDSIZE=64
 CC_INCLUDE := -I include/
 
 RILL_MAIN := src/main.c

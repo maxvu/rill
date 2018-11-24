@@ -338,7 +338,7 @@ int __rstr_cat ( RStr * str, const char * src, size_t src_len ) {
     assert( str );
     assert( str->buffer );
     assert( src );
-    if ( !rstr_reserve( str, str->len + src_len ) )
+    if ( !__rstr_reserve( str, str->len + src_len ) )
         return 0;
     memcpy( str->buffer + str->len, src, src_len );
     str->len += src_len;
@@ -355,7 +355,7 @@ void __rstr_destroy ( RStr * str ) {
 
 int rstr_init ( RVal * val, size_t init_cap ) {
     if ( rval_type( val ) == RVT_STR )
-        return rstr_reserve( val->str, init_cap );
+        return __rstr_reserve( val->str, init_cap );
     rval_release( val );
     RStr * str = __rstr_create( init_cap );
     if ( !str )
@@ -715,12 +715,12 @@ size_t __rmap_find_hi ( RMap * map, RVal * key ) {
     // http://www.cse.yorku.ca/~oz/hash.html
     size_t hash = 5381;
     size_t key_len = rstr_len( key );
-    char * key_str = rstr_get( key );
+    const char * key_str = rstr_get( key );
     for ( size_t i = 0; i < key_len; i++ ) {
         char c = key_str[ i ];
         hash = ( hash << 5 ) + hash + c;
     }
-    return hash % map->cap;
+    return hash % ( map->cap / 2 ) + ( map->cap / 2 );
 }
 
 size_t __rmap_find_lo ( RMap * map, RVal * key ) {
@@ -728,21 +728,40 @@ size_t __rmap_find_lo ( RMap * map, RVal * key ) {
     // http://www.cse.yorku.ca/~oz/hash.html
     size_t hash = 5381;
     size_t key_len = rstr_len( key );
-    char * key_str = rstr_get( key );
+    const char * key_str = rstr_get( key );
     for ( size_t i = 0; i < key_len; i++ ) {
         char c = key_str[ i ];
         hash = c + ( hash << 6 ) + ( hash << 16 ) - hash;
     }
-    return hash % map->cap;
+    return hash % ( map->cap / 2 );
 }
 
 int __rmap_resize ( RMap * map, size_t new_cap ) {
     assert( map );
     assert( new_cap >= RILL_RMAP_MINCAP );
-    RMapSlot * old_slots = map->slots;
+    RMap prev = *map;
     map->slots = ( RMapSlot * ) malloc( sizeof( RMapSlot ) * new_cap );
-    if ( !map->slots ) {
-        map->slots = old_slots;
+    map->len = 0;
+    if ( !map->slots )
+        goto fail;
+    for ( size_t i = 0; i < map->cap; i++ ) {
+        RMapSlot * slot = prev.slots + i;
+        if ( rval_type( &slot->key ) != RVT_STR )
+            continue;
+        if ( !__rmap_set( map, &slot->key, &slot->val ) )
+            goto fail;
+    }
+    return 1;
+    fail: {
+        for ( size_t i = 0; i < prev.cap; i++ ) {
+            RMapSlot * slot = map->slots + i;
+            if ( rval_type( &slot->key ) == RVT_STR ) {
+                rval_release( &slot->key );
+                rval_release( &slot->val );
+            }
+        }
+        free( map->slots );
+        *map = prev;
         return 0;
     }
 }
@@ -761,14 +780,14 @@ int __rmap_set ( RMap * map, RVal * key, RVal * val ) {
 
     RMapSlot * hit_hi = map->slots + __rmap_find_hi( map, key );
     RMapSlot * hit_lo = map->slots + __rmap_find_lo( map, key );
-    if ( rval_type( hit_hi->key ) == RVT_NIL ) {
-        rval_copy( hit_hi->key, key );
-        rval_copy( hit_hi->val, val );
+    if ( rval_type( &hit_hi->key ) == RVT_NIL ) {
+        rval_copy( &hit_hi->key, key );
+        rval_copy( &hit_hi->val, val );
         map->len++;
         return 1;
-    } else if ( rval_type( hit_lo->key ) == RVT_NIL ) {
-        rval_copy( hit_lo->key, key );
-        rval_copy( hit_lo->val, val );
+    } else if ( rval_type( &hit_lo->key ) == RVT_NIL ) {
+        rval_copy( &hit_lo->key, key );
+        rval_copy( &hit_lo->val, val );
         map->len++;
         return 1;
     }
@@ -776,10 +795,10 @@ int __rmap_set ( RMap * map, RVal * key, RVal * val ) {
     RMapSlot juggle;
     rval_fzero( &juggle.key );
     rval_fzero( &juggle.val );
-    rval_move( &juggle.key, hit_lo->key );
-    rval_move( &juggle.val, hit_lo->val );
-    rval_copy( hit_lo->key, key );
-    rval_copy( hit_lo->val, val );
+    rval_move( &juggle.key, &hit_lo->key );
+    rval_move( &juggle.val, &hit_lo->val );
+    rval_copy( &hit_lo->key, key );
+    rval_copy( &hit_lo->val, val );
 
     RMapSlot * target_lo;
     RMapSlot * target_hi;
@@ -787,29 +806,29 @@ int __rmap_set ( RMap * map, RVal * key, RVal * val ) {
     while ( 1 ) {
         target_hi = map->slots + __rmap_find_hi( map, &juggle.key );
         target_lo = map->slots + __rmap_find_lo( map, &juggle.key );
-        if ( rval_type( target_hi->key ) != RVT_STR )
+        if ( rval_type( &target_hi->key ) != RVT_STR )
             break;
-        if ( rval_type( target_lo->key ) != RVT_STR )
+        if ( rval_type( &target_lo->key ) != RVT_STR )
             break;
         if ( rstr_cmp( key, &juggle.key ) == 0 )
             break;
-        if ( rstr_cmp( target_hi->key, &juggle.key ) == 0 ) {
-            rval_swap( target_hi->key, &juggle.key );
-            rval_swap( target_hi->val, &juggle.val );
+        if ( rstr_cmp( &target_hi->key, &juggle.key ) == 0 ) {
+            rval_swap( &target_hi->key, &juggle.key );
+            rval_swap( &target_hi->val, &juggle.val );
         } else {
-            rval_swap( target_lo->key, &juggle.key );
-            rval_swap( target_lo->val, &juggle.val );
+            rval_swap( &target_lo->key, &juggle.key );
+            rval_swap( &target_lo->val, &juggle.val );
         }
     }
 
-    if ( rval_type( target_hi->key ) != RVT_STR ) {
-        rval_move( target_hi->key, &juggle.key );
-        rval_move( target_hi->val, &juggle.val );
+    if ( rval_type( &target_hi->key ) != RVT_STR ) {
+        rval_move( &target_hi->key, &juggle.key );
+        rval_move( &target_hi->val, &juggle.val );
         map->len++;
         return 1;
-    } else if ( rval_type( target_lo->key ) != RVT_STR ) {
-        rval_move( target_hi->key, &juggle.key );
-        rval_move( target_hi->val, &juggle.val );
+    } else if ( rval_type( &target_lo->key ) != RVT_STR ) {
+        rval_move( &target_lo->key, &juggle.key );
+        rval_move( &target_lo->val, &juggle.val );
         map->len++;
         return 1;
     } else {
@@ -823,12 +842,16 @@ int __rmap_set ( RMap * map, RVal * key, RVal * val ) {
 }
 
 void __rmap_unset ( RMap * map, size_t index ) {
-
+    assert( map );
+    assert( index < map->cap );
+    if ( rval_type( &map->slots[ index ].key ) == RVT_STR )
+        map->len--;
+    rval_release( &map->slots[ index ].key );
+    rval_release( &map->slots[ index ].val );
 }
 
 void __rmap_destroy ( RMap * map ) {
     assert( map );
-    assert( rval_type( map ) == RVT_MAP );
     for ( size_t i = 0; i < map->cap; i++ )
         __rmap_unset( map, i );
     free( map->slots );
@@ -848,14 +871,14 @@ int rmap_init ( RVal * val, size_t init_cap ) {
 
 int rmap_lease ( RVal * val ) {
     assert( val );
-    assert( rval_type( RVT_MAP ) );
+    assert( rval_type( val ) == RVT_MAP );
     val->map->refcount++;
     return 1;
 }
 
 int rmap_release ( RVal * val ) {
     assert( val );
-    assert( rval_type( RVT_MAP ) );
+    assert( rval_type( val ) == RVT_MAP );
     if ( !--val->map->refcount ) {
         __rmap_destroy( val->map );
         val->type = RVT_NIL;
@@ -875,11 +898,29 @@ int rmap_compact ( RVal * map ) {
 }
 
 int rmap_set ( RVal * map, RVal * key, RVal * val ) {
-
+    return __rmap_set( map, key, val );
 }
 
-int rmap_unset ( RVal * map, RVal * key ) {
-
+int rmap_unset ( RVal * val, RVal * key ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_MAP );
+    assert( key );
+    assert( rval_type( key ) == RVT_STR );
+    RMap * map = val->map;
+    RMapSlot * target_hi = map->slots + __rmap_find_hi( map, key );
+    RMapSlot * target_lo = map->slots + __rmap_find_lo( map, key );
+    if ( rval_cmp( key, &target_hi->key ) == 0 ) {
+        rval_release( &target_hi->key );
+        rval_release( &target_hi->val );
+        map->len--;
+        return 1;
+    } else if ( rval_cmp( key, &target_lo->key ) == 0 ) {
+        rval_release( &target_lo->key );
+        rval_release( &target_lo->val );
+        map->len--;
+        return 1;
+    }
+    return 0;
 }
 
 int rmap_clear ( RVal * map ) {

@@ -43,8 +43,8 @@ build/%.o : src/%.c build/
 	$(CC) $(CC_FLAGS) $(CC_INCLUDE) -c $< -o $@
 
 clean :
-	rm -rf bin/
-	rm -rf build/
-	rm -rf coverage/
+	rm -f bin/*
+	rm -f build/*
+	rm -f coverage/*
 	rm -f *.gcno
 	rm -f *.gcda

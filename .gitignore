@@ -1,6 +1,4 @@
-bin/*
-build/*
-coverage/*
+
 *.gcno
 *.gcda
 *.gcov

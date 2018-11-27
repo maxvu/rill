@@ -73,15 +73,13 @@ int rval_clone ( RVal * dst, RVal * src ) {
             return rval_copy( dst, src );
         break;
         case RVT_STR:
-            if ( !rstr_init( dst, rstr_len( src ) ) )
-                return 0;
-            return rstr_cat( dst, src );
+            return rstr_clone( dst, src );
         break;
         case RVT_VEC:
-            /* ... */
+            return rvec_clone( dst, src );
         break;
         case RVT_MAP:
-            /* ... */
+            return rmap_clone( dst, src );
         break;
     }
 }
@@ -427,6 +425,22 @@ int rstr_copy ( RVal * dst, RVal * src ) {
     rstr_lease( dst );
 }
 
+int rstr_clone ( RVal * dst, RVal * src ) {
+    assert( rval_type( src ) == RVT_STR );
+    RVal & clone;
+    rval_fzero( &clone );
+    if ( !rstr_init( &clone, rstr_len( src ) ) )
+        goto fail;
+    if ( !rstr_cat( &clone, src )
+        goto fail;
+    if ( !rval_move( dst, &clone )
+        goto fail;
+    return 1;
+    fail:
+        rval_release( &clone );
+        return 0;
+}
+
 int rstr_cat ( RVal * dst, RVal * src ) {
     assert( dst );
     assert( src );
@@ -604,6 +618,31 @@ int rvec_copy ( RVal * dst, RVal * src ) {
     dst->vec = src->vec;
     rvec_lease( dst );
     return 1;
+}
+
+int rvec_clone ( RVal * dst, RVal * src ) {
+    assert( dst );
+    assert( src );
+    assert( rval_type( src ) == RVT_VEC );
+    RVal clone;
+    RVal clone_item;
+    rval_fzero( &clone );
+    rval_fzero( &clone_item );
+    if ( !rvec_init( &clone, rvec_len( src ) ) )
+        goto fail;
+    for ( size_t i = 0; i < rvec_len( src ); i++ )
+        if ( !rval_clone( &clone_item, rvec_get( src, i ) ) )
+            goto fail;
+    if ( !rval_move( dst, clone ) )
+        goto fail;
+    rval_release( &clone );
+    rval_release( &clone_item );
+    return 1;
+    fail: {
+        rval_release( &clone );
+        rval_release( &clone_item );
+        return 0;
+    }
 }
 
 size_t rvec_len ( RVal * val ) {
@@ -878,13 +917,27 @@ void __rmap_destroy ( RMap * map ) {
 
 int rmap_init ( RVal * val, size_t init_cap ) {
     assert( val );
-    RMap * map = __rmap_create( init_cap );
+    if ( init_cap < RILL_RMAP_MINCAP )
+        init_cap = RILL_RMAP_MINCAP;
+    RMap * map = __rmap_create( ( double ) init_cap / RILL_RMAP_MAXLOAD );
     if ( !map )
         return 0;
     rval_release( val );
     val->type = RVT_MAP;
     val->map = map;
     return 1;
+}
+
+size_t rmap_len ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_MAP );
+    return val->map->len;
+}
+
+double rmap_load ( RVal * val ) {
+    assert( val );
+    assert( rval_type( val ) == RVT_MAP );
+    return ( ( double ) val->map->len ) / ( double ) val->map->cap;
 }
 
 int rmap_lease ( RVal * val ) {
@@ -905,6 +958,17 @@ int rmap_release ( RVal * val ) {
     return 1;
 }
 
+int rmap_copy ( RVal * dst, RVal * src ) {
+    assert( dst );
+    assert( src );
+    assert( rval_type( src ) == RVT_MAP );
+    
+}
+
+int rmap_clone ( RVal * dst, RVal * src ) {
+
+}
+
 int rmap_reserve ( RVal * val, size_t new_cap ) {
     assert( val );
     assert( rval_type( val ) == RVT_MAP );
@@ -922,7 +986,29 @@ int rmap_compact ( RVal * val ) {
     return __rmap_resize( val->map, target );
 }
 
+RVal * rmap_get ( RVal * val, RVal * key ) {
+    assert( val );
+    assert( key );
+    assert( rval_type( val ) == RVT_MAP );
+    assert( rval_type( key ) == RVT_STR );
+    RMap * map = val->map;
+    RMapSlot * target_hi = map->slots + __rmap_find_hi( map, key );
+    RMapSlot * target_lo = map->slots + __rmap_find_lo( map, key );
+    if ( rval_type( &target_hi->key ) == RVT_STR )
+        if ( rstr_cmp( &target_hi->key, key ) == 0 )
+            return &target_hi->val;
+    if ( rval_type( &target_lo->key ) == RVT_STR )
+        if ( rstr_cmp( &target_lo->key, key ) == 0 )
+            return &target_lo->val;
+    return NULL;
+}
+
 int rmap_set ( RVal * map, RVal * key, RVal * val ) {
+    assert( map );
+    assert( key );
+    assert( val );
+    if ( rval_type( map ) != RVT_MAP && !rmap_init( map, RILL_RMAP_MINCAP ) )
+        return 0;
     if ( !rval_exclude( map ) )
         return 0;
     return __rmap_set( map, key, val );
@@ -980,7 +1066,11 @@ int rmap_keys ( RVal * dst, RVal * src ) {
             }
         }
     }
-    return rval_move( dst, &keys );
+    if ( !rval_move( dst, &keys ) ) {
+        rval_release( &keys );
+        return 0;
+    }
+    return 1;
 }
 
 int rmap_vals ( RVal * dst, RVal * src ) {

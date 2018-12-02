@@ -23,7 +23,7 @@ void rmap_destroy ( RMap * map );
 
 void rmap_lease ( RMap * map );
 void rmap_release ( RMap * map );
-bool rmap_unique ( RMap * map );
+int rmap_unique ( RMap * map );
 
 size_t rmap_len ( RMap * map );
 double rmap_load ( RMap * map );

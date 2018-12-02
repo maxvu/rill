@@ -19,7 +19,7 @@ void rvec_destroy ( RVec * vec );
 
 void rvec_ref ( RVec * vec );
 void rvec_deref ( RVec * vec );
-bool rvec_unique ( RVec * vec );
+int rvec_unique ( RVec * vec );
 
 size_t rvec_len ( RVec * vec );
 int rvec_reserve ( RVec * vec, size_t new_cap );

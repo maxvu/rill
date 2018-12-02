@@ -12,7 +12,7 @@ OBJ_ALL = $(OBJ_RVAL)
 OBJ_RVAL = build/rval/rmap.o \
 	build/rval/rvec.o build/rval/rbuf.o build/rval/rref.o
 rval : $(OBJ_RVAL)
-build/rval/rref.o : src/rval/rbuf.c include/rval/rref.h
+build/rval/rref.o : src/rval/rref.c include/rval/rref.h
 	$(CC_COMPUNIT) $< -o $@
 build/rval/rbuf.o : src/rval/rbuf.c include/rval/rbuf.h
 	$(CC_COMPUNIT) $< -o $@
@@ -23,12 +23,12 @@ build/rval/rmap.o : src/rval/rmap.c include/rval/rmap.h
 
 bin/rill-test : CC_FLAGS += $(CC_FLAGS_DEBUG)
 bin/rill-test : $(OBJ_ALL) test/main.c
-	$(CC) $(CC_FLAGS) $(OBJ_ALL) test/main.c -o $@
+	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(CC_INCLUDE) test/main.c -o $@
 
 bin/rill-test+coverage: CC_FLAGS += --coverage -fprofile-dir="test/coverage/" \
 		-fprofile-generate="test/coverage/"
 bin/rill-test+coverage: $(OBJ_ALL) test/main.c
-	$(CC) $(CC_FLAGS) $(OBJ_ALL) test/main.c -o $@
+	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(CC_INCLUDE) test/main.c -o $@
 	mv *.gcno test/coverage/
 
 test-coverage: test/coverage/.lcov-output

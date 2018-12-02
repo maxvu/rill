@@ -4,7 +4,7 @@
 #define RILL_RBUF_MINSIZE 8
 #define RILL_RBUF_GROWTHCOEFF 2.0
 
-typedef RBuf {
+typedef struct RBuf {
     char * buffer;
     size_t len;
     size_t cap;
@@ -16,7 +16,7 @@ void rbuf_destroy ( RBuf * buf );
 
 void rbuf_ref ( RBuf * buf );
 void rbuf_deref ( RBuf * buf );
-bool rbuf_unique ( RBuf * buf );
+int rbuf_unique ( RBuf * buf );
 
 int rbuf_len ( RBuf * buf );
 int rbuf_reserve ( RBuf * buf, size_t new_cap );

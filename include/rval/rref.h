@@ -34,12 +34,12 @@ bool rref_isfw ( RRef * ref );
 
 void rref_copy ( RRef * dst, RRef * src );
 void rref_move ( RRef * dst, RRef * src );
-int rref_swap ( RRef * a, RRef * b );
+void rref_swap ( RRef * a, RRef * b );
 int rref_clone ( RRef * dst, RRef * src );
 int rref_contains ( RRef * haystack, RRef * needle );
 int rref_exclude ( RRef * dst, RRef * src );
-int rref_lease ( RRef * dst, RRef * src );
-int rref_release ( RRef * dst, RRef * src );
+void rref_lease ( RRef * dst, RRef * src );
+void rref_release ( RRef * dst, RRef * src );
 int rref_eq ( RRef * dst, RRef * src );
 
 #endif

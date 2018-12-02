@@ -1,13 +1,14 @@
 CC := gcc
 
 CC_FLAGS := -Wall -std=c11
-CC_FLAGS_DEBUG := -Og -g
+CC_FLAGS_DEBUG := -Og -g -DRVAL_TATTLE
 CC_FLAGS_RELEASE := -O3 -s
 CC_INCLUDE := -I include/
 
 CC_COMPUNIT := $(CC) $(CC_FLAGS) $(CC_INCLUDE) $(CC_FLAGS_DEBUG) -c
 
 OBJ_ALL = $(OBJ_RVAL)
+TESTS = $(shell find test/src -name *.test.c)
 
 OBJ_RVAL = build/rval/rmap.o \
 	build/rval/rvec.o build/rval/rbuf.o build/rval/rref.o
@@ -21,14 +22,27 @@ build/rval/rvec.o : src/rval/rvec.c include/rval/rvec.h
 build/rval/rmap.o : src/rval/rmap.c include/rval/rmap.h
 	$(CC_COMPUNIT) $< -o $@
 
-bin/rill-test : CC_FLAGS += $(CC_FLAGS_DEBUG)
-bin/rill-test : $(OBJ_ALL) test/main.c
-	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(CC_INCLUDE) test/main.c -o $@
+test : bin/rill-test
+test-memory : bin/rill-test
+	valgrind $<
+test-debug : bin/rill-test
+	gdb $<
 
-bin/rill-test+coverage: CC_FLAGS += --coverage -fprofile-dir="test/coverage/" \
-		-fprofile-generate="test/coverage/"
+bin/rill-test : CC_FLAGS += $(CC_FLAGS_DEBUG)
+bin/rill-test : CC_INCLUDE += -I test/include/
+bin/rill-test : $(OBJ_ALL) $(TESTS) test/main.c
+	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(TESTS) $(CC_INCLUDE) test/main.c \
+		test/src/rill_test.c -o $@
+
+bin/rill-test+coverage: CC_FLAGS += \
+		--coverage \
+		-fprofile-dir="test/coverage/" \
+		-fprofile-generate="test/coverage/" \
+		$(CC_FLAGS_DEBUG)
+bin/rill-test+coverage: CC_INCLUDE += -I test/include/
 bin/rill-test+coverage: $(OBJ_ALL) test/main.c
-	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(CC_INCLUDE) test/main.c -o $@
+	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(TESTS) $(CC_INCLUDE) test/main.c \
+		test/src/rill_test.c -o $@
 	mv *.gcno test/coverage/
 
 test-coverage: test/coverage/.lcov-output

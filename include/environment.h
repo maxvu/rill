@@ -4,13 +4,15 @@
     // Turn off all debugging features.
     #ifdef RVAL_RELEASE
         #undef RVAL_TATTLE
+        #undef RVAL_TRACE_ALLOC
     #else
-        #define RVAL_TATTLE
+
     #endif
 
     // Intercept allocation calls.
     #ifdef RVAL_TRACE_ALLOC
-
+        #define RILL_ALLOC(n) malloc(n)
+        #define RILL_DEALLOC(x) free(x)
     #else
         #define RILL_ALLOC(n) malloc(n)
         #define RILL_DEALLOC(x) free(x)
@@ -21,13 +23,17 @@
         #error "32-bit compilation not yet supported."
     #endif
 
+    #define RILL_CONSOLE_GREEN "\033[1;32m"
+    #define RILL_CONSOLE_RED "\033[1;31m"
+    #define RILL_CONSOLE_RESET "\033[0m"
+
     // Disable console coloring.
     #ifndef RILL_DISABLE_CONSOLE_COLOR
-        #define RILL_CONSOLE_GREEN( msg ) "\033[1;32m" "msg" "\033[0m"
-        #define RILL_CONSOLE_RED( msg ) "\033[1;31m" "msg" "\033[0m"
+        #define RILL_CONSOLE_SUCCESS( MSG ) RILL_CONSOLE_GREEN #MSG RILL_CONSOLE_RESET
+        #define RILL_CONSOLE_FAILURE( MSG ) RILL_CONSOLE_RED #MSG RILL_CONSOLE_RESET
     #else
-        #define RILL_CONSOLE_GREEN( msg ) "msg"
-        #define RILL_CONSOLE_RED( msg ) "msg"
+        #define RILL_CONSOLE_FAILURE( MSG ) #MSG
+        #define RILL_CONSOLE_SUCCESS( MSG ) #MSG
     #endif
 
     // Programatically trigger breakpoints in debugging.

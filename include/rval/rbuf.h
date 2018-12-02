@@ -1,6 +1,8 @@
 #ifndef RILL_RVAL_RBUF
 #define RILL_RVAL_RBUF
 
+#include <stdlib.h>
+
 #define RILL_RBUF_MINSIZE 8
 #define RILL_RBUF_GROWTHCOEFF 2.0
 

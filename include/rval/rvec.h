@@ -35,4 +35,6 @@ int rvec_concat ( RVec * vec, RVec * other );
 int rvec_fill ( RVec * vec, RRef * val, size_t n );
 void rvec_clear ( RVec * vec );
 
+int rvec_eq ( RVec * a, RVec * b );
+
 #endif

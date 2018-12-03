@@ -91,10 +91,8 @@ int rvec_set ( RVec * vec, size_t index, RRef * ref ) {
     TATTLE_IF( vec == NULL );
     TATTLE_IF( vec->vals == NULL );
     if ( index >= vec->len )
-        return NULL;
-    if ( !rval_copy( vec->vals + index, ref ) )
         return 0;
-    rref_lease( ref );
+    rref_copy( vec->vals + index, ref );
     return 1;
 }
 
@@ -149,4 +147,14 @@ void rvec_clear ( RVec * vec ) {
         rref_release( vec->vals + i );
     memset( vec->vals, 0, sizeof( RRef ) * vec->len );
     vec->len = 0;
+}
+
+int rvec_eq ( RVec * a, RVec * b ) {
+    TATTLE_IF( a == NULL );
+    TATTLE_IF( b == NULL );
+    if ( a->len != b->len ) return 0;
+    for ( size_t i = 0; i < a->len; i++ )
+        if ( !rref_eq( a->vals + i, b->vals + i ) )
+            return 0;
+    return 1;
 }

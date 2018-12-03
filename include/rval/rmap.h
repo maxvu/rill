@@ -1,6 +1,8 @@
 #ifndef RILL_RVAL_RMAP
 #define RILL_RVAL_RMAP
 
+#include "rval/rref.h"
+
 #define RILL_RMAP_MINCAP 8
 #define RILL_RMAP_DEFAULTSIZE 16
 #define RILL_RMAP_MAXLOAD 0.65
@@ -18,7 +20,7 @@ typedef struct RMap {
     size_t refcount;
 } RMap;
 
-RMap * map rmap_create ( size_t init_cap );
+RMap * rmap_create ( size_t init_cap );
 void rmap_destroy ( RMap * map );
 
 void rmap_lease ( RMap * map );
@@ -30,9 +32,9 @@ double rmap_load ( RMap * map );
 int rmap_reserve ( RMap * map, size_t new_cap );
 int rmap_compact ( RMap * map );
 
-RRef * rmap_get ( RMap * map, RStr * key );
-int rmap_set ( RMap * map, RStr * key, RRef * val );
-int rmap_unset ( RMap * map, RStr * key );
+RRef * rmap_get ( RMap * map, RBuf * key );
+int rmap_set ( RMap * map, RBuf * key, RRef * val );
+int rmap_unset ( RMap * map, RBuf * key );
 void rmap_clear ( RMap * map );
 
 typedef RMapSlot * RMapIter;

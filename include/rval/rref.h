@@ -6,13 +6,13 @@
 #include "environment.h"
 
 typedef enum RValType {
-    NIL = 0,
-    UXX = 1,
-    IXX = 2,
-    FXX = 3,
-    BUF = 32,
-    VEC = 64,
-    MAP = 128
+    RVT_NIL = 0,
+    RVT_UXX = 1,
+    RVT_IXX = 2,
+    RVT_FXX = 3,
+    RVT_BUF = 32,
+    RVT_VEC = 64,
+    RVT_MAP = 128
 } RValType;
 
 typedef struct RBuf RBuf;
@@ -54,10 +54,14 @@ void rref_copy ( RRef * dst, RRef * src );
 void rref_move ( RRef * dst, RRef * src );
 void rref_swap ( RRef * a, RRef * b );
 int rref_clone ( RRef * dst, RRef * src );
+
 int rref_contains ( RRef * haystack, RRef * needle );
 int rref_exclude ( RRef * dst, RRef * src );
-void rref_lease ( RRef * val );
-void rref_release ( RRef * val );
-int rref_eq ( RRef * dst, RRef * src );
+
+void rref_ref ( RRef * val );
+void rref_deref ( RRef * val );
+
+int rref_eq ( RRef * a, RRef * b );
+void rref_dump ( RRef * val );
 
 #endif

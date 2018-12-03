@@ -13,9 +13,9 @@ typedef struct RMapSlot {
 
 typedef struct RMap {
     RMapSlot * slots;
-    size_t refcount;
     size_t len;
     size_t cap;
+    size_t refcount;
 } RMap;
 
 RMap * map rmap_create ( size_t init_cap );

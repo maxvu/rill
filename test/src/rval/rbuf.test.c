@@ -55,6 +55,11 @@ void test_rval_rbuf () {
         INSIST( rbuf_compact( a ) );
         INSIST( rbuf_len( a ) == 1000 );
 
+        rbuf_clear( a );
+        rbuf_clear( a );
+        INSIST( rbuf_len( a ) == 0 );
+        INSIST( rbuf_compact( a ) );
+
         rbuf_destroy( a );
     } TEST_END
 

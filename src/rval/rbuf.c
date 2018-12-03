@@ -69,7 +69,7 @@ int rbuf_reserve ( RBuf * buf, size_t new_cap ) {
         new_cap = RILL_RBUF_MINSIZE;
     if ( buf->cap >= new_cap )
         return 1;
-    return __rbuf_resize( buf, new_cap );
+    return __rbuf_resize( buf, (double) new_cap * RILL_RBUF_GROWTHCOEFF );
 }
 
 int rbuf_compact ( RBuf * buf ) {
@@ -101,11 +101,7 @@ int rbuf_cpy ( RBuf * dst, RBuf * src ) {
 int rbuf_cat ( RBuf * dst, RBuf * src ) {
     TATTLE_IF( dst == NULL );
     TATTLE_IF( src == NULL );
-    size_t target_size = (
-        ( ( double ) dst->len + ( double ) src->len ) *
-        RILL_RBUF_GROWTHCOEFF
-    );
-    if ( !rbuf_reserve( dst, target_size ) )
+    if ( !rbuf_reserve( dst, dst->len + src->len ) )
         return 0;
     memcpy( dst->buffer + dst->len, src->buffer, src->len );
     dst->len += src->len;
@@ -135,11 +131,7 @@ int rbuf_catc ( RBuf * buf, const char * cstr ) {
     TATTLE_IF( buf == NULL );
     TATTLE_IF( cstr == NULL );
     size_t cstr_len = strlen( cstr );
-    size_t target_size = (
-        ( ( double ) buf->len + ( double ) cstr_len ) *
-        RILL_RBUF_GROWTHCOEFF
-    );
-    if ( !rbuf_reserve( buf, target_size ) )
+    if ( !rbuf_reserve( buf, buf->len + cstr_len ) )
         return 0;
     memcpy( buf->buffer + buf->len, cstr, cstr_len );
     buf->len += cstr_len;

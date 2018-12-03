@@ -13,6 +13,8 @@ typedef struct RBuf {
     size_t refcount;
 } RBuf;
 
+// int __rbuf_resize ( RBuf * buf, size_t new_cap );
+
 RBuf * rbuf_create ( size_t init_cap );
 void rbuf_destroy ( RBuf * buf );
 
@@ -20,7 +22,7 @@ void rbuf_ref ( RBuf * buf );
 void rbuf_deref ( RBuf * buf );
 int rbuf_unique ( RBuf * buf );
 
-int rbuf_len ( RBuf * buf );
+size_t rbuf_len ( RBuf * buf );
 int rbuf_reserve ( RBuf * buf, size_t new_cap );
 int rbuf_compact ( RBuf * buf );
 
@@ -30,9 +32,9 @@ int rbuf_cpy ( RBuf * dst, RBuf * src );
 int rbuf_cat ( RBuf * dst, RBuf * src );
 int rbuf_cmp ( RBuf * a, RBuf * b );
 
-int rbuf_cpyc ( RBuf * buf, char * cstr, size_t cstr_len );
-int rbuf_catc ( RBuf * buf, char * cstr, size_t cstr_len );
-int rbuf_cmpc ( RBuf * buf, char * cstr );
+int rbuf_cpyc ( RBuf * buf, const char * cstr );
+int rbuf_catc ( RBuf * buf, const char * cstr );
+int rbuf_cmpc ( RBuf * buf, const char * cstr );
 
 void rbuf_clear ( RBuf * buf );
 

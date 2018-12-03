@@ -60,3 +60,11 @@ void ___rtest_end () {
         printf( "%s\n", ___rtest.msgbuf );
     }
 }
+
+size_t ___rtest_num_conditions () {
+    return ___rtest.n_conds;
+}
+
+size_t ___rtest_num_conditions_passing () {
+    return ___rtest.n_conds_passed;
+}

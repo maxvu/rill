@@ -13,9 +13,11 @@
     #ifdef RVAL_TRACE_ALLOC
         #define RILL_ALLOC(n) malloc(n)
         #define RILL_DEALLOC(x) free(x)
+        #define RILL_REALLOC(x, n) realloc(x, n)
     #else
         #define RILL_ALLOC(n) malloc(n)
         #define RILL_DEALLOC(x) free(x)
+        #define RILL_REALLOC(x, n) realloc(x, n)
     #endif
 
     // Special byte-shuffling for 32-bit systems.
@@ -39,9 +41,11 @@
     // Programatically trigger breakpoints in debugging.
     #ifdef RVAL_TATTLE
         #include <signal.h>
-        #define TATTLE(EXPR) if ( !(EXPR) ) { raise(SIGINT); }
+        #define TATTLE raise(SIGINT);
+        #define TATTLE_IF( COND ) if ( (COND) ) { TATTLE }
+        #define TATTLE_IF_NOT( COND ) if ( !(COND) ) { TATTLE }
     #else
-        #define TATTLE(EXPR)
+        #define TATTLE
     #endif
 
 #endif

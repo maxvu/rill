@@ -1,3 +1,6 @@
+#ifndef RILL_TEST_TEST
+#define RILL_TEST_TEST
+
 #include <stdio.h>
 
 #include "environment.h"
@@ -26,6 +29,11 @@ void ___rtest_begin ( char * name );
 void ___rtest_insist ( const char * cond_text, int cond, const char * file, size_t line );
 void ___rtest_end ();
 
+size_t ___rtest_num_conditions ();
+size_t ___rtest_num_conditions_passing ();
+
 #define TEST_BEGIN( NAME ) ___rtest_begin( NAME ) ;
 #define INSIST( CONDITION ) ___rtest_insist( #CONDITION, CONDITION, __FILE__, __LINE__ ) ;
 #define TEST_END ___rtest_end() ;
+
+#endif

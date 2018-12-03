@@ -5,7 +5,7 @@ CC_FLAGS_DEBUG := -Og -g -DRVAL_TATTLE
 CC_FLAGS_RELEASE := -O3 -s
 CC_INCLUDE := -I include/
 
-CC_COMPUNIT := $(CC) $(CC_FLAGS) $(CC_INCLUDE) $(CC_FLAGS_DEBUG) -c
+CC_COMPUNIT = $(CC) $(CC_FLAGS) $(CC_INCLUDE) -c
 
 OBJ_ALL = $(OBJ_RVAL)
 TESTS = $(shell find test/src -name *.test.c)
@@ -37,13 +37,12 @@ bin/rill-test : $(OBJ_ALL) $(TESTS) test/main.c
 bin/rill-test+coverage: CC_FLAGS += \
 		--coverage \
 		-fprofile-dir="test/coverage/" \
-		-fprofile-generate="test/coverage/" \
-		$(CC_FLAGS_DEBUG)
+		-fprofile-generate="test/coverage/"
 bin/rill-test+coverage: CC_INCLUDE += -I test/include/
+bin/rill-test+coverage: CC_FLAGS += $(CC_FLAGS_DEBUG)
 bin/rill-test+coverage: $(OBJ_ALL) test/main.c
 	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(TESTS) $(CC_INCLUDE) test/main.c \
 		test/src/rill_test.c -o $@
-	mv *.gcno test/coverage/
 
 test-coverage: test/coverage/.lcov-output
 	cd test/coverage/ && genhtml coverage.info --output-directory html
@@ -57,6 +56,7 @@ test/coverage/.gcov-output : test/coverage/.profile-output
 
 test/coverage/.profile-output : bin/rill-test+coverage
 	cd test/coverage && GCOV_PREFIX_STRIP=99 ../../bin/rill-test+coverage
+	mv $(shell find . -name "*.gcno" -not -path test/coverage) -t test/coverage/
 	touch $@
 
 clean:

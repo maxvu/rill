@@ -15,22 +15,40 @@ typedef enum RValType {
     MAP = 128
 } RValType;
 
-typedef RRef {
-    RValType type;
-    union {
-        uint64_t uxx;
-        int64_t  ixx;
-        double   fxx;
-        RBuf *   buf;
-        RVec *   vec;
-        RMap *   map;
-    };
-} RVal;
+typedef struct RBuf RBuf;
+typedef struct RVec RVec;
+typedef struct RMap RMap;
+
+#ifdef RILL_32BIT
+    typedef struct RRef {
+        RValType type;
+        union {
+            uint32_t uxx;
+            int32_t  ixx;
+            double   fxx;
+            RBuf *   buf;
+            RVec *   vec;
+            RMap *   map;
+        };
+    } RVal;
+#else
+    typedef struct RRef {
+        RValType type;
+        union {
+            uint64_t uxx;
+            int64_t  ixx;
+            double   fxx;
+            RBuf *   buf;
+            RVec *   vec;
+            RMap *   map;
+        };
+    } RVal;
+#endif
 
 RRef rref_nil ();
 
 RValType rref_type ( RRef * ref );
-bool rref_isfw ( RRef * ref );
+int rref_isfw ( RRef * ref );
 
 void rref_copy ( RRef * dst, RRef * src );
 void rref_move ( RRef * dst, RRef * src );
@@ -38,8 +56,8 @@ void rref_swap ( RRef * a, RRef * b );
 int rref_clone ( RRef * dst, RRef * src );
 int rref_contains ( RRef * haystack, RRef * needle );
 int rref_exclude ( RRef * dst, RRef * src );
-void rref_lease ( RRef * dst, RRef * src );
-void rref_release ( RRef * dst, RRef * src );
+void rref_lease ( RRef * val );
+void rref_release ( RRef * val );
 int rref_eq ( RRef * dst, RRef * src );
 
 #endif

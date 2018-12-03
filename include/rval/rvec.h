@@ -27,7 +27,7 @@ size_t rvec_len ( RVec * vec );
 int rvec_reserve ( RVec * vec, size_t new_cap );
 int rvec_compact ( RVec * vec );
 
-RRef * rvec_get ( RVec * vec );
+RRef * rvec_get ( RVec * vec, size_t index );
 int rvec_set ( RVec * vec, size_t index, RRef * ref );
 int rvec_push ( RVec * vec, RRef * ref );
 int rvec_pop ( RVec * vec );

@@ -49,18 +49,14 @@ RRef rref_nil ();
 
 RValType rref_type ( RRef * ref );
 int rref_isfw ( RRef * ref );
-
 void rref_copy ( RRef * dst, RRef * src );
 void rref_move ( RRef * dst, RRef * src );
 void rref_swap ( RRef * a, RRef * b );
 int rref_clone ( RRef * dst, RRef * src );
-
 int rref_contains ( RRef * haystack, RRef * needle );
 int rref_exclude ( RRef * dst, RRef * src );
-
-void rref_ref ( RRef * val );
-void rref_deref ( RRef * val );
-
+void rref_lease ( RRef * val );
+void rref_release ( RRef * val );
 int rref_eq ( RRef * a, RRef * b );
 void rref_dump ( RRef * val );
 

@@ -18,8 +18,8 @@ typedef struct RBuf {
 RBuf * rbuf_create ( size_t init_cap );
 void rbuf_destroy ( RBuf * buf );
 
-void rbuf_ref ( RBuf * buf );
-void rbuf_deref ( RBuf * buf );
+void rbuf_lease ( RBuf * buf );
+void rbuf_release ( RBuf * buf );
 int rbuf_unique ( RBuf * buf );
 
 size_t rbuf_len ( RBuf * buf );

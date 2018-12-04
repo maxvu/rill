@@ -23,8 +23,8 @@ typedef struct RMap {
 RMap * rmap_create ( size_t init_cap );
 void rmap_destroy ( RMap * map );
 
-void rmap_ref ( RMap * map );
-void rmap_deref ( RMap * map );
+void rmap_lease ( RMap * map );
+void rmap_release ( RMap * map );
 int rmap_unique ( RMap * map );
 
 size_t rmap_len ( RMap * map );

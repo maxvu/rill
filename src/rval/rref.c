@@ -60,7 +60,7 @@ int rref_exclude ( RRef * dst, RRef * src ) {
 
 }
 
-void rref_ref ( RRef * val ) {
+void rref_lease ( RRef * val ) {
     if ( val == NULL ) {
         TATTLE;
         return;
@@ -70,13 +70,13 @@ void rref_ref ( RRef * val ) {
         case RVT_UXX:
         case RVT_IXX:
         case RVT_FXX: return; break;
-        case RVT_BUF: rbuf_ref( val->buf ); break;
+        case RVT_BUF: rbuf_lease( val->buf ); break;
         case RVT_VEC:
         case RVT_MAP: break;
     }
 }
 
-void rref_deref ( RRef * val ) {
+void rref_release ( RRef * val ) {
     if ( val == NULL ) {
         TATTLE;
         return;
@@ -86,9 +86,9 @@ void rref_deref ( RRef * val ) {
         case RVT_UXX:
         case RVT_IXX:
         case RVT_FXX: return; break;
-        case RVT_BUF: rbuf_deref( val->buf ); break;
-        case RVT_VEC: rvec_deref( val->vec ); break;
-        // case RVT_MAP: rmap_deref( val->map ); break;
+        case RVT_BUF: rbuf_release( val->buf ); break;
+        case RVT_VEC: rvec_release( val->vec ); break;
+        // case RVT_MAP: rmap_release( val->map ); break;
     }
 }
 

@@ -19,8 +19,8 @@ typedef struct RVec {
 RVec * rvec_create ( size_t init_cap );
 void rvec_destroy ( RVec * vec );
 
-void rvec_ref ( RVec * vec );
-void rvec_deref ( RVec * vec );
+void rvec_lease ( RVec * vec );
+void rvec_release ( RVec * vec );
 int rvec_unique ( RVec * vec );
 
 size_t rvec_len ( RVec * vec );

@@ -53,7 +53,7 @@ void rbuf_destroy ( RBuf * buf ) {
     free( buf );
 }
 
-void rbuf_ref ( RBuf * buf ) {
+void rbuf_lease ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return;
@@ -62,7 +62,7 @@ void rbuf_ref ( RBuf * buf ) {
     buf->refcount++;
 }
 
-void rbuf_deref ( RBuf * buf ) {
+void rbuf_release ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return;

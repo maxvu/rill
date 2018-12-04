@@ -35,11 +35,11 @@ void test_rval_rbuf () {
         INSIST( rbuf_cpy( a, b ) );
         INSIST( rbuf_cmp( a, b ) == 0 );
 
-        rbuf_ref( a );
-        rbuf_deref( a );
+        rbuf_lease( a );
+        rbuf_release( a );
 
-        rbuf_deref( a );
-        rbuf_deref( b );
+        rbuf_release( a );
+        rbuf_release( b );
     } TEST_END
 
     TEST_BEGIN( "rbuf / resizing" ) {

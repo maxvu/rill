@@ -59,7 +59,7 @@ void rvec_ref ( RVec * vec ) {
     vec->refcount++;
 }
 
-void rvec_deref ( RVec * vec ) {
+void rvec_release ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return;
@@ -167,7 +167,7 @@ int rvec_pop ( RVec * vec ) {
     }
     if ( vec->len == 0 )
         return 0;
-    rref_ref( vec->vals + vec->len - 1 );
+    rref_lease( vec->vals + vec->len - 1 );
     vec->len--;
     return 1;
 }
@@ -186,7 +186,7 @@ int rvec_concat ( RVec * vec, RVec * other ) {
     vec->len += other->len;
     memcpy( vec->vals + vec->len, other->vals, sizeof( RRef ) * other->len );
     for ( size_t i = 0; i < other->len; i++ )
-        rref_ref( other->vals + i );
+        rref_lease( other->vals + i );
     return 1;
 }
 
@@ -213,7 +213,7 @@ void rvec_clear ( RVec * vec ) {
         return;
     }
     for ( size_t i = 0; i < vec->len; i++ )
-        rref_deref( vec->vals + i );
+        rref_release( vec->vals + i );
     memset( vec->vals, 0, sizeof( RRef ) * vec->len );
     vec->len = 0;
 }

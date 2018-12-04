@@ -23,6 +23,10 @@
     // Special byte-shuffling for 32-bit systems.
     #ifdef RILL_32BIT
         #error "32-bit compilation not yet supported."
+    #else
+        #define RILL_UXX_TYPE uint64_t
+        #define RILL_IXX_TYPE int64_t
+        #define RILL_FXX_TYPE double
     #endif
 
     #define RILL_CONSOLE_GREEN "\033[1;32m"

@@ -19,31 +19,17 @@ typedef struct RBuf RBuf;
 typedef struct RVec RVec;
 typedef struct RMap RMap;
 
-#ifdef RILL_32BIT
-    typedef struct RRef {
-        RValType type;
-        union {
-            uint32_t uxx;
-            int32_t  ixx;
-            double   fxx;
-            RBuf *   buf;
-            RVec *   vec;
-            RMap *   map;
-        };
-    } RVal;
-#else
-    typedef struct RRef {
-        RValType type;
-        union {
-            uint64_t uxx;
-            int64_t  ixx;
-            double   fxx;
-            RBuf *   buf;
-            RVec *   vec;
-            RMap *   map;
-        };
-    } RVal;
-#endif
+typedef struct RRef {
+    RValType type;
+    union {
+        RILL_UXX_TYPE uxx;
+        RILL_IXX_TYPE ixx;
+        RILL_FXX_TYPE fxx;
+        RBuf *        buf;
+        RVec *        vec;
+        RMap *        map;
+    };
+} RVal;
 
 RRef rref_nil ();
 
@@ -59,5 +45,14 @@ void rref_lease ( RRef * val );
 void rref_release ( RRef * val );
 int rref_eq ( RRef * a, RRef * b );
 void rref_dump ( RRef * val );
+
+RILL_UXX_TYPE ruxx_get ( RRef * ref );
+void ruxx_set ( RRef * ref, RILL_UXX_TYPE u );
+
+RILL_IXX_TYPE rixx_get ( RRef * ref );
+void rixx_set ( RRef * ref, RILL_IXX_TYPE i );
+
+RILL_FXX_TYPE rfxx_get ( RRef * ref );
+void rfxx_set ( RRef * ref, RILL_FXX_TYPE f );
 
 #endif

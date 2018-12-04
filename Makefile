@@ -46,7 +46,7 @@ bin/rill-test+coverage: $(OBJ_ALL) test/main.c
 	$(CC) $(CC_FLAGS) $(OBJ_ALL) $(TESTS) $(CC_INCLUDE) test/main.c \
 		test/src/rill_test.c -o $@
 
-test-coverage: test/coverage/.lcov-output
+test-coverage: clean test/coverage/.lcov-output
 	cd test/coverage/ && genhtml coverage.info --output-directory html
 test/coverage/.lcov-output : test/coverage/.gcov-output
 	lcov --capture --directory ./ --output-file test/coverage/coverage.info

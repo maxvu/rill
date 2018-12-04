@@ -1,7 +1,7 @@
 CC := gcc
 
 CC_FLAGS := -Wall -std=c11
-CC_FLAGS_DEBUG := -Og -g -DRVAL_TATTLE
+CC_FLAGS_DEBUG := -O0 -g -DRVAL_TATTLE
 CC_FLAGS_RELEASE := -O3 -s
 CC_INCLUDE := -I include/
 
@@ -66,3 +66,5 @@ clean:
 	rm -rf test/coverage/.profile-output
 	rm -rf test/coverage/.gcov-output
 	rm -rf test/coverage/.lcov-output
+	rm -f *.gcno
+	rm -f *.gcda

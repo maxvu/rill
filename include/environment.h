@@ -41,9 +41,8 @@
     // Programatically trigger breakpoints in debugging.
     #ifdef RVAL_TATTLE
         #include <signal.h>
-        #define TATTLE raise(SIGINT);
-        #define TATTLE_IF( COND ) if ( (COND) ) { TATTLE }
-        #define TATTLE_IF_NOT( COND ) if ( !(COND) ) { TATTLE }
+        #include <stdio.h>
+        #define TATTLE { printf( "~tattling~\n" ); raise(SIGINT); }
     #else
         #define TATTLE
     #endif

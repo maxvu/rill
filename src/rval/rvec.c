@@ -1,10 +1,19 @@
 #include "environment.h"
+
+#include <string.h>
+
 #include "rval/rvec.h"
 #include "rval/rref.h"
 
 int __rvec_resize ( RVec * vec, size_t new_cap ) {
-    TATTLE_IF( vec == NULL );
-    TATTLE_IF( new_cap <= vec->len );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( new_cap <= vec->len ) {
+        TATTLE;
+        return 0;
+    }
     RRef * new_vals = RILL_REALLOC( vec->vals, new_cap );
     if ( new_vals == NULL )
         return 0;
@@ -34,34 +43,52 @@ RVec * rvec_create ( size_t init_cap ) {
 }
 
 void rvec_destroy ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return;
+    }
     free( vec->vals );
     free( vec );
 }
 
 void rvec_ref ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return;
+    }
     vec->refcount++;
 }
 
 void rvec_deref ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return;
+    }
     if ( !--vec->refcount )
         rvec_destroy( vec );
 }
 
 int rvec_unique ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
     return vec->refcount == 1;
 }
 
 size_t rvec_len ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
     return vec->len;
 }
 
 int rvec_reserve ( RVec * vec, size_t new_cap ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( new_cap < RILL_RVEC_MINSIZE )
         new_cap = RILL_RVEC_MINSIZE;
     if ( vec->cap >= new_cap )
@@ -70,7 +97,10 @@ int rvec_reserve ( RVec * vec, size_t new_cap ) {
 }
 
 int rvec_compact ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
     size_t target_size = vec->len;
     if ( target_size < RILL_RVEC_MINSIZE )
         target_size = RILL_RVEC_MINSIZE;
@@ -80,16 +110,28 @@ int rvec_compact ( RVec * vec ) {
 }
 
 RRef * rvec_get ( RVec * vec, size_t index ) {
-    TATTLE_IF( vec == NULL );
-    TATTLE_IF( vec->vals == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( vec->vals == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( index >= vec->len )
         return NULL;
     return vec->vals + index;
 }
 
 int rvec_set ( RVec * vec, size_t index, RRef * ref ) {
-    TATTLE_IF( vec == NULL );
-    TATTLE_IF( vec->vals == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( vec->vals == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( index >= vec->len )
         return 0;
     rref_copy( vec->vals + index, ref );
@@ -97,8 +139,14 @@ int rvec_set ( RVec * vec, size_t index, RRef * ref ) {
 }
 
 int rvec_push ( RVec * vec, RRef * ref ) {
-    TATTLE_IF( vec == NULL );
-    TATTLE_IF( vec->vals == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( vec->vals == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( !rvec_reserve( vec, vec->len + 1 ) )
         return 0;
     vec->len++;
@@ -109,30 +157,48 @@ int rvec_push ( RVec * vec, RRef * ref ) {
 }
 
 int rvec_pop ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
-    TATTLE_IF( vec->vals == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( vec->vals == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( vec->len == 0 )
         return 0;
-    rref_release( vec->vals + vec->len - 1 );
+    rref_ref( vec->vals + vec->len - 1 );
     vec->len--;
     return 1;
 }
 
 int rvec_concat ( RVec * vec, RVec * other ) {
-    TATTLE_IF( vec == NULL );
-    TATTLE_IF( other == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( other == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( !rvec_reserve( vec, vec->len + other->len ) )
         return 0;
     vec->len += other->len;
     memcpy( vec->vals + vec->len, other->vals, sizeof( RRef ) * other->len );
     for ( size_t i = 0; i < other->len; i++ )
-        rref_lease( other->vals + i );
+        rref_ref( other->vals + i );
     return 1;
 }
 
 int rvec_fill ( RVec * vec, RRef * val, size_t n ) {
-    TATTLE_IF( vec == NULL );
-    TATTLE_IF( val == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( val == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( !rvec_reserve( vec, vec->len + n ) )
         return 0;
     vec->len += n;
@@ -142,16 +208,25 @@ int rvec_fill ( RVec * vec, RRef * val, size_t n ) {
 }
 
 void rvec_clear ( RVec * vec ) {
-    TATTLE_IF( vec == NULL );
+    if ( vec == NULL ) {
+        TATTLE;
+        return;
+    }
     for ( size_t i = 0; i < vec->len; i++ )
-        rref_release( vec->vals + i );
+        rref_deref( vec->vals + i );
     memset( vec->vals, 0, sizeof( RRef ) * vec->len );
     vec->len = 0;
 }
 
 int rvec_eq ( RVec * a, RVec * b ) {
-    TATTLE_IF( a == NULL );
-    TATTLE_IF( b == NULL );
+    if ( a == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( b == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( a->len != b->len ) return 0;
     for ( size_t i = 0; i < a->len; i++ )
         if ( !rref_eq( a->vals + i, b->vals + i ) )

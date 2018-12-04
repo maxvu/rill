@@ -12,12 +12,18 @@ RRef rref_nil () {
 }
 
 RValType rref_type ( RRef * ref ) {
-    TATTLE_IF( ref == NULL );
+    if ( ref == NULL ) {
+        TATTLE;
+        return 0;
+    }
     return ref->type;
 }
 
 int rref_isfw ( RRef * val ) {
-    TATTLE_IF( val == NULL );
+    if ( val == NULL ) {
+        TATTLE;
+        return 0;
+    }
     switch ( val->type ) {
         case RVT_NIL:
         case RVT_UXX:
@@ -26,6 +32,7 @@ int rref_isfw ( RRef * val ) {
         case RVT_BUF:
         case RVT_VEC:
         case RVT_MAP: return 0; break;
+        default: return 0;
     }
 }
 
@@ -54,7 +61,10 @@ int rref_exclude ( RRef * dst, RRef * src ) {
 }
 
 void rref_ref ( RRef * val ) {
-    TATTLE_IF( val == NULL );
+    if ( val == NULL ) {
+        TATTLE;
+        return;
+    }
     switch ( val->type ) {
         case RVT_NIL:
         case RVT_UXX:
@@ -67,21 +77,30 @@ void rref_ref ( RRef * val ) {
 }
 
 void rref_deref ( RRef * val ) {
-    TATTLE_IF( val == NULL );
+    if ( val == NULL ) {
+        TATTLE;
+        return;
+    }
     switch ( val->type ) {
         case RVT_NIL:
         case RVT_UXX:
         case RVT_IXX:
-        case RVT_FXX: return 1; break;
+        case RVT_FXX: return; break;
         case RVT_BUF: rbuf_deref( val->buf ); break;
-        case RVT_VEC:
-        case RVT_MAP: return 0; break;
+        case RVT_VEC: rvec_deref( val->vec ); break;
+        // case RVT_MAP: rmap_deref( val->map ); break;
     }
 }
 
 int rref_eq ( RRef * a, RRef * b ) {
-    TATTLE_IF( a == NULL );
-    TATTLE_IF( b == NULL );
+    if ( a == NULL ) {
+        TATTLE;
+        return 0;
+    }
+    if ( b == NULL ) {
+        TATTLE;
+        return 0;
+    }
     if ( a->type != b->type )
         return 0;
     switch ( a->type ) {
@@ -89,8 +108,8 @@ int rref_eq ( RRef * a, RRef * b ) {
         case RVT_UXX: return a->uxx = b->uxx; break;
         case RVT_IXX: return a->ixx = b->ixx; break;
         case RVT_FXX: return a->fxx = b->fxx; break;
-        case RVT_BUF: rbuf_cmp( a, b ) == 0; break;
-        case RVT_VEC: rvec_eq( a, b ); break;
+        case RVT_BUF: return rbuf_cmp( a->buf, b->buf ) == 0; break;
+        case RVT_VEC: return rvec_eq( a->vec, b->vec ); break;
         case RVT_MAP: return 0; break;
     }
 }

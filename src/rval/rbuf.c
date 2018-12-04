@@ -5,7 +5,7 @@
 #include "environment.h"
 #include "rval/rbuf.h"
 
-int __rbuf_resize ( RBuf * buf, size_t new_cap ) {
+int ____rbuf_resize ( RBuf * buf, size_t new_cap ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -22,7 +22,7 @@ int __rbuf_resize ( RBuf * buf, size_t new_cap ) {
     return 1;
 }
 
-RBuf * rbuf_create ( size_t init_cap ) {
+RBuf * __rbuf_create ( size_t init_cap ) {
     RBuf * buf = RILL_ALLOC( sizeof( RBuf ) );
     if ( !buf )
         return NULL;
@@ -40,7 +40,7 @@ RBuf * rbuf_create ( size_t init_cap ) {
     return buf;
 }
 
-void rbuf_destroy ( RBuf * buf ) {
+void __rbuf_destroy ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return;
@@ -53,7 +53,7 @@ void rbuf_destroy ( RBuf * buf ) {
     free( buf );
 }
 
-void rbuf_lease ( RBuf * buf ) {
+void __rbuf_lease ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return;
@@ -62,17 +62,17 @@ void rbuf_lease ( RBuf * buf ) {
     buf->refcount++;
 }
 
-void rbuf_release ( RBuf * buf ) {
+void __rbuf_release ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return;
     }
 
     if ( !--buf->refcount )
-        rbuf_destroy( buf );
+        __rbuf_destroy( buf );
 }
 
-int rbuf_unique ( RBuf * buf ) {
+int __rbuf_unique ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -81,7 +81,7 @@ int rbuf_unique ( RBuf * buf ) {
     return buf->refcount == 1;
 }
 
-size_t rbuf_len ( RBuf * buf ) {
+size_t __rbuf_len ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -90,7 +90,7 @@ size_t rbuf_len ( RBuf * buf ) {
     return buf->len;
 }
 
-int rbuf_reserve ( RBuf * buf, size_t new_cap ) {
+int __rbuf_reserve ( RBuf * buf, size_t new_cap ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -99,10 +99,10 @@ int rbuf_reserve ( RBuf * buf, size_t new_cap ) {
         new_cap = RILL_RBUF_MINSIZE;
     if ( buf->cap >= new_cap )
         return 1;
-    return __rbuf_resize( buf, (double) new_cap * RILL_RBUF_GROWTHCOEFF );
+    return ____rbuf_resize( buf, (double) new_cap * RILL_RBUF_GROWTHCOEFF );
 }
 
-int rbuf_compact ( RBuf * buf ) {
+int __rbuf_compact ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -112,10 +112,10 @@ int rbuf_compact ( RBuf * buf ) {
         return 1;
     if ( target < RILL_RBUF_MINSIZE )
         target = RILL_RBUF_MINSIZE;
-    return __rbuf_resize( buf, target );
+    return ____rbuf_resize( buf, target );
 }
 
-const char * rbuf_get ( RBuf * buf ) {
+const char * __rbuf_get ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -123,7 +123,7 @@ const char * rbuf_get ( RBuf * buf ) {
     return buf->buffer;
 }
 
-int rbuf_cpy ( RBuf * dst, RBuf * src ) {
+int __rbuf_cpy ( RBuf * dst, RBuf * src ) {
     if ( dst == NULL ) {
         TATTLE;
         return 0;
@@ -132,7 +132,7 @@ int rbuf_cpy ( RBuf * dst, RBuf * src ) {
         TATTLE;
         return 0;
     }
-    if ( !rbuf_reserve( dst, src->len ) )
+    if ( !__rbuf_reserve( dst, src->len ) )
         return 0;
     memcpy( dst->buffer, src->buffer, src->len );
     dst->len = src->len;
@@ -140,7 +140,7 @@ int rbuf_cpy ( RBuf * dst, RBuf * src ) {
     return 1;
 }
 
-int rbuf_cat ( RBuf * dst, RBuf * src ) {
+int __rbuf_cat ( RBuf * dst, RBuf * src ) {
     if ( dst == NULL ) {
         TATTLE;
         return 0;
@@ -149,7 +149,7 @@ int rbuf_cat ( RBuf * dst, RBuf * src ) {
         TATTLE;
         return 0;
     }
-    if ( !rbuf_reserve( dst, dst->len + src->len ) )
+    if ( !__rbuf_reserve( dst, dst->len + src->len ) )
         return 0;
     memcpy( dst->buffer + dst->len, src->buffer, src->len );
     dst->len += src->len;
@@ -157,7 +157,7 @@ int rbuf_cat ( RBuf * dst, RBuf * src ) {
     return 1;
 }
 
-int rbuf_cmp ( RBuf * a, RBuf * b ) {
+int __rbuf_cmp ( RBuf * a, RBuf * b ) {
     if ( a == NULL ) {
         TATTLE;
         return 0;
@@ -169,7 +169,7 @@ int rbuf_cmp ( RBuf * a, RBuf * b ) {
     return memcmp( a->buffer, b->buffer, a->len );
 }
 
-int rbuf_cpyc ( RBuf * buf, const char * cstr ) {
+int __rbuf_cpyc ( RBuf * buf, const char * cstr ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -179,7 +179,7 @@ int rbuf_cpyc ( RBuf * buf, const char * cstr ) {
         return 0;
     }
     size_t cstr_len = strlen( cstr );
-    if ( !rbuf_reserve( buf, cstr_len ) )
+    if ( !__rbuf_reserve( buf, cstr_len ) )
         return 0;
     memcpy( buf->buffer, cstr, cstr_len );
     buf->len = cstr_len;
@@ -187,7 +187,7 @@ int rbuf_cpyc ( RBuf * buf, const char * cstr ) {
     return 1;
 }
 
-int rbuf_catc ( RBuf * buf, const char * cstr ) {
+int __rbuf_catc ( RBuf * buf, const char * cstr ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -197,7 +197,7 @@ int rbuf_catc ( RBuf * buf, const char * cstr ) {
         return 0;
     }
     size_t cstr_len = strlen( cstr );
-    if ( !rbuf_reserve( buf, buf->len + cstr_len ) )
+    if ( !__rbuf_reserve( buf, buf->len + cstr_len ) )
         return 0;
     memcpy( buf->buffer + buf->len, cstr, cstr_len );
     buf->len += cstr_len;
@@ -205,7 +205,7 @@ int rbuf_catc ( RBuf * buf, const char * cstr ) {
     return 1;
 }
 
-int rbuf_cmpc ( RBuf * buf, const char * cstr ) {
+int __rbuf_cmpc ( RBuf * buf, const char * cstr ) {
     if ( buf == NULL ) {
         TATTLE;
         return 0;
@@ -213,7 +213,7 @@ int rbuf_cmpc ( RBuf * buf, const char * cstr ) {
     return memcmp( buf->buffer, cstr, buf->len );
 }
 
-void rbuf_clear ( RBuf * buf ) {
+void __rbuf_clear ( RBuf * buf ) {
     if ( buf == NULL ) {
         TATTLE;
         return;

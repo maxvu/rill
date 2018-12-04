@@ -15,27 +15,27 @@ typedef struct RBuf {
 
 // int __rbuf_resize ( RBuf * buf, size_t new_cap );
 
-RBuf * rbuf_create ( size_t init_cap );
-void rbuf_destroy ( RBuf * buf );
+RBuf * __rbuf_create ( size_t init_cap );
+void __rbuf_destroy ( RBuf * buf );
 
-void rbuf_lease ( RBuf * buf );
-void rbuf_release ( RBuf * buf );
-int rbuf_unique ( RBuf * buf );
+void __rbuf_lease ( RBuf * buf );
+void __rbuf_release ( RBuf * buf );
+int __rbuf_unique ( RBuf * buf );
 
-size_t rbuf_len ( RBuf * buf );
-int rbuf_reserve ( RBuf * buf, size_t new_cap );
-int rbuf_compact ( RBuf * buf );
+size_t __rbuf_len ( RBuf * buf );
+int __rbuf_reserve ( RBuf * buf, size_t new_cap );
+int __rbuf_compact ( RBuf * buf );
 
-const char * rbuf_get ( RBuf * buf );
+const char * __rbuf_get ( RBuf * buf );
 
-int rbuf_cpy ( RBuf * dst, RBuf * src );
-int rbuf_cat ( RBuf * dst, RBuf * src );
-int rbuf_cmp ( RBuf * a, RBuf * b );
+int __rbuf_cpy ( RBuf * dst, RBuf * src );
+int __rbuf_cat ( RBuf * dst, RBuf * src );
+int __rbuf_cmp ( RBuf * a, RBuf * b );
 
-int rbuf_cpyc ( RBuf * buf, const char * cstr );
-int rbuf_catc ( RBuf * buf, const char * cstr );
-int rbuf_cmpc ( RBuf * buf, const char * cstr );
+int __rbuf_cpyc ( RBuf * buf, const char * cstr );
+int __rbuf_catc ( RBuf * buf, const char * cstr );
+int __rbuf_cmpc ( RBuf * buf, const char * cstr );
 
-void rbuf_clear ( RBuf * buf );
+void __rbuf_clear ( RBuf * buf );
 
 #endif

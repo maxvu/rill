@@ -55,4 +55,6 @@ void rixx_set ( RRef * ref, RILL_IXX_TYPE i );
 RILL_FXX_TYPE rfxx_get ( RRef * ref );
 void rfxx_set ( RRef * ref, RILL_FXX_TYPE f );
 
+
+
 #endif

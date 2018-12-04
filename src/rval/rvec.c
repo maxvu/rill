@@ -5,7 +5,7 @@
 #include "rval/rvec.h"
 #include "rval/rref.h"
 
-int __rvec_resize ( RVec * vec, size_t new_cap ) {
+int ____rvec_resize ( RVec * vec, size_t new_cap ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -23,7 +23,7 @@ int __rvec_resize ( RVec * vec, size_t new_cap ) {
     return 1;
 }
 
-RVec * rvec_create ( size_t init_cap ) {
+RVec * __rvec_create ( size_t init_cap ) {
     if ( init_cap < RILL_RVEC_MINSIZE )
         init_cap = RILL_RVEC_MINSIZE;
     RVec * vec = RILL_ALLOC( sizeof( RVec ) );
@@ -42,7 +42,7 @@ RVec * rvec_create ( size_t init_cap ) {
     return vec;
 }
 
-void rvec_destroy ( RVec * vec ) {
+void __rvec_destroy ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return;
@@ -51,7 +51,7 @@ void rvec_destroy ( RVec * vec ) {
     free( vec );
 }
 
-void rvec_ref ( RVec * vec ) {
+void __rvec_ref ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return;
@@ -59,16 +59,16 @@ void rvec_ref ( RVec * vec ) {
     vec->refcount++;
 }
 
-void rvec_release ( RVec * vec ) {
+void __rvec_release ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return;
     }
     if ( !--vec->refcount )
-        rvec_destroy( vec );
+        __rvec_destroy( vec );
 }
 
-int rvec_unique ( RVec * vec ) {
+int __rvec_unique ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -76,7 +76,7 @@ int rvec_unique ( RVec * vec ) {
     return vec->refcount == 1;
 }
 
-size_t rvec_len ( RVec * vec ) {
+size_t __rvec_len ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -84,7 +84,7 @@ size_t rvec_len ( RVec * vec ) {
     return vec->len;
 }
 
-int rvec_reserve ( RVec * vec, size_t new_cap ) {
+int __rvec_reserve ( RVec * vec, size_t new_cap ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -93,10 +93,10 @@ int rvec_reserve ( RVec * vec, size_t new_cap ) {
         new_cap = RILL_RVEC_MINSIZE;
     if ( vec->cap >= new_cap )
         return 1;
-    return __rvec_resize( vec, (double) new_cap * RILL_RVEC_GROWTHCOEFF );
+    return ____rvec_resize( vec, (double) new_cap * RILL_RVEC_GROWTHCOEFF );
 }
 
-int rvec_compact ( RVec * vec ) {
+int __rvec_compact ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -106,10 +106,10 @@ int rvec_compact ( RVec * vec ) {
         target_size = RILL_RVEC_MINSIZE;
     if ( target_size == vec->cap )
         return 1;
-    return __rvec_resize( vec, target_size );
+    return ____rvec_resize( vec, target_size );
 }
 
-RRef * rvec_get ( RVec * vec, size_t index ) {
+RRef * __rvec_get ( RVec * vec, size_t index ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -123,7 +123,7 @@ RRef * rvec_get ( RVec * vec, size_t index ) {
     return vec->vals + index;
 }
 
-int rvec_set ( RVec * vec, size_t index, RRef * ref ) {
+int __rvec_set ( RVec * vec, size_t index, RRef * ref ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -138,7 +138,7 @@ int rvec_set ( RVec * vec, size_t index, RRef * ref ) {
     return 1;
 }
 
-int rvec_push ( RVec * vec, RRef * ref ) {
+int __rvec_push ( RVec * vec, RRef * ref ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -147,16 +147,16 @@ int rvec_push ( RVec * vec, RRef * ref ) {
         TATTLE;
         return 0;
     }
-    if ( !rvec_reserve( vec, vec->len + 1 ) )
+    if ( !__rvec_reserve( vec, vec->len + 1 ) )
         return 0;
     vec->len++;
-    if ( rvec_set( vec, vec->len, ref ) )
+    if ( __rvec_set( vec, vec->len, ref ) )
         return 1;
     vec->len--;
     return 0;
 }
 
-int rvec_pop ( RVec * vec ) {
+int __rvec_pop ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -172,7 +172,7 @@ int rvec_pop ( RVec * vec ) {
     return 1;
 }
 
-int rvec_concat ( RVec * vec, RVec * other ) {
+int __rvec_concat ( RVec * vec, RVec * other ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -181,7 +181,7 @@ int rvec_concat ( RVec * vec, RVec * other ) {
         TATTLE;
         return 0;
     }
-    if ( !rvec_reserve( vec, vec->len + other->len ) )
+    if ( !__rvec_reserve( vec, vec->len + other->len ) )
         return 0;
     vec->len += other->len;
     memcpy( vec->vals + vec->len, other->vals, sizeof( RRef ) * other->len );
@@ -190,7 +190,7 @@ int rvec_concat ( RVec * vec, RVec * other ) {
     return 1;
 }
 
-int rvec_fill ( RVec * vec, RRef * val, size_t n ) {
+int __rvec_fill ( RVec * vec, RRef * val, size_t n ) {
     if ( vec == NULL ) {
         TATTLE;
         return 0;
@@ -199,15 +199,15 @@ int rvec_fill ( RVec * vec, RRef * val, size_t n ) {
         TATTLE;
         return 0;
     }
-    if ( !rvec_reserve( vec, vec->len + n ) )
+    if ( !__rvec_reserve( vec, vec->len + n ) )
         return 0;
     vec->len += n;
     for ( size_t i = 0; i < n; i++ )
-        rvec_push( vec, val );
+        __rvec_push( vec, val );
     return 1;
 }
 
-void rvec_clear ( RVec * vec ) {
+void __rvec_clear ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return;
@@ -218,7 +218,7 @@ void rvec_clear ( RVec * vec ) {
     vec->len = 0;
 }
 
-int rvec_eq ( RVec * a, RVec * b ) {
+int __rvec_eq ( RVec * a, RVec * b ) {
     if ( a == NULL ) {
         TATTLE;
         return 0;

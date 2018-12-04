@@ -70,7 +70,7 @@ void rref_lease ( RRef * val ) {
         case RVT_UXX:
         case RVT_IXX:
         case RVT_FXX: return; break;
-        case RVT_BUF: rbuf_lease( val->buf ); break;
+        case RVT_BUF: __rbuf_lease( val->buf ); break;
         case RVT_VEC:
         case RVT_MAP: break;
     }
@@ -86,9 +86,9 @@ void rref_release ( RRef * val ) {
         case RVT_UXX:
         case RVT_IXX:
         case RVT_FXX: return; break;
-        case RVT_BUF: rbuf_release( val->buf ); break;
-        case RVT_VEC: rvec_release( val->vec ); break;
-        // case RVT_MAP: rmap_release( val->map ); break;
+        case RVT_BUF: __rbuf_release( val->buf ); break;
+        case RVT_VEC: __rvec_release( val->vec ); break;
+        case RVT_MAP: /* rmap_release( val->map ); */ TATTLE; break;
     }
 }
 
@@ -108,8 +108,8 @@ int rref_eq ( RRef * a, RRef * b ) {
         case RVT_UXX: return a->uxx = b->uxx; break;
         case RVT_IXX: return a->ixx = b->ixx; break;
         case RVT_FXX: return a->fxx = b->fxx; break;
-        case RVT_BUF: return rbuf_cmp( a->buf, b->buf ) == 0; break;
-        case RVT_VEC: return rvec_eq( a->vec, b->vec ); break;
+        case RVT_BUF: return __rbuf_cmp( a->buf, b->buf ) == 0; break;
+        case RVT_VEC: return __rvec_eq( a->vec, b->vec ); break;
         case RVT_MAP: return 0; break;
     }
 }

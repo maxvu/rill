@@ -11,9 +11,11 @@ OBJ_ALL = $(OBJ_RVAL)
 TESTS = $(shell find test/src -name *.test.c)
 
 OBJ_RVAL = build/rval/rmap.o \
-	build/rval/rvec.o build/rval/rbuf.o build/rval/rref.o
+	build/rval/rvec.o build/rval/rbuf.o build/rval/rref.o build/rval/rnum.o
 rval : $(OBJ_RVAL)
 build/rval/rref.o : src/rval/rref.c include/rval/rref.h
+	$(CC_COMPUNIT) $< -o $@
+build/rval/rnum.o : src/rval/rnum.c include/rval/rnum.h
 	$(CC_COMPUNIT) $< -o $@
 build/rval/rbuf.o : src/rval/rbuf.c include/rval/rbuf.h
 	$(CC_COMPUNIT) $< -o $@

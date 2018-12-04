@@ -14,7 +14,7 @@ int ____rbuf_resize ( RBuf * buf, size_t new_cap ) {
     if ( new_cap <= buf->len )
         TATTLE;
     new_cap = sizeof( char ) * new_cap;
-    char * new_buffer = RILL_REALLOC( buf->buffer, new_cap );
+    char * new_buffer = RILL_REALLOC( buf->buffer, sizeof( char ) * new_cap );
     if ( new_buffer == NULL )
         return 0;
     buf->buffer = new_buffer;
@@ -108,10 +108,10 @@ int __rbuf_compact ( RBuf * buf ) {
         return 0;
     }
     size_t target = buf->len;
-    if ( buf->cap == target + 1 )
-        return 1;
     if ( target < RILL_RBUF_MINSIZE )
         target = RILL_RBUF_MINSIZE;
+    if ( buf->cap == target + 1 )
+        return 1;
     return ____rbuf_resize( buf, target );
 }
 

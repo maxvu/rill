@@ -29,9 +29,12 @@ typedef struct RRef {
         RVec *        vec;
         RMap *        map;
     };
-} RVal;
+} RRef;
 
 RRef rref_nil ();
+RRef rref_uxx ( RILL_UXX_TYPE u );
+RRef rref_ixx ( RILL_IXX_TYPE i );
+RRef rref_fxx ( RILL_FXX_TYPE f );
 
 RValType rref_type ( RRef * ref );
 int rref_isfw ( RRef * ref );
@@ -45,16 +48,5 @@ void rref_lease ( RRef * val );
 void rref_release ( RRef * val );
 int rref_eq ( RRef * a, RRef * b );
 void rref_dump ( RRef * val );
-
-RILL_UXX_TYPE ruxx_get ( RRef * ref );
-void ruxx_set ( RRef * ref, RILL_UXX_TYPE u );
-
-RILL_IXX_TYPE rixx_get ( RRef * ref );
-void rixx_set ( RRef * ref, RILL_IXX_TYPE i );
-
-RILL_FXX_TYPE rfxx_get ( RRef * ref );
-void rfxx_set ( RRef * ref, RILL_FXX_TYPE f );
-
-
 
 #endif

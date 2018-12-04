@@ -1,6 +1,8 @@
 #include "environment.h"
 #include "rill_test.h"
 
+#include "rval/rref.h"
+#include "rval/rnum.h"
 #include "rval/rvec.h"
 
 void test_rval_rvec () {
@@ -12,18 +14,27 @@ void test_rval_rvec () {
         __rvec_destroy( vec );
     } TEST_END
 
-    // TEST_BEGIN( "__rvec / ops" ) {
-    //     RVec * a = __rvec_create( 10 );
-    //     RVec * b = __rvec_create( 10 );
-    //     RRef c = rref_nil();
-    //
-    //     for ( size_t i = 0; i < 100; i++ ) {
-    //         if ( i % 3 == 0 && i % 5 == 0 )
-    //             INSIST( __rvec_push( a,  ) );
-    //     }
-    //
-    //     __rvec_destroy( a );
-    //     __rvec_destroy( b );
-    // } TEST_END
+    TEST_BEGIN( "__rvec / ops" ) {
+        RVec * a = __rvec_create( 10 );
+        RVec * b = __rvec_create( 10 );
+        RRef c = rref_uxx( 0 );
+
+        for ( size_t i = 0; i < 50; i++ ) {
+            __ruxx_set( &c, i );
+            if ( i % 2 == 0 ) {
+                INSIST( __rvec_push( a, &c ) );
+            } else {
+                INSIST( __rvec_push( b, &c ) );
+            }
+        }
+
+        // INSIST( __rvec_len( a ) == 50 );
+        // INSIST( __rvec_len( b ) == 50 );
+        // RRef * xx = __rvec_get( b, 48 );
+        // INSIST( __ruxx_get( xx ) == 99 );
+
+        __rvec_destroy( a );
+        __rvec_destroy( b );
+    } TEST_END
 
 }

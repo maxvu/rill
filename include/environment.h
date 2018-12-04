@@ -24,6 +24,7 @@
     #ifdef RILL_32BIT
         #error "32-bit compilation not yet supported."
     #else
+        #include <stdint.h>
         #define RILL_UXX_TYPE uint64_t
         #define RILL_IXX_TYPE int64_t
         #define RILL_FXX_TYPE double

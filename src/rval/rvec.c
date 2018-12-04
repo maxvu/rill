@@ -10,14 +10,15 @@ int ____rvec_resize ( RVec * vec, size_t new_cap ) {
         TATTLE;
         return 0;
     }
-    if ( new_cap <= vec->len ) {
+    if ( new_cap < vec->len ) {
         TATTLE;
         return 0;
     }
-    RRef * new_vals = RILL_REALLOC( vec->vals, new_cap );
+    RRef * new_vals = RILL_REALLOC( vec->vals, sizeof( RRef ) * new_cap );
     if ( new_vals == NULL )
         return 0;
-    free( vec->vals );
+    for ( size_t i = vec->len; i < new_cap; i++ )
+        new_vals[ i ] = rref_nil();
     vec->vals = new_vals;
     vec->cap = new_cap;
     return 1;
@@ -47,11 +48,12 @@ void __rvec_destroy ( RVec * vec ) {
         TATTLE;
         return;
     }
+    __rvec_clear( vec );
     free( vec->vals );
     free( vec );
 }
 
-void __rvec_ref ( RVec * vec ) {
+void __rvec_lease ( RVec * vec ) {
     if ( vec == NULL ) {
         TATTLE;
         return;
@@ -101,12 +103,12 @@ int __rvec_compact ( RVec * vec ) {
         TATTLE;
         return 0;
     }
-    size_t target_size = vec->len;
-    if ( target_size < RILL_RVEC_MINSIZE )
-        target_size = RILL_RVEC_MINSIZE;
-    if ( target_size == vec->cap )
+    size_t target = vec->len;
+    if ( target < RILL_RVEC_MINSIZE )
+        target = RILL_RVEC_MINSIZE;
+    if ( target == vec->cap )
         return 1;
-    return ____rvec_resize( vec, target_size );
+    return ____rvec_resize( vec, target );
 }
 
 RRef * __rvec_get ( RVec * vec, size_t index ) {
@@ -150,10 +152,11 @@ int __rvec_push ( RVec * vec, RRef * ref ) {
     if ( !__rvec_reserve( vec, vec->len + 1 ) )
         return 0;
     vec->len++;
-    if ( __rvec_set( vec, vec->len, ref ) )
-        return 1;
-    vec->len--;
-    return 0;
+    if ( !__rvec_set( vec, vec->len - 1, ref ) ) {
+        vec->len--;
+        return 0;
+    }
+    return 1;
 }
 
 int __rvec_pop ( RVec * vec ) {

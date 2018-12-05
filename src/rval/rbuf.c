@@ -210,7 +210,9 @@ int __rbuf_cmpc ( RBuf * buf, const char * cstr ) {
         TATTLE;
         return 0;
     }
-    return memcmp( buf->buffer, cstr, buf->len );
+    size_t cstr_len = strlen( cstr );
+    size_t n = buf->len < cstr_len ? buf->len : cstr_len;
+    return memcmp( buf->buffer, cstr, n );
 }
 
 void __rbuf_clear ( RBuf * buf ) {

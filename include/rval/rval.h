@@ -23,7 +23,6 @@ RVal rval_buf ();
 RVal rval_vec ();
 RVal rval_map ();
 
-RVal rval_isnil ();
 int rval_type ( RVal * val );
 int rval_copy ( RVal * dst, RVal * src );
 int rval_swap ( RVal * a, RVal * b );
@@ -34,6 +33,9 @@ void rval_release ( RVal * val );
 int rval_exclude ( RVal * val );
 int rval_contains ( RVal * haystack, RVal * needle );
 int rval_isfw ( RVal * val );
+int rval_isnil ( RVal * val );
+int rval_isfw ( RVal * val );
+int rval_istruthy ( RVal * val );
 int rval_eq ( RVal * val );
 int rval_serialize ( RVal * dstbuf, RVal * val );
 

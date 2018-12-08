@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define RILL_RBUF_MINSIZE 8
+#define RILL_RBUF_DEFAULTSIZE 8
 #define RILL_RBUF_GROWTHCOEFF 2.0
 
 int rbuf_init ( size_t init_cap );

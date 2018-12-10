@@ -1,9 +1,4 @@
-#include "rval/primitives.h"
-#include "rval/rval.h"
-#include "rval/rbuf.h"
-#include "rval/rvec.h"
-#include "rval/rmap.h"
-#include "rval/slab.h"
+#include "rval/val.h"
 
 #include <stdio.h>
 

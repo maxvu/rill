@@ -1,5 +1,6 @@
 #include "rval/slab.h"
 
+#include <assert.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -24,16 +25,27 @@ Slab * slab_create ( size_t init_cap ) {
 }
 
 void slab_lease ( Slab * slab ) {
+    assert( slab != NULL );
     if ( slab )
         slab->ref++;
 }
 
-void slab_release ( Slab * slab ) {
-    if ( slab && !--slab->ref )
+int slab_release ( Slab * slab ) {
+    assert( slab != NULL );
+    if ( slab && !--slab->ref ) {
         slab_destroy( slab );
+        return 0;
+    }
+    return 1;
+}
+
+size_t slab_refcount ( Slab * slab ) {
+    assert( slab != NULL );
+    return slab->ref;
 }
 
 int slab_resize ( Slab * slab, size_t new_cap ) {
+    assert( slab != NULL );
     if ( !slab )
         return 0;
     if ( new_cap < RILL_RVAL_SLAB_MINSIZE )
@@ -48,6 +60,7 @@ int slab_resize ( Slab * slab, size_t new_cap ) {
 }
 
 void slab_destroy ( Slab * slab ) {
+    assert( slab != NULL );
     if ( !slab )
         return;
     if ( slab->arr )

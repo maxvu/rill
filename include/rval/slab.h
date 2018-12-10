@@ -15,7 +15,8 @@ typedef struct Slab {
 
 Slab * slab_create ( size_t init_cap );
 void slab_lease ( Slab * slab );
-void slab_release ( Slab * slab );
+int slab_release ( Slab * slab );
+size_t slab_refcount ( Slab * slab );
 int slab_resize ( Slab * slab, size_t new_cap );
 void slab_destroy ( Slab * slab );
 

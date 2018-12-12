@@ -1,13 +1,14 @@
-#include "Val/Buffer.hpp"
+#include "Val/Buf.hpp"
 #include "Val/Fxx.hpp"
 #include "Val/Ixx.hpp"
 #include "Val/Map.hpp"
 #include "Val/Ref.hpp"
 #include "Val/Slab.hpp"
-#include "Val/ValType.hpp"
 #include "Val/Uxx.hpp"
 #include "Val/Val.hpp"
-#include "Val/Vector.hpp"
+#include "Val/ValType.hpp"
+#include "Val/Vec.hpp"
+
 
 #include <iostream>
 

@@ -4,6 +4,8 @@
 #include "Val/Ref.hpp"
 #include "Val/Val.hpp"
 
+#include <initializer_list>
+
 namespace Rill {
 
     struct MapSlot {
@@ -24,7 +26,7 @@ namespace Rill {
         ConstMapIter & operator++ ();
         operator bool () const;
 
-        Buffer & key () const;
+        Buf & key () const;
         Val & val () const;
 
     };
@@ -47,7 +49,17 @@ namespace Rill {
         public:
 
         Map ();
+        Map ( size_t initial_capacity );
+        Map ( std::initializer_list<Ref> vals );
         Map ( const Map & other );
+
+        Val & lease ();
+        int release ();
+        Val & exclude ();
+        Val * clone () const;
+        operator bool () const;
+        bool operator==  ( const Val & other );
+        bool contains ( const Val * needle );
 
         size_t size () const;
         double load () const;
@@ -55,13 +67,20 @@ namespace Rill {
         Map & reserve ( size_t n_items );
         Map & compact ();
 
-        Ref & operator[] ( const Buffer & key );
-        const Ref & operator[] ( const Buffer & key ) const;
-        Map & unset ( const Buffer & key );
+        bool has ( const Buf & key ) const;
+        Ref & get ( const Buf & key );
+        const Ref & set ( const Buf & key, Ref & val ) const;
+        Map & unset ( const Buf & key );
+
+        Vec keys () const;
+        Vec vals () const;
 
         Map & clear ();
 
+        ConstMapIter begin () const;
+        ConstMapIter end () const;
         MapIter begin ();
+        MapIter end ();
 
     };
 

@@ -17,6 +17,15 @@ namespace Rill {
         Fxx ();
         Fxx ( RILL_FXX_TYPE f );
         Fxx ( const Fxx & other );
+        ~Fxx ();
+
+        Val & lease ();
+        int release ();
+        Val & exclude ();
+        Val * clone () const;
+        operator bool () const;
+        bool operator==  ( const Val & other );
+        bool contains ( const Val * needle );
 
         operator RILL_FXX_TYPE & ();
         operator RILL_FXX_TYPE & () const;

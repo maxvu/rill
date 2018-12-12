@@ -1,6 +1,13 @@
 #ifndef RILL_VAL_VAL
 #define RILL_VAL_VAL
 
+typedef class Ixx Ixx;
+typedef class Uxx Uxx;
+typedef class Fxx Fxx;
+typedef class Buf Buf;
+typedef class Vec Vec;
+typedef class Map Map;
+
 namespace Rill {
 
     class Val {
@@ -9,17 +16,28 @@ namespace Rill {
 
         virtual ~Val () =0;
 
-        virtual Val & lease () =0;
-        virtual int release () =0;
-        virtual Val & exclude () =0;
-        virtual Val * clone () const =0;
-
-        virtual operator bool () const =0;
-        virtual bool operator==  ( const Val & other ) =0;
-        bool operator!=  ( const Val & other );
+        Val & lease ();
+        int release ();
+        Val & exclude ();
+        Val * clone () const;
+        operator bool () const;
+        bool operator==  ( const Val & other );
 
         virtual bool contains ( const Val * needle ) =0;
-        // void dump () =0;
+
+        Fxx & asIxx ();
+        Uxx & asUxx ();
+        Ixx & asFxx ();
+        Buf & asBuf ();
+        Vec & asVec ();
+        Map & asMap ();
+
+        const Fxx & asIxx () const;
+        const Uxx & asUxx () const;
+        const Ixx & asFxx () const;
+        const Buf & asBuf () const;
+        const Vec & asVec () const;
+        const Map & asMap () const;
 
     };
 

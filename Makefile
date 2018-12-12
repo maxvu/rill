@@ -1,30 +1,22 @@
-CC = clang
-CC_FLAGS = -Wall -lstdc++ -std=c++11 -g
-CC_INCLUDE = -I include/ -I lib/
+CC := clang
+CC_FLAGS := -Wall -lstdc++ -std=c++11
+CC_FLAGS_DEBUG := -g -O0
+CC_FLAGS_RELEASE := -s -O3
+CC_INCLUDE := -I include/ -I lib/
 
-ENTRY   = src/Main.cpp
-SOURCES = $(filter-out $(ENTRY), $(shell find src/*.cpp))
-OBJECTS = $(patsubst src/%.cpp, build/%.o, $(SOURCES))
-TESTS   = $(shell find test/*.cpp)
+COMPILE = $(CC) $(CC_FLAGS) $(CC_INCLUDE)
 
-bin/rill : $(OBJECTS) $(ENTRY)
-	$(CC) $(CC_INCLUDE) $(ENTRY) $(CC_FLAGS) $(OBJECTS) -o $@
+rill : CC_FLAGS += $(CC_FLAGS_DEBUG)
+rill : bin/rval
 
-bin/rill-tests : $(OBJECTS) $(TESTS)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) $(OBJECTS) $(TESTS) -o $@
+bin/rval : $(OBJECTS_VAL) src/Rill/Main.cpp
+	$(COMPILE) -$(OBJECTS_VAL) -o $@
 
-build/Main.o : $(ENTRY)
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@
-
-build/%.o : src/%.cpp include/%.hpp
-	$(CC) $(CC_INCLUDE) $(CC_FLAGS) -c $< -o $@
-
-tests : bin/rill-tests
+SOURCES_VAL := $(shell find src/Val/ | grep \.cpp)
+OBJECTS_VAL := $(patsubst src/Val/%.cpp, build/Val/%.o, $(SOURCES_VAL))
+build/Val/%.o : src/Val/%.cpp include/Val/%.hpp
+	$(COMPILE) -c $< -o $@
 
 clean :
 	rm -rf bin/*
-	rm -rf build/*
-
-dbg :
-	@echo SOURCES: $(SOURCES)
-	@echo OBJECTS: $(OBJECTS)
+	rm -rf $(shell find build/ | grep \.o)

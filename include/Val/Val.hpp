@@ -23,7 +23,7 @@ namespace Rill {
         operator bool () const;
         bool operator==  ( const Val & other );
 
-        virtual bool contains ( const Val * needle ) =0;
+        virtual bool containsRef ( const Val * needle ) =0;
 
         Fxx & asIxx ();
         Uxx & asUxx ();

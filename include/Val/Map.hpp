@@ -52,6 +52,7 @@ namespace Rill {
         Map ( size_t initial_capacity );
         Map ( std::initializer_list<Ref> vals );
         Map ( const Map & other );
+        ~Map ();
 
         Val & lease ();
         int release ();
@@ -59,7 +60,7 @@ namespace Rill {
         Val * clone () const;
         operator bool () const;
         bool operator==  ( const Val & other );
-        bool contains ( const Val * needle );
+        bool containsRef ( const Val * needle );
 
         size_t size () const;
         double load () const;

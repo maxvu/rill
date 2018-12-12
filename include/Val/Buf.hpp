@@ -32,7 +32,7 @@ namespace Rill {
         Val & exclude ();
         Val * clone () const;
         operator bool () const;
-        bool contains ( const Val * needle );
+        bool containsRef ( const Val * needle );
 
         size_t length () const;
         size_t capacity () const;

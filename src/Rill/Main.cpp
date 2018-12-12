@@ -9,7 +9,6 @@
 #include "Val/ValType.hpp"
 #include "Val/Vec.hpp"
 
-
 #include <iostream>
 
 int main ( int argc, char ** argv ) {

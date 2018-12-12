@@ -25,7 +25,7 @@ namespace Rill {
         Val * clone () const;
         operator bool () const;
         bool operator==  ( const Val & other );
-        bool contains ( const Val * needle );
+        bool containsRef ( const Val * needle );
 
         operator RILL_UXX_TYPE & ();
         operator RILL_UXX_TYPE & () const;

@@ -18,6 +18,23 @@ namespace Rill {
         Ref ( Val * val );
         Ref ( const Ref & other );
 
+        Val & operator* ();
+        const Val & operator* () const;
+
+        Val * operator-> ();
+        const Val * operator-> () const;
+
+        Ref & operator= ( Val * other );
+        Ref & operator= ( const Ref & other );
+
+        bool operator== ( Val * other );
+        bool operator== ( const Ref & other );
+
+        bool operator!= ( Val * other );
+        bool operator!= ( const Ref & other );
+
+        bool contains ( const Ref & needle ) const;
+
     };
 
 }

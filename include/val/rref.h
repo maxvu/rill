@@ -61,4 +61,23 @@ int rbuf_repeat ( RRef * buf, size_t n );
 void rbuf_zero ( RRef * buf );
 int rbuf_substr ( RRef * dst, RRef * src_buf );
 void rbuf_clear ( RRef * buf );
+
+RRef rref_vec ( size_t init_cap );
+int rvec_reserve ( RRef * ref, size_t new_cap );
+int rvec_compact ( RRef * ref );
+size_t rvec_len ( RRef * ref );
+int rvec_get ( RRef * ref, size_t index );
+int rvec_set ( RRef * ref, size_t index, RRef * val );
+int rvec_push ( RRef * ref, RRef * val );
+int rvec_pop ( RRef * ref );
+int rvec_fill ( RRef * ref, size_t n, RRef * val );
+void rvec_clear ( RRef * ref );
+
+RRef rref_map ( size_t init_cap );
+size_t rmap_len ( RRef * ref );
+RRef * rmap_get ( RRef * ref, RRef * key );
+int rmap_set ( RRef * ref, RRef * key, RRef * val );
+int rmap_unset ( RRef * ref, RRef * key );
+void rmap_clear ( RRef * ref );
+
 #endif

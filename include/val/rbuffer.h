@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define RILL_VAL_RBUFFER_DEFAULTSIZE 16
 #define RILL_VAL_RBUFFER_MINSIZE 8
 #define RILL_VAL_RBUFFER_GROWTHCOEFF 2.0
 

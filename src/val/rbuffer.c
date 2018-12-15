@@ -93,6 +93,8 @@ uint8_t * rbuffer_get ( RBuffer * buf ) {
 int __rbuffer_cat( RBuffer * dst, uint8_t * src, size_t src_len ) {
     assert( dst );
     assert( src );
+    size_t requested = dst->len + src_len;
+    requested = ( double ) requested * RILL_VAL_RBUFFER_GROWTHCOEFF;
     if ( !rbuffer_reserve( dst, dst->len + src_len ) )
         return 0;
     memcpy(

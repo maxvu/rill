@@ -5,18 +5,20 @@
 
 #include <stddef.h>
 
+#define RILL_VAL_RVECTOR_DEFAULTSIZE 16
+#define RILL_VAL_RVECTOR_MINSIZE 8
 #define RILL_VAL_RVECTOR_GROWTHCOEFF 2.0
 
 typedef struct rvector {
     RRef * vals;
-    size_t len;
     size_t ref;
+    size_t len;
     size_t cap;
 } RVector;
 
 RVector * rvector_create ( size_t init_cap );
 RVector * rvector_clone ( RVector * vector );
-int rvector_destroy ( RVector * vector );
+void rvector_destroy ( RVector * vector );
 
 size_t rvector_lease ( RVector * vector );
 size_t rvector_release ( RVector * vector );

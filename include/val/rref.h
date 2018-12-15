@@ -44,6 +44,8 @@ void rref_lease ( RRef * ref );
 void rref_release ( RRef * ref );
 void rref_dump ( RRef * ref );
 
+RRef rref_nil ();
+
 RRef rref_ixx ( RILL_IXX_TYPE i );
 RILL_IXX_TYPE rixx_get ( RRef * ref );
 void rixx_set ( RRef * ref, RILL_IXX_TYPE i );

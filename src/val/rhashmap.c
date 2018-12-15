@@ -1,27 +1,4 @@
-#ifndef RILL_VAL_RHASHMAP
-#define RILL_VAL_RHASHMAP
-
-#include "val/rbuffer.h"
-#include "val/rref.h"
-
-#include <stddef.h>
-
-#define RILL_VAL_RMAP_GROWTHCOEFF 2.0
-#define RILL_VAL_RMAP_MAXLOAD 0.60
-
-typedef struct rhashmap_slot {
-    RRef key;
-    RRef val;
-} RHashMapSlot;
-
-typedef RHashMapSlot * RHashMapIter;
-
-typedef struct rhashmap {
-    RHashMapSlot * slots;
-    size_t ref;
-    size_t len;
-    size_t cap;
-} RHashMap;
+#include "val/rhashmap.h"
 
 RHashMap * rhashmap_create ( size_t init_cap );
 RHashMap * rhashmap_clone ( RHashMap * hashmap );
@@ -46,5 +23,3 @@ RHashMapIter rhashmap_iter_next ( RHashMapIter iter );
 RRef * rhashmap_iter_key ( RHashMapIter iter );
 RRef * rhashmap_iter_val ( RHashMapIter iter );
 void rhashmap_iter_del ( RHashMapIter iter );
-
-#endif

@@ -1,6 +1,10 @@
 #ifndef RVAL_VAL_RREF
 #define RVAL_VAL_RREF
 
+#include "config.h"
+
+#include <stddef.h>
+
 typedef enum {
     RRT_NIL = 0,
     RRT_IXX = 1,
@@ -10,6 +14,10 @@ typedef enum {
     RRT_VEC = 5,
     RRT_MAP = 6
 } RRefType;
+
+typedef struct rbuffer RBuffer;
+typedef struct rvector RVector;
+typedef struct rhashmap RHashMap;
 
 typedef struct rref {
     RRefType type;
@@ -23,7 +31,10 @@ typedef struct rref {
     };
 } RRef;
 
-int rref_type ( RRef * ref );
+RRefType rref_type ( RRef * ref );
+int rref_settype ( RRef * ref, RRefType type );
+uint8_t rref_rttype ( RRef * ref );
+uint8_t rref_setrttype ( RRef * ref );
 int rref_copy ( RRef * dst, RRef * src );
 int rref_move ( RRef * dst, RRef * src );
 int rref_swap ( RRef * a, RRef * b );
@@ -77,6 +88,8 @@ RRef rref_map ( size_t init_cap );
 size_t rmap_len ( RRef * ref );
 RRef * rmap_get ( RRef * ref, RRef * key );
 int rmap_set ( RRef * ref, RRef * key, RRef * val );
+int rmap_merge ( RRef * a, RRef * b );
+int rmap_intersect ( RRef * a, RRef * b );
 int rmap_unset ( RRef * ref, RRef * key );
 void rmap_clear ( RRef * ref );
 

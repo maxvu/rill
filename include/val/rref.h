@@ -35,7 +35,7 @@ RRefType rref_type ( RRef * ref );
 int rref_settype ( RRef * ref, RRefType type );
 uint8_t rref_rttype ( RRef * ref );
 uint8_t rref_setrttype ( RRef * ref );
-int rref_copy ( RRef * dst, RRef * src );
+int rref_copy ( RRef * dst, RRef * src ); // check: dst->buf == src->buf?
 int rref_move ( RRef * dst, RRef * src );
 int rref_swap ( RRef * a, RRef * b );
 int rref_clone ( RRef * dst, RRef * src );

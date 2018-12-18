@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define RILL_RVAL_ENFORCETYPE(X,T) if ( !X || rval_type( X ) != T )
+
 #define RILL_ALLOC(N) malloc(N)
 #define RILL_REALLOC(X, N) realloc(X, N)
 #define RILL_DEALLOC(X) free(X)

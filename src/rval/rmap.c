@@ -6,47 +6,44 @@
 #include <string.h>
 #include <stdlib.h>
 
-size_t rmap_hash_a ( RVal * mapval, RVal * keyval ) {
-    // http://www.partow.net/programming/hashfunctions/#SDBMHashFunction
-    size_t hash;
+size_t rmap_hash_a ( RVal * keyval ) {
+    RILL_RVAL_ENFORCETYPE( keyval, RVT_BUF ) { return 0; }
+    size_t hash = 0; // sdbm
     uint8_t * key = rbuf_get( keyval );
-    uint8_t c = 0;
-    while ( ( c = *key++ ) )
-        hash = c + ( hash << 6 ) + ( hash << 16 ) - hash;
-    size_t segment_size = mapval->map->cap / 4;
-    return ( hash % segment_size ) + segment_size * 0;
+    size_t len = rbuf_len( keyval );
+    for ( size_t i = 0; i < len; i++ )
+        hash = key[ i ] + ( hash << 6 ) + ( hash << 16 ) - hash;
+    return hash;
 }
 
-size_t rmap_hash_b ( RVal * mapval, RVal * keyval ) {
-    // http://www.partow.net/programming/hashfunctions/#DJBHashFunction
-    size_t hash = 5381;
+size_t rmap_hash_b ( RVal * keyval ) {
+    RILL_RVAL_ENFORCETYPE( keyval, RVT_BUF ) { return 0; }
+    size_t hash = 5381; // djb
     uint8_t * key = rbuf_get( keyval );
-    uint8_t c;
-    while ( ( c = *key++ ) )
-        hash = ( hash << 5 ) + hash + c;
-    size_t segment_size = mapval->map->cap / 4;
-    return ( hash % segment_size ) + segment_size * 1;
+    size_t len = rbuf_len( keyval );
+    for ( size_t i = 0; i < len; i++ )
+        hash = ( hash << 5 ) + hash + key[ i ];
+    return hash;
 }
 
-size_t rmap_hash_c ( RVal * mapval, RVal * keyval ) {
-    // ...something I made up, twiddling constants from B.
-    size_t hash = 56923;
+size_t rmap_hash_c ( RVal * keyval ) {
+    RILL_RVAL_ENFORCETYPE( keyval, RVT_BUF ) { return 0; }
+    size_t hash = 56923; // hand-rolled
     uint8_t * key = rbuf_get( keyval );
-    uint8_t c;
-    while ( ( c = *key++ ) )
-        hash = hash;
-    size_t segment_size = mapval->map->cap / 4;
-    return ( hash % segment_size ) + segment_size * 2;
+    size_t len = rbuf_len( keyval );
+    for ( size_t i = 0; i < len; i++ )
+        hash = ( hash << 7 ) ^ ( hash - key[ i ] );
+    return hash;
 }
 
-size_t rmap_hash_d ( RVal * mapval, RVal * keyval ) {
-    size_t hash = 77317;
+size_t rmap_hash_d ( RVal * keyval ) {
+    RILL_RVAL_ENFORCETYPE( keyval, RVT_BUF ) { return 0; }
+    size_t hash = 77317; // one-at-a-time
     uint8_t * key = rbuf_get( keyval );
-    uint8_t c;
-    while ( ( c = *key++ ) )
-        hash = ( ( hash << 10 ) ^ ( hash >> 6 ) ) + c;
-    size_t segment_size = mapval->map->cap / 4;
-    return ( hash % segment_size ) + segment_size * 3;
+    size_t len = rbuf_len( keyval );
+    for ( size_t i = 0; i < len; i++ )
+        hash = ( ( hash << 10 ) ^ ( hash >> 6 ) ) + key[ i ];
+    return hash;
 }
 
 int rmap_resize ( RVal * val, size_t new_cap ) {
@@ -92,16 +89,48 @@ size_t rmap_load ( RVal * val ) {
 
 int rmap_reserve ( RVal * mapval, size_t new_cap ) {
     RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
+    if ( mapval->map->cap >= new_cap )
+        return 1;
+    return rmap_resize( mapval, new_cap );
 }
 
 int rmap_compact ( RVal * mapval ) {
     RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
-    // TODO: implement
+    size_t target = ( double ) mapval->map->occ / RILL_RMAP_MAXLOAD;
+    if ( target < RILL_RMAP_MINCAP )
+        target = RILL_RMAP_MINCAP;
+    if ( mapval->map->cap == target )
+        return 1;
+    return rmap_resize( mapval, target );
 }
 
-RVal * rmap_get ( RVal * mapval ) {
+RVal * rmap_get ( RVal * mapval, RVal * keyval ) {
     RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
-    // TODO: implement
+    RILL_RVAL_ENFORCETYPE( keyval, RVT_MAP ) { return 0; }
+    RMapSlot * hit;
+    size_t segment = mapval->map->cap / 4;
+
+    hit = mapval->map->slots + rmap_hash_a( keyval ) % segment + segment * 0;
+    if ( rval_type( &hit->key ) == RVT_BUF ) {
+        return &hit->val;
+    }
+
+    hit = mapval->map->slots + rmap_hash_b( keyval ) % segment + segment * 1;
+    if ( rval_type( &hit->key ) == RVT_BUF ) {
+        return &hit->val;
+    }
+
+    hit = mapval->map->slots + rmap_hash_c( keyval ) % segment + segment * 2;
+    if ( rval_type( &hit->key ) == RVT_BUF ) {
+        return &hit->val;
+    }
+
+    hit = mapval->map->slots + rmap_hash_d( keyval ) % segment + segment * 3;
+    if ( rval_type( &hit->key ) == RVT_BUF ) {
+        return &hit->val;
+    }
+
+    return NULL;
 }
 
 int rmap_set ( RVal * mapval, RVal * key, RVal * val ) {
@@ -130,13 +159,16 @@ int rmap_merge ( RVal * dst, RVal * src ) {
     return 1;
 }
 
-int rmap_intersect ( RVal * dst, RVal * src ) {
+int rmap_intersect ( RVal * dst, RVal * src ) { // TODO
     RILL_RVAL_ENFORCETYPE( dst, RVT_MAP ) { return 0; }
     RILL_RVAL_ENFORCETYPE( src, RVT_MAP ) { return 0; }
 }
 
 void rmap_clear ( RVal * mapval ) {
     RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return; }
+    RMapIter it = rmap_begin( mapval );
+    while ( it )
+        it = rmap_iter_del( mapval, it );
 }
 
 // int rmap_keys ( RVal * dst_vec, RVal * src_map ) {
@@ -181,35 +213,35 @@ void rmap_clear ( RVal * mapval ) {
 //     return 1;
 // }
 //
-// RMapIter rmap_begin ( RVal * mapval ) {
-//     RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
-//     return mapval->map->slots;
-// }
-//
-// RMapIter rmap_iter_next ( RVal * map, RMapIter it ) {
-//     if ( it < rmap_begin( map ) || it >= rmap_end( map ) )
-//         return NULL;
-//     while ( rval_type( &it->key ) == RVT_NIL && it < rmap_end( map ) ) {
-//         it++;
-//     }
-//     if ( it == rmap_end( map ) )
-//         return NULL;
-//     return it;
-// }
-//
-// RVal * rmap_iter_key ( RMapIter it ) {
-//     return &it->key;
-// }
-//
-// RVal * rmap_iter_val ( RMapIter it ) {
-//     return &it->val;
-// }
-//
-// RMapIter rmap_iter_del ( RVal * mapval, RMapIter it ) {
-//     RMapIter end = mapval->map->slots + mapval->map->occ;
-//     if ( it < rmap_begin( mapval ) || it >= end )
-//         return NULL;
-//     rval_release( &it->key );
-//     rval_release( &it->val );
-//     return rmap_iter_next( mapval, it );
-// }
+RMapIter rmap_begin ( RVal * mapval ) {
+    RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
+    return mapval->map->slots;
+}
+
+RMapIter rmap_iter_next ( RVal * map, RMapIter it ) {
+    if ( it < rmap_begin( map ) || it >= rmap_end( map ) )
+        return NULL;
+    while ( rval_type( &it->key ) == RVT_NIL && it < rmap_end( map ) ) {
+        it++;
+    }
+    if ( it == rmap_end( map ) )
+        return NULL;
+    return it;
+}
+
+RVal * rmap_iter_key ( RMapIter it ) {
+    return &it->key;
+}
+
+RVal * rmap_iter_val ( RMapIter it ) {
+    return &it->val;
+}
+
+RMapIter rmap_iter_del ( RVal * mapval, RMapIter it ) {
+    RMapIter end = mapval->map->slots + mapval->map->occ;
+    if ( it < rmap_begin( mapval ) || it >= end )
+        return NULL;
+    rval_release( &it->key );
+    rval_release( &it->val );
+    return rmap_iter_next( mapval, it );
+}

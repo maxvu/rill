@@ -22,17 +22,17 @@ typedef struct rmap {
     RMapSlot slots[];
 } RMap;
 
-size_t rmap_hash_a ( RVal * map, RVal * key );
-size_t rmap_hash_b ( RVal * map, RVal * key );
-size_t rmap_hash_c ( RVal * map, RVal * key );
-size_t rmap_hash_d ( RVal * map, RVal * key );
+size_t rmap_hash_a ( RVal * key );
+size_t rmap_hash_b ( RVal * key );
+size_t rmap_hash_c ( RVal * key );
+size_t rmap_hash_d ( RVal * key );
 
 RVal rmap ( size_t init_cap );
 size_t rmap_size ( RVal * map );
 size_t rmap_load ( RVal * map );
 int rmap_reserve ( RVal * map, size_t new_cap );
 int rmap_compact ( RVal * map );
-RVal * rmap_get ( RVal * map );
+RVal * rmap_get ( RVal * map, RVal * key );
 int rmap_set ( RVal * map, RVal * key, RVal * val );
 int rmap_unset ( RVal * map, RVal * key );
 int rmap_merge ( RVal * dst, RVal * src );
@@ -48,6 +48,6 @@ RMapIter rmap_end ( RVal * map );
 RMapIter rmap_iter_next ( RVal * map, RMapIter it );
 RVal * rmap_iter_key ( RMapIter it );
 RVal * rmap_iter_val ( RMapIter it );
-RMapIter rmap_iter_del ( RMap * map, RMapIter it );
+RMapIter rmap_iter_del ( RVal * map, RMapIter it );
 
 #endif

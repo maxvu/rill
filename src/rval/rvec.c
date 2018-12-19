@@ -6,7 +6,7 @@
 
 int rvec_resize ( RVal * val, size_t new_cap ) {
     size_t target = sizeof( RVec ) + sizeof( RVal ) * new_cap;
-    RVec * resized = RILL_REALLOC( val->vec, target );
+    RVec * resized = ( RVec * ) RILL_REALLOC( val->vec, target );
     if ( !resized )
         return 0;
     val->vec = resized;
@@ -21,7 +21,9 @@ int rvec_resize ( RVal * val, size_t new_cap ) {
 
 RVal rvec ( size_t init_cap ) {
     RVal val = rnil();
-    RVec * vec = RILL_ALLOC( sizeof( RVec ) + sizeof( RVal ) * init_cap );
+    RVec * vec = ( RVec * ) RILL_ALLOC(
+        sizeof( RVec ) + sizeof( RVal ) * init_cap
+    );
     if ( !vec )
         return val;
     memset( vec, 0, sizeof( RVec ) + sizeof( RVal ) * init_cap );

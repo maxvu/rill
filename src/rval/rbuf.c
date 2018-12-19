@@ -5,7 +5,7 @@
 #include <string.h>
 
 int rbuf_resize ( RVal * bufval, size_t new_cap ) {
-    RBuf * resized = RILL_REALLOC(
+    RBuf * resized = ( RBuf * ) RILL_REALLOC(
         bufval->buf,
         sizeof( RBuf ) + sizeof( uint8_t ) * new_cap + 1
     );
@@ -22,7 +22,7 @@ RVal rbuf ( size_t init_cap ) {
         init_cap = RILL_RBUF_MINCAP;
     RVal val = rnil();
     size_t target = sizeof( RBuf ) + sizeof( uint8_t ) * init_cap + 1;
-    RBuf * buf = RILL_ALLOC( target );
+    RBuf * buf = ( RBuf * ) RILL_ALLOC( target );
     if ( !buf )
         return val;
     memset( buf, 0, sizeof( RBuf ) + sizeof( uint8_t ) );

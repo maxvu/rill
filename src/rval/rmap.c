@@ -66,7 +66,9 @@ RVal rmap ( size_t init_cap ) {
         init_cap = RILL_RMAP_MINCAP;
     init_cap += init_cap % 4;
     RVal val = rnil();
-    RMap * map = RILL_ALLOC( sizeof( RMap ) + sizeof( RMapSlot ) * init_cap );
+    RMap * map = ( RMap * ) RILL_ALLOC(
+        sizeof( RMap ) + sizeof( RMapSlot ) * init_cap
+    );
     if ( !map )
         return val;
     memset( map + sizeof( RMap ), 0, sizeof( RMapSlot ) * init_cap );
@@ -115,7 +117,7 @@ int rmap_unset ( RVal * mapval, RVal * key ) {
 int rmap_merge ( RVal * dst, RVal * src ) {
     RILL_RVAL_ENFORCETYPE( dst, RVT_MAP ) { return 0; }
     RILL_RVAL_ENFORCETYPE( src, RVT_MAP ) { return 0; }
-    if ( !rmap_reserve( dst, rmap_len( dst ) + rmap_len( src ) ) )
+    if ( !rmap_reserve( dst, rmap_size( dst ) + rmap_size( src ) ) )
         return 0;
     RMapIter it = rmap_begin( src );
     while ( it ) {
@@ -134,7 +136,7 @@ int rmap_intersect ( RVal * dst, RVal * src ) {
 }
 
 void rmap_clear ( RVal * mapval ) {
-    RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
+    RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return; }
 }
 
 // int rmap_keys ( RVal * dst_vec, RVal * src_map ) {

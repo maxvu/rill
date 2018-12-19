@@ -1,10 +1,10 @@
 #include "rval/rfxx.h"
 
 RVal rfxx ( RILL_FXX_TYPE f ) {
-    return ( RVal ){
-        .info = RVT_FXX,
-        .fxx = f
-    };
+    RVal val;
+    val.info = RVT_FXX;
+    val.fxx = f;
+    return val;
 }
 
 RILL_FXX_TYPE rfxx_get ( RVal * val ) {

@@ -2,10 +2,10 @@
 #include "rval/ruxx.h"
 
 RVal ruxx ( RILL_UXX_TYPE u ) {
-    return ( RVal ){
-        .info = RVT_UXX,
-        .uxx = u
-    };
+    RVal val;
+    val.info = RVT_UXX;
+    val.uxx = u;
+    return val;
 }
 
 RILL_UXX_TYPE ruxx_get ( RVal * val ) {

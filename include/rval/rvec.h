@@ -9,7 +9,6 @@
 #define RILL_RVEC_DEFAULTCAP 16
 #define RILL_RVEC_GROWTHFACT 2.25
 
-
 typedef struct rvec {
     size_t  ref;
     size_t  len;

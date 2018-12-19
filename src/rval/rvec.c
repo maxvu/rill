@@ -11,6 +11,11 @@ int rvec_resize ( RVal * val, size_t new_cap ) {
         return 0;
     val->vec = resized;
     val->vec->cap = new_cap;
+    memset(
+        val->vec->vals + val->vec->len,
+        0,
+        new_cap - val->vec->len
+    );
     return 1;
 }
 

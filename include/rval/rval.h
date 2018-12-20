@@ -48,6 +48,7 @@ typedef struct rval {
 int rval_type ( RVal * val );
 int rval_usertype ( RVal * val );
 int rval_usertype_set ( RVal * val );
+int rval_isnil ( RVal * val );
 int rval_copy ( RVal * dst, RVal * src );
 int rval_move ( RVal * dst, RVal * src );
 int rval_clone ( RVal * dst, RVal * src );
@@ -55,7 +56,7 @@ int rval_swap ( RVal * val );
 int rval_cycles ( RVal * val );
 int rval_lease ( RVal * val );
 int rval_release ( RVal * val );
-int rval_exclude ( RVal * val );
+int rval_subsume ( RVal * dst, RVal * src, RVal * container );
 int rval_eq ( RVal * val );
 int rval_dump ( RVal * val );
 

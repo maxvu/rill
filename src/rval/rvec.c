@@ -34,7 +34,14 @@ RVal rvec ( size_t init_cap ) {
 }
 
 int rvec_reserve ( RVal * vecval, size_t new_cap ) {
-    RILL_RVAL_ENFORCETYPE( vecval, RVT_VEC ) { return 0; }
+    if ( rval_type( vecval ) != RVT_VEC ) {
+        RVal tmp = rvec( new_cap );
+        if ( rval_type( &tmp ) != RVT_VEC )
+            return 0;
+        rval_release( vecval );
+        *vecval = tmp;
+        return 1;
+    }
     if ( vecval->vec->cap >= new_cap )
         return 1;
     return rvec_resize( vecval, new_cap );
@@ -65,7 +72,7 @@ int rvec_set ( RVal * vecval, size_t index, RVal * item ) {
     if ( !item ) { return 0; }
     if ( index >= vecval->vec->len )
         return 0;
-    rval_copy( vecval->vec->vals + index, item );
+    rval_subsume( vecval->vec->vals + index, item, vecval );
     return 1;
 }
 
@@ -74,7 +81,7 @@ int rvec_push ( RVal * vecval, RVal * item ) {
     if ( !item ) { return 0; }
     if ( !rvec_reserve( vecval, vecval->vec->cap * RILL_RVEC_GROWTHFACT ) )
         return 0;
-    rval_copy( vecval->vec->vals + vecval->vec->len, item );
+    rval_subsume( vecval->vec->vals + vecval->vec->len, item, vecval );
     vecval->vec->len += 1;
     return 1;
 }

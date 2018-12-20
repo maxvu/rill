@@ -8,7 +8,7 @@
 #define RILL_RMAP_MINCAP     8
 #define RILL_RMAP_DEFAULTCAP 12
 #define RILL_RMAP_GROWTHFACT 2.25
-#define RILL_RMAP_MAXLOAD    0.75 // TODO: verify?
+#define RILL_RMAP_MAXLOAD    0.50
 
 typedef struct rmap_slot {
     RVal key;

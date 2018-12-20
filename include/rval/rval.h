@@ -26,6 +26,7 @@ typedef enum rvaltype {
 } RValType;
 
 typedef RILL_UXX_TYPE RValTag;
+typedef RILL_UXX_TYPE RValUserTag;
 
 uint8_t rvinfo_type ( RValTag tag );
 void rvinfo_settype ( RValTag * tag, RValType type );
@@ -45,15 +46,14 @@ typedef struct rval {
     };
 } RVal;
 
-int rval_type ( RVal * val );
-int rval_usertype ( RVal * val );
-int rval_usertype_set ( RVal * val );
+RValTag rval_type ( RVal * val );
+RValUserTag rval_usertype ( RVal * val );
+int rval_usertype_set ( RVal * val, RValUserTag tag );
 int rval_isnil ( RVal * val );
 int rval_copy ( RVal * dst, RVal * src );
 int rval_move ( RVal * dst, RVal * src );
 int rval_clone ( RVal * dst, RVal * src );
-int rval_swap ( RVal * val );
-int rval_cycles ( RVal * val );
+int rval_swap ( RVal * a, RVal * b );
 int rval_lease ( RVal * val );
 int rval_release ( RVal * val );
 int rval_subsume ( RVal * dst, RVal * src, RVal * container );

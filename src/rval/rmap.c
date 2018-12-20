@@ -178,43 +178,11 @@ int rmap_set ( RVal * mapval, RVal * key, RVal * val ) {
 
 }
 
-int rmap_unset ( RVal * mapval, RVal * key ) {
+int rmap_unset ( RVal * mapval, RVal * key ) { // TODO
     RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
 
     RILL_RVAL_ENFORCETYPE( mapval, RVT_MAP ) { return 0; }
     RILL_RVAL_ENFORCETYPE( key, RVT_MAP ) { return 0; }
-    RMapSlot * hit;
-    RMap * map = mapval->map;
-    size_t segment = mapval->map->cap / 4;
-
-    hit = mapval->map->slots + rmap_hash_a( key ) % segment + segment * 0;
-    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, key ) == 0 ) {
-        rval_release( &hit->key );
-        rval_release( &hit->val );
-        map->occ -= 1;
-        return 1;
-    }
-    hit = mapval->map->slots + rmap_hash_b( key ) % segment + segment * 1;
-    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, key ) == 0 ) {
-        rval_release( &hit->key );
-        rval_release( &hit->val );
-        map->occ -= 1;
-        return 1;
-    }
-    hit = mapval->map->slots + rmap_hash_c( key ) % segment + segment * 2;
-    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, key ) == 0 ) {
-        rval_release( &hit->key );
-        rval_release( &hit->val );
-        map->occ -= 1;
-        return 1;
-    }
-    hit = mapval->map->slots + rmap_hash_d( key ) % segment + segment * 3;
-    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, key ) == 0 ) {
-        rval_release( &hit->key );
-        rval_release( &hit->val );
-        map->occ -= 1;
-        return 1;
-    }
 
     return 0;
 }

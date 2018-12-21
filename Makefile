@@ -17,13 +17,13 @@ RVAL := $(patsubst src/rval/%.c, \
 
 RILL := $(RVAL)
 
-TESTS := $(find)
+TESTS := $(shell find test/ | grep \\.test\\.c$)
 
 test : CC_FLAGS += $(CC_FLAGS_DEVELOP)
 test : bin/rill-test
 
 bin/rill-test : CC_INCLUDE += -I test/include/
-bin/rill-test : $(RILL) $(TESTS) test/main.c
+bin/rill-test : $(RILL) $(TESTS) test/main.c test/rill_test.c
 	$(CC_COMPILE) $^ -o $@
 
 clean :

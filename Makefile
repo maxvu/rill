@@ -21,6 +21,16 @@ RILL := $(RVAL)
 
 TESTS = $(shell find test/ | grep \\.test\\.c$)
 
+rill : CC_FLAGS += $(CC_FLAGS_DEVELOP)
+rill : bin/rill
+
+release : CC_FLAGS += $(CC_FLAGS_RELEASE)
+release : bin/rill
+
+bin/rill : $(RILL) src/rill/*.c
+	$(CC_COMPILE) $^ -o $@
+
+# Requires gcov, lcov and genhtml.
 test-coverage : CC_FLAGS += $(CC_FLAGS_COVERAGE)
 test-coverage : test/coverage/.lcov-output
 	cd test/coverage/ && genhtml coverage.info --output-directory html

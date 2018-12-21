@@ -1,4 +1,5 @@
 #include "rval/rnil.h"
+#include "rval/rval.h"
 #include "rval/rvec.h"
 
 #include <string.h>
@@ -29,11 +30,34 @@ RVal rvec ( size_t init_cap ) {
     memset( vec, 0, sizeof( RVec ) + sizeof( RVal ) * init_cap );
     vec->ref = 1;
     vec->cap = init_cap;
-    rvinfo_settype( &val.info, RVT_VEC );
+    val.info = RVT_VEC;
     return val;
 }
 
+int rvec_clone ( RVal * dst, RVal * src ) {
+    RILL_RVAL_ENFORCETYPE( dst, RVT_VEC ) { return 0; }
+    RILL_RVAL_ENFORCETYPE( src, RVT_VEC ) { return 0; }
+    if ( dst->vec == src->vec )
+        return 1;
+    RVal tmpvec = rvec( rvec_len( src ) );
+    if ( rval_isnil( &tmpvec ) )
+        return 0;
+    RVal tmpitem = rnil();
+    for ( size_t i = 0; i < rvec_len( src ); i++ ) {
+        if ( !rval_clone( &tmpitem, rvec_get( src, i ) ) ) {
+            rval_release( &tmpvec );
+            rval_release( &tmpitem );
+            return 0;
+        }
+        rvec_push( &tmpvec, &tmpitem );
+    }
+    rval_release( &tmpitem );
+    rval_move( dst, &tmpvec );
+    return 1;
+}
+
 int rvec_reserve ( RVal * vecval, size_t new_cap ) {
+    RILL_RVAL_ENFORCETYPE( vecval, RVT_VEC ) { return 0; }
     if ( rval_type( vecval ) != RVT_VEC ) {
         RVal tmp = rvec( new_cap );
         if ( rval_type( &tmp ) != RVT_VEC )

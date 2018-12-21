@@ -1,5 +1,6 @@
 #include "rval/rbuf.h"
 #include "rval/rnil.h"
+#include "rval/rval.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +29,7 @@ RVal rbuf ( size_t init_cap ) {
     memset( buf, 0, sizeof( RBuf ) + sizeof( uint8_t ) );
     buf->ref = 1;
     buf->cap = init_cap;
-    rvinfo_settype( &val.info, RVT_BUF );
+    val.info = RVT_BUF;
     return val;
 }
 

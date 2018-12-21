@@ -4,6 +4,7 @@
 #include "rval/rval.h"
 #include "rval/rvec.h"
 
+#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -76,6 +77,35 @@ RVal rmap ( size_t init_cap ) {
     val.info = RVT_MAP;
     val.map = map;
     return val;
+}
+
+int rmap_clone ( RVal * dst, RVal * src ) {
+    RILL_RVAL_ENFORCETYPE( src, RVT_MAP ) { return 0; }
+    if ( !dst ) { assert( 0 ); return 0; }
+    if ( dst->map == src->map )
+        return 1;
+    RVal tmpmap = rmap( rmap_size( src ) );
+    if ( rval_isnil( &tmpmap ) )
+        return 0;
+    RVal tmpval = rnil();
+    RVal tmpkey = rnil();
+    RMapIter it = rmap_begin( src );
+    while ( it ) {
+        int ok = rval_clone( &tmpkey, rmap_iter_key( it ) );
+        ok = ok && rval_clone( &tmpkey, rmap_iter_key( it ) );
+        ok = ok && rmap_set( &tmpmap, &tmpkey, &tmpval );
+        if ( !ok ) {
+            rval_release( &tmpmap );
+            rval_release( &tmpkey );
+            rval_release( &tmpval );
+            return 0;
+        }
+        it = rmap_iter_next( src, it );
+    }
+    rval_release( &tmpkey );
+    rval_release( &tmpval );
+    rval_move( dst, &tmpmap );
+    return 1;
 }
 
 size_t rmap_size ( RVal * val ) {
@@ -203,9 +233,16 @@ int rmap_merge ( RVal * dst, RVal * src ) {
     return 1;
 }
 
-int rmap_intersect ( RVal * dst, RVal * src ) { // TODO
+int rmap_intersect ( RVal * dst, RVal * src ) {
     RILL_RVAL_ENFORCETYPE( dst, RVT_MAP ) { return 0; }
     RILL_RVAL_ENFORCETYPE( src, RVT_MAP ) { return 0; }
+    RMapIter it = rmap_begin( dst );
+    while ( it ) {
+        if ( !rmap_get( src, rmap_iter_key( it ) ) )
+            rmap_iter_del( dst, it );
+        it = rmap_iter_next( dst, it );
+    }
+    return 1;
 }
 
 void rmap_clear ( RVal * mapval ) {
@@ -250,13 +287,15 @@ RMapIter rmap_begin ( RVal * mapval ) {
     return mapval->map->slots;
 }
 
-RMapIter rmap_iter_next ( RVal * map, RMapIter it ) {
-    if ( it < rmap_begin( map ) || it >= rmap_end( map ) )
+RMapIter rmap_iter_next ( RVal * mapval, RMapIter it ) {
+    RMapSlot * begin = mapval->map->slots;
+    RMapSlot * end = mapval->map->slots + mapval->map->cap;
+    if ( it < begin || it >= end )
         return NULL;
-    while ( rval_type( &it->key ) == RVT_NIL && it < rmap_end( map ) ) {
+    while ( rval_type( &it->key ) == RVT_NIL && it < end ) {
         it++;
     }
-    if ( it == rmap_end( map ) )
+    if ( it == end )
         return NULL;
     return it;
 }

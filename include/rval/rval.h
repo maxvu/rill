@@ -56,8 +56,9 @@ int rval_clone ( RVal * dst, RVal * src );
 int rval_swap ( RVal * a, RVal * b );
 int rval_lease ( RVal * val );
 int rval_release ( RVal * val );
+int rval_containsref ( RVal * haystack, RVal * needle );
 int rval_subsume ( RVal * dst, RVal * src, RVal * container );
-int rval_eq ( RVal * val );
-int rval_dump ( RVal * val );
+int rval_eq ( RVal * a, RVal * b );
+void rval_dump ( RVal * val );
 
 #endif

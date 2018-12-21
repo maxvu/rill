@@ -81,56 +81,12 @@ int rval_clone ( RVal * dst, RVal * src ) {
         case RVT_BUF: {
             if ( dst->buf == src->buf )
                 return 1;
-            RVal tmp = rbuf( rbuf_len( src ) );
-            if ( rval_isnil( &tmp ) )
+            if ( !rbuf_reserve( dst, rbuf_len( src ) ) )
                 return 0;
-            if ( !rbuf_cat( &tmp, src ) )
-                return 0;
-            rval_move( dst, &tmp );
+            return rbuf_cat( dst, src );
         } break;
-        case RVT_VEC: {
-            if ( dst->vec == src->vec )
-                return 1;
-            RVal tmpvec = rvec( rvec_len( src ) );
-            if ( rval_isnil( &tmpvec ) )
-                return 0;
-            RVal tmpitem = rnil();
-            for ( size_t i = 0; i < rvec_len( src ); i++ ) {
-                if ( !rval_clone( &tmpitem, rvec_get( src, i ) ) ) {
-                    rval_release( &tmpvec );
-                    rval_release( &tmpitem );
-                    return 0;
-                }
-                rvec_push( &tmpvec, &tmpitem );
-            }
-            rval_release( &tmpitem );
-            rval_move( dst, &tmpvec );
-        } break;
-        case RVT_MAP: {
-            if ( dst->map == src->map )
-                return 1;
-            RVal tmpmap = rmap( rmap_size( src ) );
-            if ( rval_isnil( &tmpmap ) )
-                return 0;
-            RVal tmpval = rnil();
-            RVal tmpkey = rnil();
-            RMapIter it = rmap_begin( src );
-            while ( it ) {
-                int ok = rval_clone( &tmpkey, rmap_iter_key( it ) );
-                ok = ok && rval_clone( &tmpkey, rmap_iter_key( it ) );
-                ok = ok && rmap_set( &tmpmap, &tmpkey, &tmpval );
-                if ( !ok ) {
-                    rval_release( &tmpmap );
-                    rval_release( &tmpkey );
-                    rval_release( &tmpval );
-                    return 0;
-                }
-                it = rmap_iter_next( src, it );
-            }
-            rval_release( &tmpkey );
-            rval_release( &tmpval );
-            rval_move( dst, &tmpmap );
-        } break;
+        case RVT_VEC: return rvec_clone( dst, src ); break;
+        case RVT_MAP: return rmap_clone( dst, src ); break;
         default: break;
     }
     return 1;
@@ -176,14 +132,101 @@ int rval_release ( RVal * val ) {
     return 1;
 }
 
+int rval_containsref ( RVal * haystack, RVal * needle ) {
+    if ( !haystack ) { assert( 0 ); return 0; }
+    if ( !needle ) { assert( 0 ); return 0; }
+    switch ( rval_type( haystack ) ) {
+        case RVT_VEC: {
+            if ( rval_type( needle ) == RVT_VEC ) {
+                if ( haystack->vec == needle->vec )
+                    return 1;
+            }
+            for ( size_t i = 0; i < rvec_len( haystack ); i++ )
+                if ( rval_containsref( rvec_get( haystack, i ), needle ) )
+                    return 1;
+            return 0;
+        } break;
+        case RVT_MAP: {
+            if ( rval_type( needle ) == RVT_MAP ) {
+                if ( haystack->map == needle->map )
+                    return 1;
+            }
+            RMapIter it = rmap_begin( needle );
+            while ( it ) {
+                RVal * val = rmap_iter_val( it );
+                if ( rval_containsref( val, needle ) )
+                    return 1;
+                it = rmap_iter_next( needle, it );
+            }
+            return 1;
+        } break;
+        default: return 0; break;
+    }
+}
+
 int rval_subsume ( RVal * dst, RVal * src, RVal * container ) { // TODO
-
+    if ( rval_containsref( src, container ) ) {
+        RVal tmp = rnil();
+        if ( !rval_clone( &tmp, container ) )
+            return 0;
+        rval_move( container, &tmp );
+    }
+    rval_copy( dst, src );
+    return 1;
 }
 
-int rval_eq ( RVal * val ) { // TODO
-
+int rval_eq ( RVal * a, RVal * b ) { // TODO
+    if ( !a ) { assert( 0 ); return 0; }
+    if ( !b ) { assert( 0 ); return 0; }
+    if ( rval_type( a ) != rval_type( b ) )
+        return 0;
+    switch ( rval_type( a ) ) {
+        case RVT_NIL: return 1; break;
+        case RVT_IXX: return rixx_get( a ) == rixx_get( b ); break;
+        case RVT_UXX: return ruxx_get( a ) == rixx_get( b ); break;
+        case RVT_FXX: return rfxx_get( a ) == rixx_get( b ); break;
+        case RVT_BUF: return rbuf_cmp( a, b ) == 0; break;
+        case RVT_VEC: {
+            if ( rvec_len( a ) != rvec_len( b ) )
+                return 0;
+            for ( size_t i = 0; i < rvec_len( a ); i++ )
+                if ( !rval_eq( rvec_get( a, i ), rvec_get( b, i ) ) )
+                    return 0;
+            return 1;
+        } break;
+        case RVT_MAP: {
+            if ( rmap_size( a ) != rmap_size( b ) )
+                return 0;
+            RMapIter it = rmap_begin( a );
+            while ( it ) {
+                RVal * item_a = rmap_iter_val( it );
+                RVal * item_b = rmap_get( b, rmap_iter_key( it ) );
+                if ( !rval_eq( item_a, item_b ) )
+                    return 0;
+                it = rmap_iter_next( a, it );
+            }
+            it = rmap_begin( b );
+            while ( it ) {
+                RVal * item_a = rmap_get( a, rmap_iter_key( it ) );
+                RVal * item_b = rmap_iter_val( it );
+                if ( !rval_eq( item_a, item_b ) )
+                    return 0;
+                it = rmap_iter_next( b, it );
+            }
+            return 1;
+        } break;
+        default: return 0; break;
+    }
 }
 
-int rval_dump ( RVal * val ) { // TODO
-
+void rval_dump ( RVal * val ) { // TODO
+    switch ( rval_type( val ) ) {
+        case RVT_NIL: break;
+        case RVT_IXX: break;
+        case RVT_UXX: break;
+        case RVT_FXX: break;
+        case RVT_BUF: break;
+        case RVT_VEC: break;
+        case RVT_MAP: break;
+    }
 }

@@ -28,6 +28,7 @@ size_t rmap_hash_c ( RVal * key );
 size_t rmap_hash_d ( RVal * key );
 
 RVal rmap ( size_t init_cap );
+int rmap_clone ( RVal * dst, RVal * src );
 size_t rmap_size ( RVal * map );
 size_t rmap_load ( RVal * map );
 int rmap_reserve ( RVal * map, size_t new_cap );

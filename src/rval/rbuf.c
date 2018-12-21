@@ -30,6 +30,7 @@ RVal rbuf ( size_t init_cap ) {
     buf->ref = 1;
     buf->cap = init_cap;
     val.info = RVT_BUF;
+    val.buf = buf;
     return val;
 }
 

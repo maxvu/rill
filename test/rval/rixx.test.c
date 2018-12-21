@@ -8,8 +8,9 @@ void rill_rval_rixx_test () {
         RVal x = rnil();
         rixx_set( &x, 123 );
         insist( rixx_get( &x ) == 123 );
-        rixx_set( &x, 321 );
-        insist( rixx_get( &x ) == 321 );
+        rixx_set( &x, -321 );
+        insist( rixx_get( &x ) == -321 );
+        insist( rval_type( &x ) == RVT_IXX );
     } rtest_end();
 
 }

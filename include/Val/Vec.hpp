@@ -6,6 +6,10 @@
 #include <cstddef>
 #include <vector>
 
+#define RILL_VAL_VEC_DEFAULTSIZE 12
+#define RILL_VAL_VEC_MINSIZE 4
+#define RILL_VAL_VEC_GROWTHC 2.0
+
 namespace Rill {
 
     class Vec : public Refcounted {
@@ -16,9 +20,12 @@ namespace Rill {
         size_t len;
         size_t cap;
 
+        Vec & resize ( size_t new_capacity );
+
         public:
 
         Vec ();
+        Vec ( size_t init_capacity );
         Vec ( const Vec & other );
         ~Vec ();
 
@@ -37,8 +44,9 @@ namespace Rill {
         Vec & push ( const Val & item );
         Vec & pop ( const Val & item );
         Vec & reverse ();
+        Vec & clear ();
 
-        Val serialize () const;
+        Buf serialize () const;
 
     };
 

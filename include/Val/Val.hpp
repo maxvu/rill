@@ -45,6 +45,8 @@ namespace Rill {
         Vec & asVec ();
         Map & asMap ();
 
+        Vec & unlock () const;
+
         const RILL_IXX_TYPE & asIxx () const;
         const RILL_UXX_TYPE & asUxx () const;
         const RILL_FXX_TYPE & asFxx () const;
@@ -63,7 +65,7 @@ namespace Rill {
         operator bool () const;
         Val clone () const;
         Val & compact ();
-        Val serialize () const;
+        Buf serialize () const;
 
     };
 

@@ -30,7 +30,8 @@ Buf::Buf ( const Buf & other ) : Buf( other.len * RILL_VAL_BUF_GROWTHC ) {
 }
 
 Buf::~Buf () {
-    delete[] this->bytes;
+    if ( this->bytes )
+        delete[] this->bytes;
 }
 
 Buf::operator bool () const {
@@ -108,7 +109,8 @@ BufBytesView & BufBytesView::set ( const uint8_t * mem, size_t mem_len ) {
 BufBytesView & BufBytesView::cat ( const uint8_t * mem, size_t mem_len ) {
     if ( !mem )
         throw std::runtime_error( "null pointer provided to BufBytesView::cat");
-    this->reserve( this->len + mem_len );
+    if ( this->cap <= this->len + mem_len )
+        this->reserve( ( this->len + mem_len ) * RILL_VAL_BUF_GROWTHC );
     if ( !mem_len )
         return *this;
     memcpy( this->bytes + this->len, mem, mem_len );

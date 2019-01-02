@@ -6,6 +6,10 @@
 #include <cstddef>
 #include <vector>
 
+#define RILL_VAL_BUF_DEFAULTSIZE 24
+#define RILL_VAL_BUF_MINSIZE 8
+#define RILL_VAL_BUF_GROWTHC 2.0
+
 namespace Rill {
 
     typedef class BufCharView BufCharView;
@@ -20,12 +24,13 @@ namespace Rill {
         size_t len;
         size_t cap;
 
+        Buf & resize ( size_t new_size );
+
         public:
 
         Buf ();
         Buf ( size_t initial_capacity );
         Buf ( const Buf & other );
-        Buf ( const char * cstr );
         ~Buf ();
 
         operator bool () const;
@@ -40,13 +45,27 @@ namespace Rill {
         Buf & compact ();
         Buf & clear ();
 
-        BufCharView & asChars ();
         BufBytesView & asBytes ();
+        BufCharView & asChars ();
         BufUTF8View & asUTF8 ();
 
     };
 
+    class BufBytesView : public Buf {
+
+        public:
+
+        BufBytesView & set ( const uint8_t * mem, size_t mem_len );
+        BufBytesView & cat ( const uint8_t * mem, size_t mem_len );
+        int cmp ( const uint8_t * mem, size_t mem_len ) const;
+        uint8_t & operator[] ( size_t index );
+        const uint8_t & operator[] ( size_t index ) const;
+
+    };
+
     class BufCharView : public Buf {
+
+        public:
 
         BufCharView & operator= ( const char * cstr );
         BufCharView & operator+= ( const char * cstr );
@@ -54,16 +73,6 @@ namespace Rill {
         bool operator!= ( const char * cstr ) const;
         char & operator[] ( size_t index );
         const char & operator[] ( size_t index ) const;
-
-    };
-
-    class BufBytesView : public Buf {
-
-        BufBytesView & set ( uint8_t * mem, size_t mem_len );
-        BufBytesView & cat ( uint8_t * mem, size_t mem_len );
-        int cmp ( uint8_t * mem, size_t mem_len );
-        uint8_t & operator[] ( size_t index );
-        const uint8_t & operator[] ( size_t index ) const;
 
     };
 
@@ -85,6 +94,8 @@ namespace Rill {
     };
 
     class BufUTF8View : public Buf {
+
+        public:
 
         BufUTF8View & operator+= ( unsigned int codepoint ) ;
         BufUTF8Iter begin () const;

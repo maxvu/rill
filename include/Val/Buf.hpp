@@ -49,6 +49,10 @@ namespace Rill {
         BufCharView & asChars ();
         BufUTF8View & asUTF8 ();
 
+        const BufBytesView & asBytes () const;
+        const BufCharView & asChars () const;
+        const BufUTF8View & asUTF8 () const;
+
     };
 
     class BufBytesView : public Buf {

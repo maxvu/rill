@@ -94,6 +94,25 @@ BufUTF8View & Buf::asUTF8 () {
     return reinterpret_cast<BufUTF8View&>( *this );
 }
 
+const BufBytesView & Buf::asBytes () const {
+    Buf & self = const_cast<Buf&>( *this );
+    BufBytesView & convertedSelf = reinterpret_cast<BufBytesView&>( self );
+    return const_cast<const BufBytesView&>( convertedSelf );
+}
+
+const BufCharView & Buf::asChars () const {
+    Buf & self = const_cast<Buf&>( *this );
+    BufCharView & convertedSelf = reinterpret_cast<BufCharView&>( self );
+    return const_cast<const BufCharView&>( convertedSelf );
+}
+
+const BufUTF8View & Buf::asUTF8 () const {
+    Buf & self = const_cast<Buf&>( *this );
+    BufUTF8View & convertedSelf = reinterpret_cast<BufUTF8View&>( self );
+    return const_cast<const BufUTF8View&>( convertedSelf );
+}
+
+
 BufBytesView & BufBytesView::set ( const uint8_t * mem, size_t mem_len ) {
     if ( !mem )
         throw std::runtime_error( "null pointer provided to BufBytesView::set");

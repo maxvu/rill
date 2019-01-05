@@ -48,6 +48,7 @@ int rval_clone ( RVal * dst, RVal * src );
 int rval_move ( RVal * dst, RVal * src );
 int rval_swap ( RVal * a, RVal * b );
 int rval_eq ( RVal * a, RVal * b );
+int rval_cyclesto ( RVal * haystack, RVal * needle );
 
 RVal rnil ();
 
@@ -102,14 +103,17 @@ typedef struct RVec {
 } RVec;
 
 RVal rvec ();
-int rvec_init ( RVal * vec, size_t cap );
+int rvec_init ( RVal * val, size_t cap );
+size_t rvec_len ( RVal * vec );
 int rvec_reserve ( RVal * vec, size_t cap );
 int rvec_compact ( RVal * vec );
+int rvec_clone ( RVal * dst, RVal * src );
+int rvec_exclude ( RVal * vec );
 int rvec_push ( RVal * vec, RVal * item );
 int rvec_pop ( RVal * vec );
-int rvec_get ( RVal * vec, size_t idx );
+RVal * rvec_get ( RVal * vec, size_t idx );
 int rvec_set ( RVal * vec, size_t idx, RVal * item );
-int rvec_fill ( RVal * vec, RVal * fill, size_t n );
+int rvec_fill ( RVal * vec, RVal * item, size_t n );
 int rvec_reverse ( RVal * vec );
 int rvec_concat ( RVal * dst, RVal * src );
 int rvec_clear ( RVal * vec );
@@ -135,6 +139,8 @@ RVal rmap ();
 int rmap_init ( RVal * map, size_t cap );
 int rmap_reserve ( RVal * map, size_t cap );
 int rmap_compact ( RVal * map );
+int rmap_clone ( RVal * dst, RVal * src );
+int rmap_exclude ( RVal * map );
 int rmap_set ( RVal * map, RVal * key, RVal * val );
 int rmap_get ( RVal * map, RVal * key );
 int rmap_unset ( RVal * map, RVal * key );

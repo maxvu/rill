@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 // TODO: add const quals
-// TODO: cyclesto() implementation
 
 /*
     The following invariants must hold:
@@ -20,6 +19,8 @@
         - Convenience inner-pointers (e.g. `RVec vec = vecval->vec`) must be
           invalidated whenever a reallocation happens (e.g. _exclude(),
           _reserve()).
+        - Whenever a mutating function fails, it must leave the operand value
+          in a valid state. (CTRL+F for an `RVal tmp;` pattern.)
 */
 
 typedef enum RValType RValType;
@@ -60,6 +61,7 @@ int rval_clone ( RVal * dst, RVal * src );
 int rval_move ( RVal * dst, RVal * src );
 int rval_swap ( RVal * a, RVal * b );
 int rval_eq ( RVal * a, RVal * b );
+int rval_truthy ( RVal * val );
 int rval_isnil ( RVal * val );
 int rval_cyclesto ( RVal * haystack, RVal * needle );
 
@@ -76,6 +78,7 @@ RILL_UXX_TYPE ruxx_get ( RVal * val );
 RVal rfxx ( RILL_FXX_TYPE f );
 void rfxx_set ( RVal * val, RILL_FXX_TYPE f );
 RILL_FXX_TYPE rfxx_get ( RVal * val );
+int rfxx_isfinite ( RVal * val );
 
 #define RILL_RBUF_MINSIZ 8
 #define RILL_RBUF_DEFSIZ 16
@@ -94,6 +97,7 @@ size_t rbuf_len ( RVal * val );
 int rbuf_reserve ( RVal * buf, size_t cap );
 int rbuf_compact ( RVal * buf );
 int rbuf_release ( RVal * buf );
+int rbuf_exclude ( RVal * buf );
 int rbuf_memcpy ( RVal * buf, uint8_t * mem, size_t mem_len );
 int rbuf_memcat ( RVal * buf, uint8_t * mem, size_t mem_len );
 int rbuf_memcmp ( RVal * buf, uint8_t * mem, size_t mem_len );

@@ -6,9 +6,21 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// TODO: RVal inputs null-checked
-// TODO: wrongly-tped functions fail
-// TODO: modifiers exclude()
+// TODO: add const quals
+// TODO: cyclesto() implementation
+
+/*
+    The following invariants must hold:
+        - All null-pointer arguments should be immediately rejected.
+        - Except _init() functions, and fixed-width _set()'s, invocations on
+          arguments on wrong-typed values should be rejected.
+        - Recursive values (i.e. RVec's and RMap's) must check - before
+          accepting a new member value - that it does not eventually _cycleto()
+          itself. If it does, _exclude() must be called on the container.
+        - Convenience inner-pointers (e.g. `RVec vec = vecval->vec`) must be
+          invalidated whenever a reallocation happens (e.g. _exclude(),
+          _reserve()).
+*/
 
 typedef enum RValType RValType;
 typedef struct RVal RVal;
@@ -48,6 +60,7 @@ int rval_clone ( RVal * dst, RVal * src );
 int rval_move ( RVal * dst, RVal * src );
 int rval_swap ( RVal * a, RVal * b );
 int rval_eq ( RVal * a, RVal * b );
+int rval_isnil ( RVal * val );
 int rval_cyclesto ( RVal * haystack, RVal * needle );
 
 RVal rnil ();
@@ -80,6 +93,7 @@ int rbuf_init ( RVal * val, size_t cap );
 size_t rbuf_len ( RVal * val );
 int rbuf_reserve ( RVal * buf, size_t cap );
 int rbuf_compact ( RVal * buf );
+int rbuf_release ( RVal * buf );
 int rbuf_memcpy ( RVal * buf, uint8_t * mem, size_t mem_len );
 int rbuf_memcat ( RVal * buf, uint8_t * mem, size_t mem_len );
 int rbuf_memcmp ( RVal * buf, uint8_t * mem, size_t mem_len );
@@ -109,6 +123,7 @@ int rvec_reserve ( RVal * vec, size_t cap );
 int rvec_compact ( RVal * vec );
 int rvec_clone ( RVal * dst, RVal * src );
 int rvec_exclude ( RVal * vec );
+int rvec_release ( RVal * vec );
 int rvec_push ( RVal * vec, RVal * item );
 int rvec_pop ( RVal * vec );
 RVal * rvec_get ( RVal * vec, size_t idx );
@@ -121,7 +136,7 @@ int rvec_clear ( RVal * vec );
 #define RILL_RMAP_MINSIZ 4
 #define RILL_RMAP_DEFSIZ 12
 #define RILL_RMAP_GROWTH 2.0
-#define RILL_RMAP_MAXLOD 0.95
+#define RILL_RMAP_MAXLOD 0.90
 
 struct RMapSlot {
     RVal key;
@@ -137,16 +152,25 @@ struct RMap {
 
 RVal rmap ();
 int rmap_init ( RVal * map, size_t cap );
+size_t rmap_size ( RVal * map );
 int rmap_reserve ( RVal * map, size_t cap );
 int rmap_compact ( RVal * map );
 int rmap_clone ( RVal * dst, RVal * src );
 int rmap_exclude ( RVal * map );
+int rmap_release ( RVal * map );
 int rmap_set ( RVal * map, RVal * key, RVal * val );
-int rmap_get ( RVal * map, RVal * key );
+RVal * rmap_get ( RVal * map, RVal * key );
 int rmap_unset ( RVal * map, RVal * key );
-int rmap_keys ( RVal * dst_lst, RVal * src_map );
-int rmap_vals ( RVal * dst_lst, RVal * src_map );
+int rmap_keys ( RVal * dst_vec, RVal * src_map );
+int rmap_vals ( RVal * dst_vec, RVal * src_map );
 int rmap_merge ( RVal * dst, RVal * src );
 int rmap_clear ( RVal * map );
+
+typedef RMapSlot * RMapIter;
+RMapIter rmap_begin ( RVal * map );
+RMapIter rmap_iter_next ( RVal * map, RMapIter it );
+RVal * rmap_iter_key ( RMapIter it );
+RVal * rmap_iter_val ( RMapIter it );
+RMapIter rmap_iter_del ( RVal * map, RMapIter it );
 
 #endif

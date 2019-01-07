@@ -94,6 +94,8 @@ typedef struct RBuf {
 RVal rbuf ();
 int rbuf_init ( RVal * val, size_t cap );
 size_t rbuf_len ( RVal * val );
+uint8_t * rbuf_get ( RVal * bufval );
+char * rbuf_strget ( RVal * bufval );
 int rbuf_reserve ( RVal * buf, size_t cap );
 int rbuf_compact ( RVal * buf );
 int rbuf_release ( RVal * buf );

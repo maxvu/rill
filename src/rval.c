@@ -389,6 +389,18 @@ size_t rbuf_len ( RVal * bufval ) {
     return bufval->buf->len;
 }
 
+uint8_t * rbuf_get ( RVal * bufval ) {
+    if ( !bufval || rval_type( bufval ) != RVT_BUF )
+        return 0;
+    return bufval->buf->bts;
+}
+
+char * rbuf_strget ( RVal * bufval ) {
+    if ( !bufval || rval_type( bufval ) != RVT_BUF )
+        return 0;
+    return ( char * ) bufval->buf->bts;
+}
+
 int rbuf_reserve ( RVal * bufval, size_t cap ) {
     if ( !bufval ) return 0;
     if ( rval_type( bufval ) != RVT_BUF )

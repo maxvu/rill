@@ -2,7 +2,7 @@ CC := gcc
 
 CC_INCLUDE := -I include/
 
-CC_FLAGS = -Wall -std=c11 $(CC_INCLUDE) -D_XOPEN_SOURCE=500
+CC_FLAGS = -Wall -std=c11 $(CC_INCLUDE) -D_XOPEN_SOURCE=500 -fno-omit-frame-pointer
 CC_FLAGS_DEVELOP  := -O0 -g
 CC_FLAGS_RELEASE  := -O3 -DNDEBUG -s
 CC_FLAGS_COVERAGE := --coverage -fprofile-dir="test/coverage/" \

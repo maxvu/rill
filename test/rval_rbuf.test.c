@@ -78,5 +78,14 @@ void rill_test_rval_rbuf () {
         rval_release( &buf );
     } RTEST_END;
 
+    RTEST_BEGIN( "rval / buf / survives resizing" )  {
+        RVal buf = rbuf();
+        INSIST( rbuf_strcpy( &buf, "hello" ) );
+        INSIST( rbuf_reserve( &buf, 100 ) );
+        INSIST( rbuf_compact( &buf ) );
+        INSIST( rbuf_strcmp( &buf, "hello" ) == 0 );
+        rval_release( &buf );
+    } RTEST_END;
+
 
 }

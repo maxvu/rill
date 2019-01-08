@@ -6,8 +6,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// TODO: add const quals
-
 /*
     The following invariants must hold:
         - All null-pointer arguments should be immediately rejected.
@@ -64,6 +62,7 @@ int rval_eq ( RVal * a, RVal * b );
 int rval_truthy ( RVal * val );
 int rval_isnil ( RVal * val );
 int rval_cyclesto ( RVal * haystack, RVal * needle );
+void rval_dump ( RVal * val );
 
 RVal rnil ();
 

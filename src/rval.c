@@ -1,6 +1,7 @@
 #include "rval.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -266,6 +267,42 @@ int rval_cyclesto ( RVal * haystack, RVal * needle ) {
     }
 }
 
+void rval_dump ( RVal * val ) {
+    if ( !val )
+        printf( "(NULL)" );
+    switch ( rval_type( val ) ) {
+        case RVT_NIL: printf( "(nil)" ); break;
+        case RVT_IXX: printf( "ixx(%ld)", val->ixx ); break;
+        case RVT_UXX: printf( "uxx(%lu)", val->uxx ); break;
+        case RVT_FXX: printf( "ixx(%lf)", val->fxx ); break;
+        case RVT_BUF: printf( "buf(%s)",  val->buf->bts ); break;
+        case RVT_VEC: {
+            printf( "vec( len %lu cap %lu [", val->vec->len, val->vec->cap);
+            for ( size_t i = 0; i < rvec_len( val ); i++ ) {
+                rval_dump( rvec_get( val, i ) );
+                printf( " " );
+            }
+            printf( "])");
+        } break;
+        case RVT_MAP: {
+            printf( "map( occ %lu cap %lu {", val->map->occ, val->map->cap );
+            RMapIter it = rmap_begin( val );
+            while ( it ) {
+                rval_dump( rmap_iter_key( it ) );
+                printf( " " );
+                rval_dump( rmap_iter_val( it ) );
+                it = rmap_iter_next( val, it );
+            }
+            for ( size_t i = 0; i < rvec_len( val ); i++ ) {
+                rval_dump( rvec_get( val, i ) );
+                printf( " " );
+            }
+            printf( "})");
+        } break;
+        default: break;
+    }
+}
+
 RVal rnil () {
     return ( RVal ) { .typ = RVT_NIL, .uxx = 0 };
 }
@@ -433,6 +470,7 @@ int rbuf_release ( RVal * bufval ) {
     RBuf * buf = bufval->buf;
     if ( --buf->ref )
         return 1;
+    rbuf_clear( bufval );
     RILL_DEALLOC( buf );
     *bufval = rnil();
     return 1;
@@ -560,6 +598,7 @@ int rvec_realloc ( RVal * vecval, size_t new_cap ) {
     if ( !rvec_init( &tmp, new_cap ) )
         return 0;
     memcpy( tmp.vec->vls, vecval->vec->vls, sizeof( RVal ) * vecval->vec->len );
+    tmp.vec->len = vecval->vec->len;
     RILL_DEALLOC( vecval->vec );
     vecval->vec = tmp.vec;
     return 1;
@@ -584,6 +623,8 @@ int rvec_init ( RVal * val, size_t cap ) {
         .cap = cap,
         .ref = 1
     };
+    for ( size_t i = 0; i < cap; i++ )
+        *( vec->vls + i ) = rnil();
     rval_release( val );
     *val = ( RVal ) {
         .typ = RVT_VEC,
@@ -661,16 +702,17 @@ int rvec_push ( RVal * vecval, RVal * item ) {
         return 0;
     if ( !item )
         return 0;
-    RVec * vec = vecval->vec;
-    if ( vec->len == vec->cap )
-        if ( !rvec_reserve( vecval, RILL_RVEC_GROWTH * vec->cap ) )
-            return 0;
-    if ( vec->ref > 1 || rval_cyclesto( item, vecval ) )
+    if ( vecval->vec->len == vecval->vec->cap )
+        if ( !rvec_reserve(
+                vecval,
+                RILL_RVEC_GROWTH * ( double ) vecval->vec->cap
+            )
+        ) return 0;
+    if ( vecval->vec->ref > 1 || rval_cyclesto( item, vecval ) )
         if ( !rval_exclude( vecval ) )
             return 0;
-    vec = vecval->vec;
-    rval_copy( vec->vls + vec->len, item );
-    vec->len++;
+    rval_copy( vecval->vec->vls + vecval->vec->len, item );
+    vecval->vec->len++;
     return 1;
 }
 

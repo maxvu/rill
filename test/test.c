@@ -34,3 +34,8 @@ void rtest_test_end () {
 void rill_test_all () {
     rill_test_rval();
 }
+
+void rtest_test_cleanup () {
+    rval_release( &__rts.cur.name );
+    rval_release( &__rts.cur.msg );
+}

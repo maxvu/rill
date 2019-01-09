@@ -868,14 +868,13 @@ RMapSlot * rmap_hash_d ( RMap * map, RBuf * keybuf ) {
 }
 
 void rmapslot_swap ( RMapSlot * a, RMapSlot * b ) {
-    RMapSlot tmp = *a;
-    *a = *b;
-    *b = tmp;
+    rval_swap( &a->key, &b->key );
+    rval_swap( &a->val, &b->val );
 }
 
 int rmap_realloc ( RVal * mapval, size_t new_cap ) {
     RVal tmp = rnil();
-    if ( !rmap_init( &tmp, new_cap ) )
+    if ( !rmap_init( &tmp, new_cap / RILL_RMAP_MAXLOD ) )
         return 0;
     RMapIter it = rmap_begin( mapval );
     while ( it ) {
@@ -885,7 +884,7 @@ int rmap_realloc ( RVal * mapval, size_t new_cap ) {
         }
         it = rmap_iter_next( mapval, it );
     }
-    rmap_release( mapval );
+    rval_move( mapval, &tmp );
     return 1;
 }
 
@@ -893,7 +892,7 @@ int rmap_init ( RVal * mapval, size_t cap ) {
     if ( !mapval )
         return 0;
     if ( rval_type( mapval ) == RVT_MAP ) {
-        if ( !rmap_reserve( mapval, cap ) )
+        if ( !rmap_reserve( mapval, cap / RILL_RMAP_MAXLOD ) )
             return 0;
         rmap_clear( mapval );
         return 1;
@@ -930,6 +929,7 @@ size_t rmap_size ( RVal * mapval ) {
 }
 
 int rmap_reserve ( RVal * mapval, size_t cap ) {
+
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( mapval->map->cap >= cap )
@@ -941,9 +941,9 @@ int rmap_compact ( RVal * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     RMap * map = mapval->map;
-    size_t target = map->occ;
-    if ( target < RILL_RMAP_MINSIZ )
-        target = RILL_RMAP_MINSIZ;
+    size_t target = map->occ / RILL_RMAP_MAXLOD;
+    if ( target < RILL_RMAP_MINSIZ / RILL_RMAP_MAXLOD )
+        target = RILL_RMAP_MINSIZ / RILL_RMAP_MAXLOD;
     if ( target == map->cap )
         return 1;
     return rmap_realloc( mapval, target );
@@ -1000,12 +1000,25 @@ int rmap_set ( RVal * mapval, RVal * keyval, RVal * item ) {
     if ( !keyval || rval_type( keyval ) != RVT_BUF )
         return 0;
 
+    // if key already exists, just replace its value
+    {
+        RVal * hit;
+        if ( ( hit = rmap_get( mapval, keyval ) ) ) {
+            rmap_dbgprint( mapval );
+            if ( rval_cyclesto( item, mapval ) && !rval_exclude( mapval ) )
+                return 0;
+            rval_copy( hit, item );
+            return 1;
+        }
+    }
+
     // resize preemptively
     RMap * map = mapval->map;
     double new_load = ( ( double ) map->occ + 1 ) / ( double ) map->cap;
-    if ( new_load > RILL_RMAP_MAXLOD )
-        if ( !rmap_reserve( mapval, map->occ * RILL_RMAP_GROWTH ) )
+    if ( new_load > RILL_RMAP_MAXLOD ) {
+        if ( !rmap_reserve( mapval, ( double ) map->occ * RILL_RMAP_GROWTH ) )
             return 0;
+    }
     map = mapval->map;
 
     // break cycles
@@ -1026,7 +1039,6 @@ int rmap_set ( RVal * mapval, RVal * keyval, RVal * item ) {
     rmapslot_swap( &juggle, rmap_hash_a( map, keyval->buf ) );
 
     while ( 1 ) {
-
         if ( rval_isnil( &juggle.key ) || rbuf_cmp( &juggle.key, keyval ) == 0 )
             break;
         rmapslot_swap( &juggle, rmap_hash_b( map, juggle.key.buf ) );
@@ -1042,7 +1054,6 @@ int rmap_set ( RVal * mapval, RVal * keyval, RVal * item ) {
         if ( rval_isnil( &juggle.key ) || rbuf_cmp( &juggle.key, keyval ) == 0 )
             break;
         rmapslot_swap( &juggle, rmap_hash_a( map, juggle.key.buf ) );
-
     }
 
     if ( rval_isnil( &juggle.key ) ) {
@@ -1066,13 +1077,17 @@ RVal * rmap_get ( RVal * mapval, RVal * keyval ) {
     RBuf * key = keyval->buf;
     RMapSlot * hit;
 
-    if ( ( hit = rmap_hash_a( map, key ) ) && !rval_isnil( &hit->key ) )
+    hit = rmap_hash_a( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 )
         return &hit->val;
-    if ( ( hit = rmap_hash_b( map, key ) ) && !rval_isnil( &hit->key ) )
+    hit = rmap_hash_b( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 )
         return &hit->val;
-    if ( ( hit = rmap_hash_c( map, key ) ) && !rval_isnil( &hit->key ) )
+    hit = rmap_hash_c( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 )
         return &hit->val;
-    if ( ( hit = rmap_hash_d( map, key ) ) && !rval_isnil( &hit->key ) )
+    hit = rmap_hash_d( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 )
         return &hit->val;
     return NULL;
 }
@@ -1185,6 +1200,27 @@ int rmap_clear ( RVal * mapval ) {
     return 1;
 }
 
+void rmapslot_dbgprint ( RMapSlot * slot ) {
+    if ( rval_isnil( &slot->key ) ) {
+        printf( "(empty)" );
+    } else {
+        printf( "'%s' ", rbuf_get( &slot->key ) );
+    }
+}
+
+void rmap_dbgprint ( RVal * map ) {
+    if ( !map )
+        return;
+    printf( "occ %lu cap %lu\n", map->map->occ, map->map->cap );
+    for ( size_t i = 0; i < map->map->cap; i++ ) {
+        if ( i != 0 && i % ( map->map->cap / 4 ) == 0 )
+            printf( "\n" );
+        RMapSlot * slot = map->map->slt + i;
+        rmapslot_dbgprint( slot );
+    }
+    printf( "\n" );
+}
+
 RMapIter rmap_begin ( RVal * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
@@ -1201,9 +1237,11 @@ RMapIter rmap_iter_next ( RVal * mapval, RMapIter it ) {
     if ( !it )
         return NULL;
     RMap * map = mapval->map;
-    while ( rval_type( &it->key ) != RVT_BUF && it < map->slt + map->cap )
+    RMapSlot * end = map->slt + map->cap;
+    it++;
+    while ( it < end && rval_isnil( &it->key ) )
         it++;
-    if ( it == map->slt + map->cap )
+    if ( it == end )
         it = NULL;
     return it;
 }
@@ -1211,11 +1249,15 @@ RMapIter rmap_iter_next ( RVal * mapval, RMapIter it ) {
 RVal * rmap_iter_key ( RMapIter it ) {
     if ( !it )
         return NULL;
+    if ( rval_isnil( &it->key ) )
+        return NULL;
     return &it->key;
 }
 
 RVal * rmap_iter_val ( RMapIter it ) {
     if ( !it )
+        return NULL;
+    if ( rval_isnil( &it->key ) )
         return NULL;
     return &it->val;
 }
@@ -1224,6 +1266,8 @@ RMapIter rmap_iter_del ( RVal * mapval, RMapIter it ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( !it )
+        return NULL;
+    if ( rval_isnil( &it->key ) )
         return NULL;
     rval_release( &it->key );
     rval_release( &it->val );

@@ -170,6 +170,8 @@ int rmap_keys ( RVal * dst_vec, RVal * src_map );
 int rmap_vals ( RVal * dst_vec, RVal * src_map );
 int rmap_merge ( RVal * dst, RVal * src );
 int rmap_clear ( RVal * map );
+void rmapslot_dbgprint ( RMapSlot * slot );
+void rmap_dbgprint ( RVal * map );
 
 typedef RMapSlot * RMapIter;
 RMapIter rmap_begin ( RVal * map );

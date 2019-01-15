@@ -18,6 +18,7 @@ int rval_lease ( RVal * val ) {
         case RVT_NIL:
         case RVT_IXX:
         case RVT_UXX:
+        case RVT_VDP:
         case RVT_FXX: break;
         case RVT_BUF: val->buf->ref++; break;
         case RVT_VEC: val->vec->ref++; break;
@@ -33,6 +34,7 @@ int rval_release ( RVal * val ) {
         case RVT_NIL:
         case RVT_IXX:
         case RVT_UXX:
+        case RVT_VDP:
         case RVT_FXX: break;
         case RVT_BUF: rbuf_release( val ); break;
         case RVT_VEC: rvec_release( val ); break;
@@ -49,7 +51,8 @@ int rval_exclude ( RVal * val ) {
         case RVT_NIL:
         case RVT_IXX:
         case RVT_UXX:
-        case RVT_FXX: return 1; break;
+        case RVT_FXX:
+        case RVT_VDP: return 1; break;
         case RVT_BUF: return rbuf_exclude( val ); break;
         case RVT_VEC: return rvec_exclude( val ); break;
         case RVT_MAP: return rmap_exclude( val ); break;
@@ -79,6 +82,9 @@ int rval_copy ( RVal * dst, RVal * src ) {
             rval_release( dst );
             *dst = rfxx( src->fxx );
             break;
+        case RVT_VDP:
+            rval_release( dst );
+            *dst = ( RVal ) { .typ = RVT_VDP, .vdp = src->vdp };
         case RVT_BUF:
             rval_release( dst );
             *dst = ( RVal ) { .typ = RVT_BUF, .buf = src->buf };
@@ -108,24 +114,11 @@ int rval_clone ( RVal * dst, RVal * src ) {
         return 0;
     switch ( rval_type( src ) ) {
         case RVT_NIL:
-            rval_release( dst );
-            *dst = rnil();
-            return 1;
-            break;
         case RVT_IXX:
-            rval_release( dst );
-            *dst = rixx( src->ixx );
-            return 1;
-            break;
         case RVT_UXX:
-            rval_release( dst );
-            *dst = rixx( src->uxx );
-            return 1;
-            break;
         case RVT_FXX:
-            rval_release( dst );
-            *dst = rixx( src->uxx );
-            return 1;
+        case RVT_VDP:
+            return rval_copy( dst, src );
             break;
         case RVT_BUF: {
             RVal tmp = rnil();
@@ -183,6 +176,7 @@ int rval_eq ( RVal * a, RVal * b ) {
         case RVT_IXX: return a->ixx == b->ixx; break;
         case RVT_UXX: return a->uxx == b->uxx; break;
         case RVT_FXX: return a->fxx == b->fxx; break;
+        case RVT_VDP: return a->vdp == b->vdp; break;
         case RVT_BUF: return rbuf_cmp( a, b ) == 0; break;
         case RVT_VEC: {
             if ( rvec_len( a ) != rvec_len( b ) )
@@ -217,6 +211,7 @@ int rval_truthy ( RVal * val ) {
         case RVT_IXX: return val->ixx != 0; break;
         case RVT_UXX: return val->uxx == 0; break;
         case RVT_FXX: return val->fxx != 0.0 && !isnan( val->fxx ); break;
+        case RVT_VDP: return 1; break;
         case RVT_BUF: return rbuf_len( val ) != 0; break;
         case RVT_VEC: return rvec_len( val ) != 0; break;
         case RVT_MAP: return rmap_size( val ) != 0; break;

@@ -33,9 +33,10 @@ enum RValType {
     RVT_IXX = 1,
     RVT_UXX = 2,
     RVT_FXX = 3,
-    RVT_BUF = 4,
-    RVT_VEC = 5,
-    RVT_MAP = 6
+    RVT_VDP = 4,
+    RVT_BUF = 5,
+    RVT_VEC = 6,
+    RVT_MAP = 7
 };
 
 struct RVal {
@@ -44,6 +45,7 @@ struct RVal {
         RILL_IXX_TYPE ixx;
         RILL_UXX_TYPE uxx;
         RILL_FXX_TYPE fxx;
+        void *        vdp;
         RBuf *        buf;
         RVec *        vec;
         RMap *        map;
@@ -62,6 +64,8 @@ int rval_eq ( RVal * a, RVal * b );
 int rval_truthy ( RVal * val );
 int rval_isnil ( RVal * val );
 int rval_cyclesto ( RVal * haystack, RVal * needle );
+int rval_pack ( RVal * bytes, RVal * val );
+int rval_unpack ( RVal * val, RVal * bytes );
 void rval_dump ( RVal * val );
 
 RVal rnil ();

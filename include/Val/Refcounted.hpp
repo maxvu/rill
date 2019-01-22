@@ -1,6 +1,8 @@
 #ifndef RILL_VAL_REFCOUNTED
 #define RILL_VAL_REFCOUNTED
 
+#include <cstddef>
+
 namespace Rill {
 namespace Val {
 
@@ -9,7 +11,7 @@ namespace Val {
         size_t _refcount;
 
         Refcounted ();
-        
+
     };
 
 }

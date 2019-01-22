@@ -6,6 +6,8 @@
 namespace Rill {
 namespace Val {
 
+    typedef class Map Map;
+    typedef class Vector Vector;
 
     class Val {
 
@@ -40,9 +42,7 @@ namespace Val {
         Val & operator= ( const Val & other );
         Val & operator== ( const Val & other );
 
-        Val & lease ();
-        Val & release ();
-        Val * exclude ();
+        Val & exclude ();
         bool cyclesTo ( const Val & other ) const;
 
         Val clone () const;
@@ -50,19 +50,19 @@ namespace Val {
 
         RILL_IXX_TYPE & asIxx ();
         RILL_UXX_TYPE & asUxx ();
-        RILL_FXX_TYPE & asIxx ();
+        RILL_FXX_TYPE & asFxx ();
         Buffer & asBuf ();
         Vector & asVec ();
         Map & asMap ();
 
         const RILL_IXX_TYPE & asIxx () const;
         const RILL_UXX_TYPE & asUxx () const;
-        const RILL_FXX_TYPE & asIxx () const;
+        const RILL_FXX_TYPE & asFxx () const;
         const Buffer & asBuf () const;
         const Vector & asVec () const;
         const Map & asMap () const;
 
-        void dump () const;
+        Val toJSON () const;
 
     };
 

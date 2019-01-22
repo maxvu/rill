@@ -3,6 +3,8 @@
 
 #include "Config.hpp"
 
+#include <cstdint>
+
 namespace Rill {
 namespace Val {
 
@@ -27,7 +29,7 @@ namespace Val {
         public:
 
         Info ( Type type );
-        Info ( Type type, Tag, );
+        Info ( Type type, Tag tag );
         Info ( const Info & other );
 
         Type type () const;

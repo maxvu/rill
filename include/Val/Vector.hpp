@@ -2,6 +2,9 @@
 #define RILL_VAL_VECTOR
 
 #include "Val/Refcounted.hpp"
+#include "Val/Val.hpp"
+
+#include <cstddef>
 
 #define RILL_RVEC_MINSIZ 4
 #define RILL_RVEC_DEFSIZ 12

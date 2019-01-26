@@ -1,11 +1,11 @@
 #ifndef RILL_RVM
 #define RILL_RVM
 
-#define RILL_RVM_PSDEFSIZE 64
-#define RILL_RVM_SSDEFSIZE 64
-#define RILL_RVM_CSDEFSIZE 64
-#define RILL_RVM_DTDEFSIZE 64
-#define RILL_RVM_NFDEFSIZE 64
+#define RILL_RVM_PSDEFSIZ 64
+#define RILL_RVM_SSDEFSIZ 64
+#define RILL_RVM_CSDEFSIZ 64
+#define RILL_RVM_DTDEFSIZ 64
+#define RILL_RVM_NFDEFSIZ 64
 
 typedef struct RVM {
     const uint8_t * pg; // program

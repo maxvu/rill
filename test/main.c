@@ -6,7 +6,7 @@ int main ( int argc, char ** argv ) {
 
     rtest_init();
 
-    RTEST_BEGIN("sanity") {
+    RTEST_BEGIN( "sanity" ) {
         INSIST( 1 + 1 == 2 );
     } RTEST_END;
 

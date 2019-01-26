@@ -33,6 +33,7 @@ void rtest_test_end () {
 
 void rill_test_all () {
     rill_test_rval();
+    rill_test_utf8();
 }
 
 void rtest_test_cleanup () {

@@ -28,12 +28,12 @@ void rill_test_rval_rmap () {
         };
 
         for ( size_t i = 0; i < 17; i++ ) {
-            rmap_dbgprint( &map );
+            // rmap_dbgprint( &map );
             INSIST( rbuf_strcpy( &k, numbers[ i ] ) );
             rixx_set( &v, i );
             INSIST( rmap_set( &map, &k, &v ) );
         }
-        rmap_dbgprint( &map );
+        // rmap_dbgprint( &map );
 
         rval_release( &k );
         rval_release( &map );

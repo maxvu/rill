@@ -283,25 +283,29 @@ int rmap_unset ( RVal * mapval, RVal * keyval ) {
     RBuf * key = keyval->buf;
     RMapSlot * hit;
 
-    if ( ( hit = rmap_hash_a( map, key ) ) && !rval_isnil( &hit->key ) ) {
+    hit = rmap_hash_a( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 ) {
         rval_release( &hit->key );
         rval_release( &hit->val );
         map->occ--;
         return 1;
     }
-    if ( ( hit = rmap_hash_b( map, key ) ) && !rval_isnil( &hit->key ) ) {
+    hit = rmap_hash_b( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 ) {
         rval_release( &hit->key );
         rval_release( &hit->val );
         map->occ--;
         return 1;
     }
-    if ( ( hit = rmap_hash_c( map, key ) ) && !rval_isnil( &hit->key ) ) {
+    hit = rmap_hash_c( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 ) {
         rval_release( &hit->key );
         rval_release( &hit->val );
         map->occ--;
         return 1;
     }
-    if ( ( hit = rmap_hash_d( map, key ) ) && !rval_isnil( &hit->key ) ) {
+    hit = rmap_hash_d( map, key );
+    if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 ) {
         rval_release( &hit->key );
         rval_release( &hit->val );
         map->occ--;

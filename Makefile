@@ -38,7 +38,7 @@ bin/rill : $(RILL) src/rill/main.c
 
 # Requires gcov, lcov and genhtml.
 coverage : CC_FLAGS += $(CC_FLAGS_COVERAGE)
-coverage : coverage/.lcov-output
+coverage : clean coverage/.lcov-output
 	cd coverage/ && genhtml coverage.info --output-directory html
 coverage/.lcov-output : coverage/.gcov-output
 	lcov --capture --directory ./ --output-file coverage/coverage.info

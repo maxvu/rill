@@ -1,6 +1,6 @@
-#include "rval.h"
-#include "rutf8.h"
-#include "test.h"
+#include "rval/rval.h"
+#include "test/test.h"
+#include "util/rutf8.h"
 
 typedef struct {
     const char * str;

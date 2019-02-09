@@ -1,4 +1,7 @@
-#include "test.h"
+#include "test/test.h"
+#include "rval/rixx.h"
+#include "rval/rval.h"
+#include "rval/rmap.h"
 
 void rill_test_rval_rmap () {
 

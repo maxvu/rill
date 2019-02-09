@@ -1,5 +1,6 @@
-#include "test.h"
-#include "rval.h"
+#include "test/test.h"
+#include "rval/rval.h"
+#include "rval/rbuf.h"
 
 #include <string.h>
 

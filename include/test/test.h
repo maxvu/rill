@@ -1,8 +1,8 @@
 #ifndef RILL_TEST
 #define RILL_TEST
 
-#include "config.h"
-#include "rval.h"
+#include "config/color.h"
+#include "rval/rbuf.h"
 
 struct {
     struct {

@@ -1,5 +1,8 @@
-#include "test.h"
-#include "rval.h"
+#include "test/test.h"
+#include "rval/rixx.h"
+#include "rval/ruxx.h"
+#include "rval/rfxx.h"
+#include "rval/rval.h"
 
 void rill_test_rval_numerics () {
 

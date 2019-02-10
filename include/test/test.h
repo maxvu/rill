@@ -28,14 +28,4 @@ void rtest_test_cleanup ();
 #define INSIST(COND) __rts.cur.n++; if (COND) { __rts.cur.n_pass++; } else { rbuf_strcat( &__rts.cur.msg, __FILE__ ":" RILL_REALLY_MAKE_INT_MACRO_PARAM_INTO_STRING(__LINE__) " | " RILL_CONSOLE_RED #COND RILL_CONSOLE_CLEAR "\n    "); }
 #define RTEST_END rtest_test_end();
 
-void rill_test_all ();
-
-void rill_test_rval ();
-void rill_test_rval_numerics ();
-void rill_test_rval_rbuf ();
-void rill_test_rval_rvec ();
-void rill_test_rval_rmap ();
-
-void rill_test_utf8 ();
-
 #endif

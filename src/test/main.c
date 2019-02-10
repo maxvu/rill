@@ -1,4 +1,5 @@
 #include "test/test.h"
+#include "test/manifest.h"
 
 #include <stdio.h>
 

@@ -1,4 +1,4 @@
-#include "test/test.h"
+#include "test/manifest.h"
 
 void rill_test_rval () {
     rill_test_rval_numerics();

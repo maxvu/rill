@@ -33,11 +33,6 @@ void rtest_test_end () {
     __rts.tot.n_pass += __rts.cur.n_pass;
 }
 
-void rill_test_all () {
-    rill_test_rval();
-    rill_test_utf8();
-}
-
 void rtest_test_cleanup () {
     rval_release( &__rts.cur.name );
     rval_release( &__rts.cur.msg );

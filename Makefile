@@ -55,7 +55,7 @@ test : CC_FLAGS += $(CC_FLAGS_DEVELOP)
 test : bin/rill-test
 
 bin/rill-test : CC_INCLUDE += -I test/
-bin/rill-test : $(RILL) $(TESTS) src/test/main.c src/test/test.c
+bin/rill-test : $(RILL) $(TESTS) src/test/main.c src/test/test.c src/test/manifest.c
 	$(CC_COMPILE) $^ -o $@
 
 clean :

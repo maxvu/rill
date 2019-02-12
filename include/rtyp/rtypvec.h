@@ -1,7 +1,13 @@
 #ifndef RILL_RTYP_RTYPVEC
 #define RILL_RTYP_RTYPVEC
 
-RVal rtypvec ( RVal held_typ );
-RVal rtypvec_heldtyp ( RVal held_typ );
+/*
+    0: rtypkind
+    1: name
+    2: held type
+*/
+
+RVal rtypvec ( RVal * held_typ );
+RVal * rtypvec_heldtyp ( RVal * typvec );
 
 #endif

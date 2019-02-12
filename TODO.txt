@@ -2,3 +2,6 @@
 - doxygen?
 - user guide
 - benchmarks
+- unit test coverage > 85%
+- fuzz
+- Computer Language Benchmark Game

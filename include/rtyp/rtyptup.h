@@ -1,8 +1,13 @@
 #ifndef RILL_RTYP_RTYPTUP
 #define RILL_RTYP_RTYPTUP
 
-RVal rtyptup ( RVal key_typ, RVal val_typ );
-RVal rtypvec_keytyp ( RVal maptyp );
-RVal rtypvec_valtyp ( RVal maptyp );
+/*
+    0: rtypkind
+    1: name
+    2: vec field values
+*/
+
+RVal rtyptup ( RVal * name, RVal * fields );
+RVal * rtyptup_get_field ( RVal typtup, size_t index );
 
 #endif

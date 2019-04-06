@@ -30,6 +30,7 @@ int rmap_exclude ( RVal * map );
 int rmap_release ( RVal * map );
 int rmap_set ( RVal * map, RVal * key, RVal * val );
 RVal * rmap_get ( RVal * map, RVal * key );
+RVal * rmap_getc ( RVal * mapval, const char * key );
 int rmap_unset ( RVal * map, RVal * key );
 int rmap_keys ( RVal * dst_vec, RVal * src_map );
 int rmap_vals ( RVal * dst_vec, RVal * src_map );

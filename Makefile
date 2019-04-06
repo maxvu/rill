@@ -15,13 +15,17 @@ RVAL := $(patsubst "src/rval/%c", "build/rval/%.o", $(wildcard src/rval/*.c))
 build/rval/%.o : src/rval/%.c
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
+RLEX := $(patsubst "src/rlex/%c", "build/rlex/%.o", $(wildcard src/rlex/*.c))
+build/rval/%.o : src/rlex/%.c
+	$(CC_COMPILE_OBJECT) $^ -o $@
+
 UTIL := $(patsubst "src/util/%c", "build/util/%.o", $(wildcard src/util/*.c))
 build/util/%.o : src/util/%.c
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
 TESTS := $(shell find test/ | grep \.test\.c)
 
-RILL := $(RVAL) $(UTIL)
+RILL := $(RVAL) $(RLEX) $(UTIL)
 
 entry:
 	@echo $(RVAL)

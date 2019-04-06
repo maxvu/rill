@@ -11,7 +11,7 @@ typedef enum rop {
     JUMP = 3,   // unconditional jump
     JMPT = 4,   // jump if TOS truthy
     JMPQ = 5,   // jump is TOS and TOS-1 equal
-    NOT  = 6,   // logical NOT TOS and TOS-1
+    NOT  = 6,   // logical NOT TOS
     XOR  = 7,   // logical XOR TOS and TOS-1
 
     /* signed integer ops */
@@ -47,7 +47,7 @@ typedef enum rop {
     FADD = 30, // addition
     FSUB = 31, // subtraction
     FMUL = 32, // multiplication
-    FDIV = 33, // divition
+    FDIV = 33, // division
     FFLR = 34, // floor
     FCMP = 35, // compare TOS and TOS-1
     FFNT = 36, // is finite
@@ -77,7 +77,7 @@ typedef enum rop {
     MSET = 51, // set element (map, key, item)
     MGET = 52, // get element (map, key)
     MSIZ = 53, // size
-    MDEL = 54, // remove elemtn (map, key)
+    MDEL = 54, // remove element (map, key)
 
     /* stack manipulation ops */
 
@@ -131,9 +131,11 @@ typedef enum rop {
     DU30 = 99,  // load immediate value 30
     DU31 = 100, // load immediate value 31
     DNIL = 101, // load immediate nil
-    DPK4 = 102, // pack four unsigned values into a 20-bit unsigned integer
-    DPK8 = 103, // pack eight unsigned values into a 40-bit unsigned integer
+    DPK4 = 102, // pack three unsigned values into a 15-bit unsigned integer
+    DPK8 = 103, // pack seven unsigned values into a 35-bit unsigned integer
     LOAD = 104, // load constant table entry (index)
+
+    /* special */
     SYSC = 105, // invoke native function
 
 } ROp;

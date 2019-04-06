@@ -1,0 +1,19 @@
+#ifndef RILL_RLEX_TYPES
+#define RILL_RLEX_TYPES
+
+#define RLXTOK_WHITESPACE    1
+#define RLXTOK_COMMENT       2
+#define RLXTOK_IDENTIFIER    3
+#define RLXTOK_NUMBER        4
+#define RLXTOK_STRING_OPEN   5
+#define RLXTOK_STRING_CLOSE  6
+#define RLXTOK_LIST_OPEN     7
+#define RLXTOK_LIST_CLOSE    8
+#define RLXTOK_HASH_OPEN     9
+#define RLXTOK_HASH_CLOSE   10
+#define RLXTOK_QUOTE_OPEN   11
+#define RLXTOK_QUOTE_CLOSE  12
+#define RLXTOK_WORD_OPEN    13
+#define RLXTOK_WORD_CLOSE   14
+
+#endif

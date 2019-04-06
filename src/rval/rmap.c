@@ -4,6 +4,8 @@
 #include "rval/rval.h"
 #include "rval/rvec.h"
 
+#include <string.h>
+
 RVal rmap () {
     RVal tmp = rnil();
     rmap_init( &tmp, RILL_RMAP_DEFSIZ );
@@ -272,6 +274,17 @@ RVal * rmap_get ( RVal * mapval, RVal * keyval ) {
     if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 )
         return &hit->val;
     return NULL;
+}
+
+RVal * rmap_getc ( RVal * mapval, const char * key ) {
+    if ( !key )
+        return NULL;
+    RVal keyval = rbuf();
+    if ( !rbuf_strcpy( &keyval, key ) )
+        return NULL;
+    RVal * result = rmap_get( mapval, &keyval );
+    rval_release( &keyval );
+    return result;
 }
 
 int rmap_unset ( RVal * mapval, RVal * keyval ) {

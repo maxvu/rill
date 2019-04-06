@@ -1,7 +1,10 @@
+- comment c code
+- user guide
 - style guide
 - doxygen?
-- user guide
+- rill doc generator
 - benchmarks
 - unit test coverage > 85%
 - fuzz
 - Computer Language Benchmark Game
+- add extensions

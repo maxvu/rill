@@ -29,14 +29,14 @@ typedef struct RMap RMap;
 typedef struct RMapSlot RMapSlot;
 
 enum RValType {
-    RVT_NIL = 0,
-    RVT_IXX = 1,
-    RVT_UXX = 2,
-    RVT_FXX = 3,
-    RVT_VDP = 4,
-    RVT_BUF = 5,
-    RVT_VEC = 6,
-    RVT_MAP = 7
+    RVT_NIL = 0, // non-value
+    RVT_IXX = 1, // signed integer
+    RVT_UXX = 2, // unsigned integer
+    RVT_FXX = 3, // floating-point
+    RVT_VDP = 4, // void pointer
+    RVT_BUF = 5, // buffer
+    RVT_VEC = 6, // vector
+    RVT_MAP = 7  // map
 };
 
 struct RVal {

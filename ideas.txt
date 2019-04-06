@@ -1,0 +1,83 @@
+':' [identifier] [word-body] ';'
+
+word-def :: ':' [identifier] [word-body] ';'
+word-body :: [word] | [lstdef] | [hshdef] | [quot]
+
+
+( .stack )
+: drp ( a -- ) ;
+: dup  ( a -- a a ) ;
+: swp ( a b -- b a ) ;
+: ovr ( a b c -- c a b ) ;
+: rot ( a b c -- c b a ) ;
+: drp2 ( a b -- ) ;
+: dup2 ( a b -- a b a b ) ;
+: swp2 ( a b c d -- c d a b ) ;
+: ovr2 ( a b c d -- a b c d a b ) ;
+
+( .side )
+: ss< ( a -- ) ;
+: ss> ( -- a ) ;
+
+( .control )
+: ? ( if-truthy -- {if-truthy} ) ;
+: ?? ( if-truthy if-falsy -- {if-truthy which should be the same} ) ;
+: times ( loop n -- {loop}xn ) ;
+: while ( init {stable-loop} -- {loop-out} ) ;
+: forever ( loop -- {never} ) ;
+: type? ( thing -- type ) ;
+: map ( in-list -- out-list ) ;
+: select ( in-list -- out-list ) ;
+: reject ( in-list -- out-list ) ;
+: reduce ( in-list init reduction-word -- out ) ;
+
+( .bool )
+: cmp ( a b -- lt/eq/gt ) ;
+: gt? ( a b -- y/n ) ;
+: ge? ( a b -- y/n ) ;
+: eq? ( a b -- y/n ) ;
+: ne? ( a b -- y/n ) ;
+: le? ( a b -- y/n ) ;
+: lt? ( a b -- y/n ) ;
+: not ( a -- !a ) ;
+: xor ( a b -- a ^ b ) ;
+: nand ( )
+
+( .number )
+: + ( a b -- a+b ) ;
+: - ( a b -- a+b ) ;
+: * ( a b -- a+b ) ;
+: / ( a b -- a+b ) ;
+: % ( a b -- a+b ) ;
+: neg ( a -- a-neg ) ;
+: << ( a n -- a/2^n ) ;
+: >> ( a n -- a*2^n) ;
+: floor ( i.d -- i ) ;
+: ceil  ( i.d -- i+1 ) ;
+: nan? ( f -- y/n ) ;
+: inf? ( f -- y/n ) ;
+: ninf? ( f -- y/n ) ;
+: finite? ( f -- y/n ) ;
+: i ( a -- int[a] ) ;
+: u ( a -- uint[a] ) ;
+: f ( a -- float[a] ) ;
+
+( .list )
+: @n ( a -- len[a] ) ;
+: @< ( lst elem -- lst ) ;
+: @> ( lst -- lst elem ) ;
+: @>l ( lst elem -- lst ) ;
+: @<l ( lst -- lst elem ) ;
+: @_< ( lst elem index -- lst ) ;
+: @_> ( lst index -- lst elem ) ;
+
+( .hash )
+: %< ( hsh key val -- hsh ) ;
+: %> ( hsh key -- hsh val ) ;
+: %n ( hsh -- size ) ;
+: %x ( hsh key -- hsh ) ;
+
+
+: map ( lst transform -- lst )
+    dup @n ( swap @> rrot ! @>l ) while
+;

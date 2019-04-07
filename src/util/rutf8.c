@@ -1,3 +1,4 @@
+#include "config/rerr.h"
 #include "util/rutf8.h"
 
 const uint8_t MASK_MSB[] = {
@@ -43,7 +44,7 @@ uint32_t GET_QUADRU_VAL( uint8_t * byt ) {
 
 uint8_t rutf8_continue_byte ( RUTF8Peek * peek, uint8_t * cb ) {
     if ( !IS_CONTIN_BYTE( cb ) ) {
-        peek->error = RUTF8_EARLY_TRUNCATION;
+        rerr_set( RILL_ERR_UTF8EOFTRUNC );
         return 0;
     }
     peek->codepoint = ( peek->codepoint << 6 ) & GET_CONTIN_VAL( cb );
@@ -51,17 +52,14 @@ uint8_t rutf8_continue_byte ( RUTF8Peek * peek, uint8_t * cb ) {
 }
 
 int rutf8_peek ( RUTF8Peek * peek, uint8_t * pos, uint8_t * end ) {
-    if ( !peek )
-        return 0;
-    *peek = ( RUTF8Peek ) {
-        .n_bytes = 0,
-        .error = RUTF8_OK,
-        .codepoint = 0
-    };
-    if ( !pos || !end ) {
-        peek->error = RUTF8_PASSED_NULLPTR;
+    if ( !peek || !pos || !end ) {
+        rerr_set( RILL_ERR_NULLARG );
         return 0;
     }
+    *peek = ( RUTF8Peek ) {
+        .n_bytes = 0,
+        .codepoint = 0
+    };
     if ( pos == end ) {
         return 0;
     }
@@ -72,7 +70,7 @@ int rutf8_peek ( RUTF8Peek * peek, uint8_t * pos, uint8_t * end ) {
     } else if ( IS_DOUBLE_BYTE( pos ) ) {
         peek->n_bytes = 2;
         if ( end - pos < 2 ) {
-            peek->error = RUTF8_EOF_TRUNCATION;
+            rerr_set( RILL_ERR_UTF8EOFTRUNC );
             return 0;
         }
         peek->codepoint = GET_DOUBLE_VAL( pos );
@@ -81,7 +79,7 @@ int rutf8_peek ( RUTF8Peek * peek, uint8_t * pos, uint8_t * end ) {
     } else if ( IS_TRIPLE_BYTE( pos ) ) {
         peek->n_bytes = 3;
         if ( end - pos < 3 ) {
-            peek->error = RUTF8_EOF_TRUNCATION;
+            rerr_set( RILL_ERR_UTF8EOFTRUNC );
             return 0;
         }
         peek->codepoint = GET_TRIPLE_VAL( pos );
@@ -92,7 +90,7 @@ int rutf8_peek ( RUTF8Peek * peek, uint8_t * pos, uint8_t * end ) {
     } else if ( IS_QUADRU_BYTE( pos ) ) {
         peek->n_bytes = 4;
         if ( end - pos < 4 ) {
-            peek->error = RUTF8_EOF_TRUNCATION;
+            rerr_set( RILL_ERR_UTF8EOFTRUNC );
             return 0;
         }
         peek->codepoint = GET_QUADRU_VAL( pos );
@@ -103,29 +101,24 @@ int rutf8_peek ( RUTF8Peek * peek, uint8_t * pos, uint8_t * end ) {
         if ( !rutf8_continue_byte( peek, ++pos ) )
             return 0;
     } else {
-        peek->error = RUTF8_INVALID_BYTE;
+        rerr_set( RILL_ERR_UTF8INVALIDBYT );
         return 0;
     }
     return 1;
 }
 
-int rutf8_scan ( RUTF8Scan * scan, uint8_t * pos, uint8_t * end ) {
-    if ( !scan | !pos | !end )
+int rutf8_scan ( size_t * length, uint8_t * pos, uint8_t * end ) {
+    if ( !length | !pos | !end ) {
+        rerr_set( RILL_ERR_NULLARG );
         return 0;
-    *scan = ( RUTF8Scan ) {
-        .length = 0,
-        .error = RUTF8_OK
-    };
-    RUTF8Peek peek;
-    rutf8_peek ( &peek, pos, end );
-    while ( peek.error == RUTF8_OK && pos < end ) {
-        pos += peek.n_bytes;
-        scan->length++;
-        rutf8_peek( &peek, pos, end );
     }
-    if ( peek.error != RUTF8_OK ) {
-        scan->error = peek.error;
-        return 0;
+    *length = 0;
+    RUTF8Peek peek;
+    while ( pos < end ) {
+        if ( !rutf8_peek( &peek, pos, end ) )
+            return 0;
+        pos += peek.n_bytes;
+        ( *length )++;
     }
     return 1;
 }

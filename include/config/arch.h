@@ -7,4 +7,6 @@
     #define RILL_UXX_TYPE uint64_t
     #define RILL_FXX_TYPE double
 
+    #define RILL_IS_NEWLINE(c) c == '\n'
+
 #endif

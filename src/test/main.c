@@ -1,3 +1,4 @@
+#include "config/rerr.h"
 #include "test/test.h"
 #include "test/manifest.h"
 
@@ -5,6 +6,7 @@
 
 int main ( int argc, char ** argv ) {
 
+    rerr_init();
     rtest_init();
 
     RTEST_BEGIN( "sanity" ) {

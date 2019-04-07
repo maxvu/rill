@@ -11,12 +11,16 @@ CC_FLAGS_COVERAGE := --coverage -fprofile-dir="coverage/" \
 CC_COMPILE = $(CC) $(CC_INCLUDE) $(CC_FLAGS)
 CC_COMPILE_OBJECT = $(CC) $(CC_INCLUDE) -c $(CC_FLAGS)
 
+CONFIG := $(patsubst "src/config/%c", "build/config/%.o", $(wildcard src/config/*.c))
+build/config/%.o : src/config/%.c
+	$(CC_COMPILE_OBJECT) $^ -o $@
+
 RVAL := $(patsubst "src/rval/%c", "build/rval/%.o", $(wildcard src/rval/*.c))
 build/rval/%.o : src/rval/%.c
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
 RLEX := $(patsubst "src/rlex/%c", "build/rlex/%.o", $(wildcard src/rlex/*.c))
-build/rval/%.o : src/rlex/%.c
+build/rlex/%.o : src/rlex/%.c
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
 UTIL := $(patsubst "src/util/%c", "build/util/%.o", $(wildcard src/util/*.c))
@@ -25,7 +29,7 @@ build/util/%.o : src/util/%.c
 
 TESTS := $(shell find test/ | grep \.test\.c)
 
-RILL := $(RVAL) $(RLEX) $(UTIL)
+RILL := $(CONFIG) $(RVAL) $(RLEX) $(UTIL)
 
 entry:
 	@echo $(RVAL)

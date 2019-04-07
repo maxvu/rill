@@ -3,6 +3,8 @@
 
 #include "rval/rval.h"
 
+#define RILL_LEX_RESULT_BUFFER_SIZE 128
+
 /*
     places an rvec of rlextok's into `dst`
 */

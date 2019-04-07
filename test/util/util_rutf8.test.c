@@ -1,6 +1,6 @@
 // TODO: fix to use rerr
 
-void rill_test_utf8 () {}
+void rill_test_util_utf8 () {}
 
 // #include "rval/rval.h"
 // #include "test/test.h"

@@ -23,7 +23,7 @@ void rval_dump ( RVal * val ) {
                 rval_dump( rvec_get( val, i ) );
                 printf( " " );
             }
-            printf( "])");
+            printf( " ] )");
         } break;
         case RVT_MAP: {
             printf( "map( occ %lu cap %lu {", val->map->occ, val->map->cap );

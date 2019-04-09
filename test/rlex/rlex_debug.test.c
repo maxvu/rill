@@ -10,7 +10,7 @@ void rill_test_rlex_debug () {
 
     RTEST_BEGIN( "rval / buf / initialization" )  {
         RVal buf = rbuf();
-        INSIST( rbuf_strcpy( &buf, "   : some-word 1 1 + ;" ) );
+        INSIST( rbuf_strcpy( &buf, "   some-word    " ) );
 
         RVal result = rvec();
         INSIST( rlex( &result, &buf ) );

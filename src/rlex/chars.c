@@ -42,8 +42,8 @@ int rlex_ischr_whitespace ( int c ) {
 
 int rlex_ischr_stringdelim ( int c ) {
     switch ( c ) {
-        case RILL_LEX_CHAR_QUOTE_SINGLE:
-        case RILL_LEX_CHAR_QUOTE_DOUBLE:
+        case RILL_LEX_CHAR_QUOTEMARK_SINGLE:
+        case RILL_LEX_CHAR_QUOTEMARK_DOUBLE:
             return 1;
             break;
     }
@@ -54,7 +54,6 @@ int rlex_ischr_idopen ( int c ) {
     if ( !rlex_ischr_idbody( c ) )
         return 0;
     switch ( c ) {
-        case RILL_LEX_CHAR_NUMERIC_DECIMAL:
         case RILL_LEX_CHAR_NUMERIC_NEGATOR:
             return 0;
             break;
@@ -68,15 +67,14 @@ int rlex_ischr_idbody ( int c ) {
     if ( rlex_ischr_stringdelim( c ) )
         return 0;
     switch ( c ) {
-        case RILL_LEX_CHAR_LIST_BEGIN:
-        case RILL_LEX_CHAR_LIST_END:
-        case RILL_LEX_CHAR_HASH_BEGIN:
-        case RILL_LEX_CHAR_HASH_END:
+        case RILL_LEX_CHAR_ENUM_BEGIN:
+        case RILL_LEX_CHAR_ENUM_END:
         case RILL_LEX_CHAR_QUOTE_BEGIN:
         case RILL_LEX_CHAR_QUOTE_END:
-        case RILL_LEX_CHAR_WORD_DEFINITION_BEGIN:
-        case RILL_LEX_CHAR_WORD_DEFINITION_END:
-        case RILL_LEX_CHAR_STRING_ESCAPE:
+        case RILL_LEX_CHAR_COMMENT_BEGIN:
+        case RILL_LEX_CHAR_COMMENT_END:
+        case RILL_LEX_CHAR_COMPILE_MODE_BEGIN:
+        case RILL_LEX_CHAR_COMPILE_MODE_END:
         case RILL_LEX_CHAR_STRING_DELIM_SINGLE:
         case RILL_LEX_CHAR_STRING_DELIM_DOUBLE:
             return 0;
@@ -106,8 +104,8 @@ int rlex_ischr_numopen ( int c ) {
 }
 
 int rlex_ischr_numbody ( int c ) {
-    if ( !rlex_ischr_numopen( c ) )
-        return 0;
+    if ( rlex_ischr_numopen( c ) )
+        return 1;
     switch ( c ) {
         case RILL_LEX_CHAR_EXPONENT_MARK_LOWER:
         case RILL_LEX_CHAR_EXPONENT_MARK_UPPER:

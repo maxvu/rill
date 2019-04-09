@@ -58,7 +58,7 @@ uint8_t * rlexstate_pos ( rlexstate * state ) {
 }
 
 int rlexstate_done ( rlexstate * state ) {
-    return rlexstate_pos( state ) < state->buf_end;
+    return rlexstate_pos( state ) >= state->buf_end;
 }
 
 int rlexstate_add_token ( rlexstate * state, uint8_t * begin ) {

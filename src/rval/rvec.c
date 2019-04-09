@@ -1,4 +1,5 @@
 #include "config/alloc.h"
+#include "config/rerr.h"
 #include "rval/rvec.h"
 #include "rval/rval.h"
 
@@ -33,8 +34,10 @@ int rvec_init ( RVal * val, size_t cap ) {
     if ( cap < RILL_RVEC_MINSIZ )
         cap = RILL_RVEC_MINSIZ;
     RVec * vec = RILL_ALLOC( sizeof( RVec ) + sizeof( RVal ) * cap );
-    if ( !vec )
+    if ( !vec ) {
+        rerr_set( RILL_ERR_ALLOC );
         return 0;
+    }
     *vec = ( RVec ) {
         .len = 0,
         .cap = cap,
@@ -51,14 +54,12 @@ int rvec_init ( RVal * val, size_t cap ) {
 }
 
 size_t rvec_len ( RVal * vecval ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     return vecval->vec->len;
 }
 
 int rvec_reserve ( RVal * vecval, size_t cap ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     RVec * vec = vecval->vec;
     if ( vec->cap >= cap )
         return 1;
@@ -66,8 +67,7 @@ int rvec_reserve ( RVal * vecval, size_t cap ) {
 }
 
 int rvec_compact ( RVal * vecval ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     RVec * vec = vecval->vec;
     size_t target = vec->len;
     if ( target < RILL_RVEC_MINSIZ )
@@ -78,10 +78,8 @@ int rvec_compact ( RVal * vecval ) {
 }
 
 int rvec_clone ( RVal * dst, RVal * src ) {
-    if ( !dst )
-        return 0;
-    if ( !src || rval_type( src ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ARGNOTNULL( dst );
+    RILL_ASSERT_ISVEC( src );
     RVal tmp = rnil();
     if ( !rvec_init( &tmp, rvec_len( src ) ) )
         return 0;
@@ -96,14 +94,12 @@ int rvec_clone ( RVal * dst, RVal * src ) {
 }
 
 int rvec_exclude ( RVal * vecval ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     return rvec_realloc( vecval, rvec_len( vecval ) );
 }
 
 int rvec_release ( RVal * vecval ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     RVec * vec = vecval->vec;
     if ( --vec->ref )
         return 1;
@@ -115,10 +111,8 @@ int rvec_release ( RVal * vecval ) {
 }
 
 int rvec_push ( RVal * vecval, RVal * item ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
-    if ( !item )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
+    RILL_ASSERT_ARGNOTNULL( item );
     if ( vecval->vec->len == vecval->vec->cap )
         if ( !rvec_reserve(
                 vecval,
@@ -134,8 +128,7 @@ int rvec_push ( RVal * vecval, RVal * item ) {
 }
 
 int rvec_pop ( RVal * vecval ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     if ( !rvec_len( vecval ) )
         return 0;
     RVec * vec = vecval->vec;
@@ -148,8 +141,7 @@ int rvec_pop ( RVal * vecval ) {
 }
 
 RVal * rvec_get ( RVal * vecval, size_t idx ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return NULL;
+    RILL_ASSERT_ISVEC( vecval );
     RVec * vec = vecval->vec;
     if ( idx >= vec->len )
         return NULL;
@@ -157,10 +149,8 @@ RVal * rvec_get ( RVal * vecval, size_t idx ) {
 }
 
 int rvec_set ( RVal * vecval, size_t idx, RVal * item ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
-    if ( !item )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
+    RILL_ASSERT_ARGNOTNULL( item );
     RVec * vec = vecval->vec;
     if ( idx >= vec->len )
         return 0;
@@ -173,8 +163,8 @@ int rvec_set ( RVal * vecval, size_t idx, RVal * item ) {
 }
 
 int rvec_fill ( RVal * vecval, RVal * item, size_t n ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
+    RILL_ASSERT_ARGNOTNULL( item );
     RVec * vec = vecval->vec;
     if ( vec->cap < n )
         if ( !rvec_reserve( vecval, RILL_RVEC_GROWTH * vec->cap ) )
@@ -184,14 +174,14 @@ int rvec_fill ( RVal * vecval, RVal * item, size_t n ) {
             return 0;
     vec = vecval->vec;
     for ( size_t i = 0; i < n; i++ )
-        rval_copy( vec->vls + i, item );
+        if ( !rval_copy( vec->vls + i, item ) )
+            return 0;
     vec->len = n;
     return 1;
 }
 
 int rvec_reverse ( RVal * vecval ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     RVec * vec = vecval->vec;
     if ( vec->ref > 1 && !rval_exclude( vecval ) )
         return 0;
@@ -202,10 +192,8 @@ int rvec_reverse ( RVal * vecval ) {
 }
 
 int rvec_concat ( RVal * dstval, RVal * srcval ) {
-    if ( !dstval || rval_type( dstval ) != RVT_VEC )
-        return 0;
-    if ( !srcval || rval_type( srcval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( srcval );
+    RILL_ASSERT_ISVEC( dstval );
     RVal tmp = rnil();
     if ( !rvec_init( &tmp, rvec_len( dstval ) + rvec_len( srcval ) ) )
         return 0;
@@ -226,8 +214,7 @@ int rvec_concat ( RVal * dstval, RVal * srcval ) {
 }
 
 int rvec_clear ( RVal * vecval ) {
-    if ( !vecval || rval_type( vecval ) != RVT_VEC )
-        return 0;
+    RILL_ASSERT_ISVEC( vecval );
     RVec * vec = vecval->vec;
     if ( vec->ref > 1 && !rval_exclude( vecval ) )
         return 0;

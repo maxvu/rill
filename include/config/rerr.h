@@ -34,6 +34,15 @@ typedef struct RVal RVal;
 #define RILL_ERR_LEXOPENQUOTE    0x37
 #define RILL_ERR_LEXOPENWORD     0x38
 
+#define RILL_ASSERT_VALTYPE(val,type) if ( !val ) { rerr_set( RILL_ERR_NULLARG ); return 0; } if ( rval_type( val ) != type ) { rerr_set( RILL_ERR_TYPEACCESS ); return 0; }
+#define RILL_ASSERT_ISIXX(val)  RILL_ASSERT_VALTYPE(val, RVT_IXX)
+#define RILL_ASSERT_ISUXX(val)  RILL_ASSERT_VALTYPE(val, RVT_UXX)
+#define RILL_ASSERT_ISFXX(val)  RILL_ASSERT_VALTYPE(val, RVT_FXX)
+#define RILL_ASSERT_ISBUF(val)  RILL_ASSERT_VALTYPE(val, RVT_BUF)
+#define RILL_ASSERT_ISVEC(val)  RILL_ASSERT_VALTYPE(val, RVT_VEC)
+#define RILL_ASSERT_ISMAP(val)  RILL_ASSERT_VALTYPE(val, RVT_MAP)
+#define RILL_ASSERT_ARGNOTNULL(arg)  if ( !arg ) { rerr_set( RILL_ERR_BADARG ); return 0; }
+
 void rerr_init ();
 
 void rerr_set ( RILL_UXX_TYPE errno );

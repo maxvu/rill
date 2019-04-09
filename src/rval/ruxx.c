@@ -1,3 +1,4 @@
+#include "config/rerr.h"
 #include "rval/ruxx.h"
 #include "rval/rval.h"
 
@@ -17,7 +18,6 @@ void ruxx_set ( RVal * val, RILL_UXX_TYPE u ) {
 }
 
 RILL_UXX_TYPE ruxx_get ( RVal * val ) {
-    if ( !val || rval_type( val ) != RVT_UXX )
-        return 0;
+    RILL_ASSERT_ISUXX( val );
     return val->uxx;
 }

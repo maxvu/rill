@@ -28,7 +28,7 @@ int rbuf_memcat ( RVal * buf, uint8_t * mem, size_t mem_len );
 int rbuf_memcmp ( RVal * buf, uint8_t * mem, size_t mem_len );
 int rbuf_cpy ( RVal * dst, RVal * src );
 int rbuf_cat ( RVal * dst, RVal * src );
-int rbuf_cmp ( RVal * a, RVal * b );
+int rbuf_cmp ( RVal * a, RVal * b ); // need to check rerr
 int rbuf_strcpy ( RVal * buf, const char * cstr );
 int rbuf_strcat ( RVal * buf, const char * cstr );
 int rbuf_strcmp ( RVal * buf, const char * cstr );

@@ -1,3 +1,4 @@
+#include "config/rerr.h"
 #include "rval/rfxx.h"
 #include "rval/rval.h"
 
@@ -19,25 +20,21 @@ void rfxx_set ( RVal * val, RILL_FXX_TYPE f ) {
 }
 
 RILL_FXX_TYPE rfxx_get ( RVal * val ) {
-    if ( !val || rval_type( val ) != RVT_FXX )
-        return 0;
+    RILL_ASSERT_ISFXX( val );
     return val->fxx;
 }
 
 int rfxx_isfinite ( RVal * val ) {
-    if ( !val || rval_type( val ) != RVT_FXX )
-        return 0;
+    RILL_ASSERT_ISFXX( val );
     return isfinite( val->fxx );
 }
 
 int rfxx_isinf ( RVal * val ) {
-    if ( !val || rval_type( val ) != RVT_FXX )
-        return 0;
+    RILL_ASSERT_ISFXX( val );
     return isinf( val->fxx );
 }
 
 int rfxx_isnan ( RVal * val ) {
-    if ( !val || rval_type( val ) != RVT_FXX )
-        return 0;
+    RILL_ASSERT_ISFXX( val );
     return isnan( val->fxx );
 }

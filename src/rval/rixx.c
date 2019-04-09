@@ -1,3 +1,4 @@
+#include "config/rerr.h"
 #include "rval/rixx.h"
 #include "rval/rval.h"
 
@@ -11,7 +12,6 @@ void rixx_set ( RVal * val, RILL_IXX_TYPE i ) {
 }
 
 RILL_IXX_TYPE rixx_get ( RVal * val ) {
-    if ( !val || rval_type( val ) != RVT_IXX )
-        return 0;
+    RILL_ASSERT_ISIXX( val );
     return val->ixx;
 }

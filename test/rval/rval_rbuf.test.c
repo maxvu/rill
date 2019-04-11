@@ -1,3 +1,4 @@
+#include "config/rerr.h"
 #include "test/test.h"
 #include "rval/rval.h"
 #include "rval/rbuf.h"
@@ -46,6 +47,7 @@ void rill_test_rval_rbuf () {
         INSIST( !rbuf_strcat( &buf, 0 ) );
         INSIST( !rbuf_strcat( &buf, 0 ) );
         INSIST( !rbuf_strcpy( &buf, 0 ) );
+        rerr_clear();
 
         INSIST( rbuf_strcmp( &buf, "hello" ) == 0 );
 

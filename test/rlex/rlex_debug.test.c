@@ -13,10 +13,8 @@ void rill_test_rlex_debug () {
         INSIST( rbuf_strcpy( &buf, "   some-word    " ) );
 
         RVal result = rvec();
-        INSIST( rlex( &result, &buf ) );
-        rval_dump( &result );
+        rlex_dump( &buf );
         printf( "\n" );
-        printf( "CODE: %lu\n", rerr_get() );
 
     } RTEST_END;
 

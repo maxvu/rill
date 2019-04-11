@@ -83,13 +83,13 @@
 #define RILL_LEX_CHAR_STRING_DELIM_SINGLE    RILL_LEX_CHAR_QUOTEMARK_SINGLE
 #define RILL_LEX_CHAR_STRING_DELIM_DOUBLE    RILL_LEX_CHAR_QUOTEMARK_DOUBLE
 
-int rlex_ischr_whitespace ( int c );
-int rlex_ischr_stringdelim ( int c );
+int rlexchr_ws ( int c );
+int rlexchr_strdelim ( int c );
 
-int rlex_ischr_idopen ( int c );
-int rlex_ischr_idbody ( int c );
+int rlexchr_idopen ( int c );
+int rlexchr_idbody ( int c );
 
-int rlex_ischr_numopen ( int c );
-int rlex_ischr_numbody ( int c );
+int rlexchr_numopen ( int c );
+int rlexchr_numbody ( int c );
 
 #endif

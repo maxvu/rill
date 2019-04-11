@@ -27,4 +27,6 @@ RVal * rlextok_line ( RVal * token );
 RVal * rlextok_pos  ( RVal * token );
 RVal * rlextok_text  ( RVal * token );
 
+RVal * rlextok_dump  ( RVal * token );
+
 #endif

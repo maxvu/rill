@@ -20,9 +20,13 @@ int rlexstate_init ( rlexstate * state, RVal * buf ) {
         .line = 1,
         .line_pos = 0,
         .pos = 0,
+        .err = RILL_ERR_LEXOK,
         .buf = rbuf_get( buf ),
         .buf_end = rbuf_get( buf ) + rbuf_len( buf )
     };
+    state->result = rnil();
+    if ( !rvec_init( &state->result, RILL_LEXSTATE_RESULT_BUFFER_SIZE ) )
+        return 0;
     return rutf8_peek( &state->peek, state->buf, state->buf_end );
 }
 
@@ -45,9 +49,9 @@ int rlexstate_step ( rlexstate * state ) {
         state->line++;
         state->line_pos = 0;
     }
-    state->buf += state->peek.n_bytes;
+    state->pos += state->peek.n_bytes;
     if ( state->buf >= state->buf_end ) {
-        rerr_set( RILL_ERR_LEXSTREAMEND );
+        state->err = RILL_ERR_LEXSTREAMEND;
         return 0;
     }
     return rutf8_peek( &state->peek, state->buf + state->pos, state->buf_end );
@@ -57,18 +61,21 @@ uint8_t * rlexstate_pos ( rlexstate * state ) {
     return state->buf + state->pos;
 }
 
-int rlexstate_done ( rlexstate * state ) {
+int rlexstate_eof ( rlexstate * state ) {
     return rlexstate_pos( state ) >= state->buf_end;
 }
 
-int rlexstate_add_token ( rlexstate * state, uint8_t * begin ) {
+int rlexstate_ok ( rlexstate * state ) {
+    return state->err != RILL_ERR_LEXOK;
+}
+
+int rlexstate_add_token ( rlexstate * state, uint8_t * begin, uint8_t type ) {
     if ( !state || !begin ) {
         rerr_set( RILL_ERR_NULLARG );
         return 0;
     }
     RVal token_buf = rnil();
-    uint8_t * end = state->buf + state->pos;
-    size_t n = end - begin;
+    size_t n = state->buf + state->pos - begin;
     if ( !rbuf_init( &token_buf, n ) )
         return 0;
     if ( !rbuf_memcpy( &token_buf, begin, n ) ) {
@@ -79,7 +86,7 @@ int rlexstate_add_token ( rlexstate * state, uint8_t * begin ) {
     RVal token = rnil();
     char ok = rlextok(
         &token,
-        RLXTOK_WHITESPACE,
+        type,
         state->line,
         state->line_pos,
         &token_buf

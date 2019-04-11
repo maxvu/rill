@@ -18,7 +18,7 @@ void rval_dump ( RVal * val ) {
         case RVT_FXX: printf( "ixx(%lf)", val->fxx ); break;
         case RVT_BUF: printf( "buf(%s)",  val->buf->bts ); break;
         case RVT_VEC: {
-            printf( "vec( len %lu cap %lu [", val->vec->len, val->vec->cap);
+            printf( "vec( len %lu cap %lu [ ", val->vec->len, val->vec->cap);
             for ( size_t i = 0; i < rvec_len( val ); i++ ) {
                 rval_dump( rvec_get( val, i ) );
                 printf( " " );

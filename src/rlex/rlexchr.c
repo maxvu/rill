@@ -1,6 +1,6 @@
-#include "rlex/chars.h"
+#include "rlex/rlexchr.h"
 
-int rlex_ischr_whitespace ( int c ) {
+int rlexchr_ws ( int c ) {
     switch ( c ) {
         case RILL_LEX_CHAR_BACKSPACE:
         case RILL_LEX_CHAR_TAB:
@@ -40,7 +40,7 @@ int rlex_ischr_whitespace ( int c ) {
     return 0;
 }
 
-int rlex_ischr_stringdelim ( int c ) {
+int rlexchr_strdelim ( int c ) {
     switch ( c ) {
         case RILL_LEX_CHAR_QUOTEMARK_SINGLE:
         case RILL_LEX_CHAR_QUOTEMARK_DOUBLE:
@@ -50,7 +50,7 @@ int rlex_ischr_stringdelim ( int c ) {
     return 0;
 }
 
-int rlex_ischr_idopen ( int c ) {
+int rlexchr_idopen ( int c ) {
     if ( !rlex_ischr_idbody( c ) )
         return 0;
     switch ( c ) {
@@ -61,7 +61,7 @@ int rlex_ischr_idopen ( int c ) {
     return 1;
 }
 
-int rlex_ischr_idbody ( int c ) {
+int rlexchr_idbody ( int c ) {
     if ( rlex_ischr_whitespace( c ) )
         return 0;
     if ( rlex_ischr_stringdelim( c ) )
@@ -83,7 +83,7 @@ int rlex_ischr_idbody ( int c ) {
     return 1;
 }
 
-int rlex_ischr_numopen ( int c ) {
+int rlexchr_numopen ( int c ) {
     switch ( c ) {
         case RILL_LEX_CHAR_NUMERIC_NEGATOR:
         case RILL_LEX_CHAR_NUMERIC_DECIMAL:
@@ -103,7 +103,7 @@ int rlex_ischr_numopen ( int c ) {
     return 0;
 }
 
-int rlex_ischr_numbody ( int c ) {
+int rlexchr_numbody ( int c ) {
     if ( rlex_ischr_numopen( c ) )
         return 1;
     switch ( c ) {

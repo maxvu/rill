@@ -18,6 +18,7 @@ namespace Structures {
         ~Ref ();
 
         bool isUnique () const;
+        Ref & makeUnique ();
 
         Ref & operator= ( T * new_data );
         Ref & operator= ( const Ref & that );
@@ -27,6 +28,8 @@ namespace Structures {
 
         const T & operator* () const;
         const T * operator-> () const;
+
+        const Ref & asConst () const;
 
     };
 

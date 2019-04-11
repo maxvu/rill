@@ -1,6 +1,8 @@
 #ifndef RILL_ERROR_NULLARGUMENTERROR
 #define RILL_ERROR_NULLARGUMENTERROR
 
+#include "Error/Error.hpp"
+
 namespace Rill {
 namespace Error {
 
@@ -10,7 +12,7 @@ namespace Error {
 
         NullArgumentError();
 
-        const char * getMessage () const;
+        const char * message () const;
 
     };
 

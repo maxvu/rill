@@ -3,10 +3,8 @@
 
 #include "Error/Error.hpp"
 
-using Rill::Error::Error;
-
 namespace Rill {
-namespace Val {
+namespace Error {
 
     class TypeMismatchError : public Error {
 

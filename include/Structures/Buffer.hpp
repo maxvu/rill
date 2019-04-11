@@ -69,13 +69,24 @@ namespace Structures {
 
     class UTF8Buffer : public Buffer {
 
-        class Iterator {
-            const UTF8Buffer & buffer;
+        class Iter {
+
+            protected:
+
+            const Buffer & buffer;
             size_t position;
-            int getCodepoint () const;
+
+            public:
+
+            Iter ( const Buffer & buffer );
+
+            Iter & operator++ (int) const;
+            operator bool () const;
+            int codepoint () const;
+
         };
 
-        Iterator & begin () const;
+        Iter & begin () const;
         size_t length () const;
 
     };

@@ -11,9 +11,10 @@ namespace Val {
     class Val : public Refcounted<Val> {
 
         virtual Type type () const =0;
-
         virtual Val * clone () =0;
+        virtual Val * exclude () const =0;
         virtual bool cyclesTo ( const Val * that ) const =0;
+        virtual Val * compact () const =0;
 
     };
 

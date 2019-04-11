@@ -12,6 +12,12 @@
 #include "Val/TypeMismatchError.hpp"
 #include "Val/VRef.hpp"
 
+#include "Val/IxxVal.hpp"
+#include "Val/UxxVal.hpp"
+#include "Val/FxxVal.hpp"
+#include "Val/BufVal.hpp"
+#include "Val/VecVal.hpp"
+#include "Val/MapVal.hpp"
 
 int main ( int argc, char ** argv ) {
     std::cout << "OK" << std::endl;

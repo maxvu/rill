@@ -9,7 +9,7 @@ namespace Error {
         virtual const char * message () const;
 
     };
-    
+
 }
 }
 

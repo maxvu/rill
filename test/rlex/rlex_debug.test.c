@@ -10,7 +10,7 @@ void rill_test_rlex_debug () {
 
     RTEST_BEGIN( "rlex / debug" )  {
         RVal buf = rbuf();
-        INSIST( rbuf_strcpy( &buf, "   some-word    " ) );
+        INSIST( rbuf_strcpy( &buf, "   some-word'somestring'" ) );
         rlex_dump( &buf );
         printf( "\n" );
     } RTEST_END;

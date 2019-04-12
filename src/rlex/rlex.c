@@ -21,16 +21,6 @@ int rlex_ws ( rlexstt * stt ) {
     return rlexstt_add( stt, begin, RILL_LEXTOK_WHITESPACE );
 }
 
-// int rlex_identifier ( rlexstt * stt ) {
-//     uint8_t * begin = rlexstate_pos( state );
-//
-//     while ( rlex_ischr_idbody( rlexstate_peek( state ) ) ) {
-//         rlexstate_step( state );
-//     }
-//
-//     return rlexstate_add_token( state, begin, RLXTOK_IDENTIFIER );
-// }
-
 int rlex_id ( rlexstt * stt ) {
     uint8_t * begin = rlexstt_pos( stt );
     while ( rlexstt_step( stt ) && rlexchr_idbody( rlexstt_peek( stt ) ) )
@@ -40,10 +30,54 @@ int rlex_id ( rlexstt * stt ) {
     return rlexstt_add( stt, begin, RILL_LEXTOK_IDENTIFIER );
 }
 
+int rlex_stresc ( rlexstt * stt );
+// int rlex_stresc ( rlexstt * stt ) {
+//     int c;
+//
+//     rlexstt_step( stt );
+//     switch ( rlexstt_peek( stt ) ) {
+//         case RILL_LEX_CHAR_X_LOWER:
+//             break;
+//         case RILL_LEX_CHAR_B_LOWER:
+//             break;
+//         case RILL_LEX_CHAR_V_LOWER:
+//             break;
+//         case RILL_LEX_CHAR_T_LOWER:
+//             break;
+//         case RILL_LEX_CHAR_F_LOWER:
+//             break;
+//         case RILL_LEX_CHAR_N_LOWER:
+//             break;
+//         case RILL_LEX_CHAR_R_LOWER:
+//             break;
+//     }
+// }
+
 int rlex_str ( rlexstt * stt ) {
+    int c;
+
+    int delim = rlexstt_peek( stt );
+    rlexstt_step( stt );
+    uint8_t * begin = rlexstt_pos( stt );
+
+    while ( rlexstt_step( stt ) ) {
+        c = rlexstt_peek( stt );
+        if ( c == delim )
+            break;
+        else if ( c == RILL_LEX_CHAR_STRING_ESCAPE )
+            if ( !rlex_stresc( stt ) )
+                return 0;
+    }
+    if ( !rlexstt_add( stt, begin, RILL_LEXTOK_STRING ) )
+        return 0;
+    if ( rlexstt_eof( stt ) ) {
+        rerr_set( RILL_LEXSTT_UNCLOSED_STRING );
+        return 0;
+    }
     rlexstt_step( stt );
     return 1;
 }
+
 int rlex_comment ( rlexstt * stt );
 
 int rlex_num ( rlexstt * stt ) {
@@ -60,28 +94,39 @@ int rlex ( RVal * dst, RVal * lexbuf ) {
     RILL_ASSERT_ARGNOTNULL( dst );
     RILL_ASSERT_ISBUF( lexbuf );
 
+    printf( "rlex() \n");
+
     rlexstt stt;
     if ( !rlexstt_init( &stt, lexbuf ) )
         return 0;
 
+    printf( "  init stt \n");
+
     int c;
 
     step:
+
+    printf( "  step \n");
 
     if ( rlexstt_done( &stt ) )
         goto done;
 
     c = rlexstt_peek( &stt );
 
+    printf( "  peek char %d \n", c);
+
     if ( rlexchr_ws( c ) ) {
+        printf( "  is ws \n");
         if ( !rlex_ws( &stt ) )
             goto err;
         goto step;
     } else if ( rlexchr_strdelim( c ) ) {
+        printf( "  is str \n");
         if ( !rlex_str( &stt ) )
             goto err;
         goto step;
     } else if ( rlexchr_numopen( c ) ) {
+        printf( "  is num \n");
         if ( !rlex_num( &stt ) )
             goto err;
         goto step;
@@ -162,6 +207,7 @@ int rlex_dump ( RVal * lexbuf ) {
     if ( !code ) {
         printf( "lex failed with code %lx\n", rerr_get() );
         rerr_clear();
+        return 0;
     }
     return 1;
 }

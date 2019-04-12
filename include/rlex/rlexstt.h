@@ -30,6 +30,7 @@ int rlexstt_retire ( rlexstt * stt );
 
 uint8_t * rlexstt_pos ( rlexstt * stt );
 int rlexstt_ok ( rlexstt * stt );
+int rlexstt_eof ( rlexstt * stt );
 int rlexstt_done ( rlexstt * stt );
 
 int rlexstt_step ( rlexstt * stt );

@@ -50,15 +50,24 @@ int rlexstt_ok ( rlexstt * stt ) {
 
 int rlexstt_done ( rlexstt * stt ) {
     RILL_ASSERT_ARGNOTNULL( stt );
-    return stt->pos < stt->buf_len;
+    return !rlexstt_ok( stt ) || rlexstt_eof( stt );
+}
+
+int rlexstt_eof ( rlexstt * stt ) {
+    RILL_ASSERT_ARGNOTNULL( stt );
+    return stt->pos >= stt->buf_len;
 }
 
 int rlexstt_step ( rlexstt * stt ) {
     RILL_ASSERT_ARGNOTNULL( stt );
-    if ( stt->pos >= stt->buf_len )
+    if ( rlexstt_done( stt ) )
         return 0;
     stt->pos++;
-    return rutf8_peek( &stt->peek, stt->buf, stt->buf + stt->pos );
+    return rutf8_peek(
+        &stt->peek,
+        stt->buf + stt->pos,
+        stt->buf + stt->buf_len
+    );
 }
 
 int rlexstt_peek ( rlexstt * stt ) {

@@ -83,12 +83,8 @@ int rlextok_dump ( RVal * token ) {
             if ( !rbuf_strcpy( &type, "comment-close" ) )
                 goto err;
             break;
-        case RILL_LEXTOK_STRING_OPEN:
-            if ( !rbuf_strcpy( &type, "string-open" ) )
-                goto err;
-            break;
-        case RILL_LEXTOK_STRING_CLOSE:
-            if ( !rbuf_strcpy( &type, "string-close" ) )
+        case RILL_LEXTOK_STRING:
+            if ( !rbuf_strcpy( &type, "string" ) )
                 goto err;
             break;
         case RILL_LEXTOK_ENUM_OPEN:

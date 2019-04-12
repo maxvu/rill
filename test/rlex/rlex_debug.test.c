@@ -8,14 +8,11 @@
 
 void rill_test_rlex_debug () {
 
-    RTEST_BEGIN( "rval / buf / initialization" )  {
+    RTEST_BEGIN( "rlex / debug" )  {
         RVal buf = rbuf();
         INSIST( rbuf_strcpy( &buf, "   some-word    " ) );
-
-        RVal result = rvec();
         rlex_dump( &buf );
         printf( "\n" );
-
     } RTEST_END;
 
 }

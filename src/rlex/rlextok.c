@@ -1,3 +1,4 @@
+#include "config/rerr.h"
 #include "rlex/rlextok.h"
 #include "rlex/types.h"
 #include "rval/rval.h"
@@ -32,10 +33,10 @@ int rlextok (
     return 1;
 }
 
-RVal * rlextok_type ( RVal * token ) {
+int rlextok_type ( RVal * token ) {
     if ( rvec_len( token ) != 4 )
-        return NULL;
-    return rvec_get( token, 0 );
+        return -1;
+    return ruxx_get( rvec_get( token, 0 ) );
 }
 
 RVal * rlextok_line ( RVal * token ) {
@@ -56,55 +57,79 @@ RVal * rlextok_text  ( RVal * token ) {
     return rvec_get( token, 3 );
 }
 
-RVal * rlextok_dump  ( RVal * token ) {
-    switch ( ruxx_get( rvec_get( token, 0 ) ) ) {
-        case RLXTOK_WHITESPACE:
-            printf( "WHITESPACE" );
+int rlextok_dump ( RVal * token ) {
+    RILL_ASSERT_ARGNOTNULL( token );
+    RVal type = rnil();
+    if ( !rbuf_init( &type, 32 ) )
+        return 0;
+    switch ( rlextok_type( token ) ) {
+        case RILL_LEXTOK_WHITESPACE:
+            if ( !rbuf_strcpy( &type, "whitespace" ) )
+                goto err;
             break;
-        case RLXTOK_COMMENT:
-            printf( "COMMENT" );
+        case RILL_LEXTOK_IDENTIFIER:
+            if ( !rbuf_strcpy( &type, "identifier" ) )
+                goto err;
             break;
-        case RLXTOK_IDENTIFIER:
-            printf( "IDENTIFIER" );
+        case RILL_LEXTOK_NUMBER:
+            if ( !rbuf_strcpy( &type, " number" ) )
+                goto err;
             break;
-        case RLXTOK_NUMBER:
-            printf( "NUMBER" );
+        case RILL_LEXTOK_COMMENT_OPEN:
+            if ( !rbuf_strcpy( &type, "comment-open" ) )
+                goto err;
             break;
-        case RLXTOK_STRING_OPEN:
-            printf( "STRING_OPEN" );
+        case RILL_LEXTOK_COMMENT_CLOSE:
+            if ( !rbuf_strcpy( &type, "comment-close" ) )
+                goto err;
             break;
-        case RLXTOK_STRING_CLOSE:
-            printf( "STRING_CLOSE" );
+        case RILL_LEXTOK_STRING_OPEN:
+            if ( !rbuf_strcpy( &type, "string-open" ) )
+                goto err;
             break;
-        case RLXTOK_LIST_OPEN:
-            printf( "LIST_OPEN" );
+        case RILL_LEXTOK_STRING_CLOSE:
+            if ( !rbuf_strcpy( &type, "string-close" ) )
+                goto err;
             break;
-        case RLXTOK_LIST_CLOSE:
-            printf( "LIST_CLOSE" );
+        case RILL_LEXTOK_ENUM_OPEN:
+            if ( !rbuf_strcpy( &type, "enum-open" ) )
+                goto err;
             break;
-        case RLXTOK_HASH_OPEN:
-            printf( "HASH_OPEN" );
+        case RILL_LEXTOK_ENUM_CLOSE:
+            if ( !rbuf_strcpy( &type, "enum-close" ) )
+                goto err;
             break;
-        case RLXTOK_HASH_CLOSE:
-            printf( "HASH_CLOSE" );
+        case RILL_LEXTOK_QUOTE_OPEN:
+            if ( !rbuf_strcpy( &type, "quotation-open" ) )
+                goto err;
             break;
-        case RLXTOK_QUOTE_OPEN:
-            printf( "QUOTE_OPEN" );
+        case RILL_LEXTOK_QUOTE_CLOSE:
+            if ( !rbuf_strcpy( &type, "quotation-close" ) )
+                goto err;
             break;
-        case RLXTOK_QUOTE_CLOSE:
-            printf( "QUOTE_CLOSE" );
+        case RILL_LEXTOK_COMPILE_OPEN:
+            if ( !rbuf_strcpy( &type, "compile-open" ) )
+                goto err;
             break;
-        case RLXTOK_WORD_OPEN:
-            printf( "WORD_OPEN" );
+        case RILL_LEXTOK_COMPILE_CLOSE:
+            if ( !rbuf_strcpy( &type, "compile-close" ) )
+                goto err;
             break;
-        case RLXTOK_WORD_CLOSE:
-            printf( "WORD_CLOSE" );
-            break;
+        default:
+            if ( !rbuf_strcpy( &type, "?? unknown ??" ) )
+                goto err;
     }
     printf(
-        " @ %lu:%lu '%s'\n",
-        ruxx_get( rvec_get( token, 1 ) ),
-        ruxx_get( rvec_get( token, 2 ) ),
-        rbuf_get( rvec_get( token, 3 ) )
+        "(%s) @ line %lu, pos %lu: `%s`\n",
+        rbuf_get( &type ),
+        ruxx_get( rlextok_line( token ) ),
+        ruxx_get( rlextok_pos( token ) ),
+        rbuf_get( rlextok_text( token ) )
     );
+    rval_release( &type );
+    return 1;
+
+    err:
+        rval_release( &type );
+        return 0;
 }

@@ -51,7 +51,7 @@ int rlexchr_strdelim ( int c ) {
 }
 
 int rlexchr_idopen ( int c ) {
-    if ( !rlex_ischr_idbody( c ) )
+    if ( !rlexchr_idbody( c ) )
         return 0;
     switch ( c ) {
         case RILL_LEX_CHAR_NUMERIC_NEGATOR:
@@ -62,9 +62,9 @@ int rlexchr_idopen ( int c ) {
 }
 
 int rlexchr_idbody ( int c ) {
-    if ( rlex_ischr_whitespace( c ) )
+    if ( rlexchr_ws( c ) )
         return 0;
-    if ( rlex_ischr_stringdelim( c ) )
+    if ( rlexchr_strdelim( c ) )
         return 0;
     switch ( c ) {
         case RILL_LEX_CHAR_ENUM_BEGIN:
@@ -104,7 +104,7 @@ int rlexchr_numopen ( int c ) {
 }
 
 int rlexchr_numbody ( int c ) {
-    if ( rlex_ischr_numopen( c ) )
+    if ( rlexchr_numopen( c ) )
         return 1;
     switch ( c ) {
         case RILL_LEX_CHAR_EXPONENT_MARK_LOWER:

@@ -1,6 +1,11 @@
 #ifndef RILL_RLEXSTT
 #define RILL_RLEXSTT
 
+#include "util/rutf8.h"
+#include "rval/rval.h"
+
+#include <stddef.h>
+
 #define RILL_LEXSTT_DEFAULT_BUFFER_SIZE 64
 
 #define RILL_LEXSTT_OK                    1
@@ -24,7 +29,8 @@ int rlexstt_init ( rlexstt * stt, RVal * buf );
 int rlexstt_retire ( rlexstt * stt );
 
 uint8_t * rlexstt_pos ( rlexstt * stt );
-uint8_t * rlexstt_ok ( rlexstt * stt );
+int rlexstt_ok ( rlexstt * stt );
+int rlexstt_done ( rlexstt * stt );
 
 int rlexstt_step ( rlexstt * stt );
 int rlexstt_peek ( rlexstt * stt );

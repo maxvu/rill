@@ -22,11 +22,11 @@ int rlextok (
     RVal * text
 );
 
-RVal * rlextok_type ( RVal * token );
+int rlextok_type ( RVal * token );
 RVal * rlextok_line ( RVal * token );
 RVal * rlextok_pos  ( RVal * token );
 RVal * rlextok_text  ( RVal * token );
 
-RVal * rlextok_dump  ( RVal * token );
+int rlextok_dump  ( RVal * token );
 
 #endif

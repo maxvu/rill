@@ -1,10 +1,9 @@
-#ifndef RILL_ERROR_INVALIDACCESSERROR
-#define RILL_ERROR_INVALIDACCESSERROR
+#ifndef RILL_INVALIDACCESSERROR
+#define RILL_INVALIDACCESSERROR
 
 #include "Error/Error.hpp"
 
 namespace Rill {
-namespace Error {
 
     class InvalidAccessError : public Error {
 
@@ -15,8 +14,6 @@ namespace Error {
         const char * message () const;
 
     };
-
-}
 }
 
 #endif

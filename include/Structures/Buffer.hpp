@@ -1,8 +1,7 @@
-#ifndef RILL_STRUCTURES_BUFFER
-#define RILL_STRUCTURES_BUFFER
+#ifndef RILL_BUFFER
+#define RILL_BUFFER
 
 namespace Rill {
-namespace Structures {
 
     class ByteBuffer;
     class CharBuffer;
@@ -91,7 +90,6 @@ namespace Structures {
 
     };
 
-}
 }
 
 #endif

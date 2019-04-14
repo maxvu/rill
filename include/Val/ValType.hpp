@@ -1,10 +1,9 @@
-#ifndef RILL_VAL_TYPE
-#define RILL_VAL_TYPE
+#ifndef RILL_VALTYPE
+#define RILL_VALTYPE
 
 namespace Rill {
-namespace Val {
 
-    enum Type {
+    enum ValType {
         NIL,
         IXX,
         UXX,
@@ -14,7 +13,6 @@ namespace Val {
         MAP
     };
 
-}
 }
 
 #endif

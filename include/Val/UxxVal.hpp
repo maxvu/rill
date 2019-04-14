@@ -1,12 +1,9 @@
-#ifndef RILL_VAL_UXXVAL
-#define RILL_VAL_UXXVAL
+#ifndef RILL_UXXVAL
+#define RILL_UXXVAL
 
 #include "Val/Val.hpp"
 
-using Rill::Val::Val;
-
 namespace Rill {
-namespace Val {
 
     class UxxVal : public Val {
 
@@ -20,7 +17,6 @@ namespace Val {
 
     };
 
-}
 }
 
 #endif

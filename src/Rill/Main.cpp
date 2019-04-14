@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "Error/Error.hpp"
+#include "Error/TypeMismatchError.hpp"
 #include "Error/NullArgumentError.hpp"
 #include "Structures/Buffer.hpp"
 #include "Structures/Map.hpp"
@@ -8,9 +9,9 @@
 #include "Structures/Refcounted.hpp"
 #include "Structures/Vector.hpp"
 
-#include "Val/Type.hpp"
-#include "Val/TypeMismatchError.hpp"
+#include "Val/ValType.hpp"
 #include "Val/VRef.hpp"
+#include "Val/Val.hpp"
 
 #include "Val/IxxVal.hpp"
 #include "Val/UxxVal.hpp"

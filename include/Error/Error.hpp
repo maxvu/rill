@@ -1,16 +1,14 @@
-#ifndef RILL_ERROR_ERROR
-#define RILL_ERROR_ERROR
+#ifndef RILL_ERROR
+#define RILL_ERROR
 
 namespace Rill {
-namespace Error {
 
     class Error {
 
-        virtual const char * message () const;
+        const char * message () const;
 
     };
 
-}
 }
 
 #endif

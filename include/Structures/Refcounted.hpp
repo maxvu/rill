@@ -1,8 +1,7 @@
-#ifndef RILL_STRUCTURES_REFCOUNTED
-#define RILL_STRUCTURES_REFCOUNTED
+#ifndef RILL_REFCOUNTED
+#define RILL_REFCOUNTED
 
 namespace Rill {
-namespace Structures {
 
     template <typename T> class Refcounted {
 
@@ -15,11 +14,10 @@ namespace Structures {
         Refcounted ();
 
         T * lease ();
-        char release ();
+        bool release ();
 
     };
 
-}
 }
 
 #endif

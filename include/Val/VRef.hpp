@@ -1,13 +1,10 @@
-#ifndef RILL_VAL_REF
-#define RILL_VAL_REF
+#ifndef RILL_VREF
+#define RILL_VREF
 
 #include "Structures/Ref.hpp"
 #include "Val/Val.hpp"
 
-using Rill::Structures::Ref;
-
 namespace Rill {
-namespace Val {
 
     class IxxVal;
     class UxxVal;
@@ -36,7 +33,6 @@ namespace Val {
 
     };
 
-}
 }
 
 #endif

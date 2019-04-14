@@ -1,16 +1,14 @@
-#ifndef RILL_VAL_VAL
-#define RILL_VAL_VAL
+#ifndef RILL_VAL
+#define RILL_VAL
 
 #include "Structures/Refcounted.hpp"
-
-using Rill::Structures::Refcounted;
+#include "Val/ValType.hpp"
 
 namespace Rill {
-namespace Val {
 
     class Val : public Refcounted<Val> {
 
-        virtual Type type () const =0;
+        virtual ValType type () const =0;
         virtual Val * clone () =0;
         virtual Val * exclude () const =0;
         virtual bool cyclesTo ( const Val * that ) const =0;
@@ -18,7 +16,6 @@ namespace Val {
 
     };
 
-}
 }
 
 #endif

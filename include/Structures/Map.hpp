@@ -1,10 +1,9 @@
-#ifndef RILL_STRUCTURES_MAP
-#define RILL_STRUCTURES_MAP
+#ifndef RILL_MAP
+#define RILL_MAP
 
 #include "Structures/Buffer.hpp"
 
 namespace Rill {
-namespace Structures {
 
     template <typename T> class Map {
 
@@ -92,7 +91,6 @@ namespace Structures {
 
     };
 
-}
 }
 
 #endif

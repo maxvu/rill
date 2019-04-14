@@ -1,8 +1,7 @@
-#ifndef RILL_STRUCTURES_REF
-#define RILL_STRUCTURES_REF
+#ifndef RILL_REF
+#define RILL_REF
 
 namespace Rill {
-namespace Structures {
 
     template <typename T> class Ref {
 
@@ -33,7 +32,6 @@ namespace Structures {
 
     };
 
-}
 }
 
 #endif

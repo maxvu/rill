@@ -1,22 +1,21 @@
-#ifndef RILL_VAL_TYPEMISMATCHERROR
-#define RILL_VAL_TYPEMISMATCHERROR
+#ifndef RILL_TYPEMISMATCHERROR
+#define RILL_TYPEMISMATCHERROR
 
 #include "Error/Error.hpp"
+#include "Val/ValType.hpp"
 
 namespace Rill {
-namespace Error {
 
     class TypeMismatchError : public Error {
 
         public:
 
-        TypeMismatchError ( Type expected, Type actual );
+        TypeMismatchError ( ValType expected, ValType actual );
 
         const char * message () const;
 
     };
 
-}
 }
 
 #endif

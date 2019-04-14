@@ -1,14 +1,10 @@
-#ifndef RILL_VAL_BUFVAL
-#define RILL_VAL_BUFVAL
+#ifndef RILL_BUFVAL
+#define RILL_BUFVAL
 
 #include "Structures/Buffer.hpp"
 #include "Val/Val.hpp"
 
-using Rill::Structures::Buffer;
-using Rill::Val::Val;
-
 namespace Rill {
-namespace Val {
 
     class BufVal : public Val, public Buffer {
 
@@ -16,7 +12,6 @@ namespace Val {
 
     };
 
-}
 }
 
 #endif

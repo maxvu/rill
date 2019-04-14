@@ -1,8 +1,7 @@
-#ifndef RILL_STRUCTURES_VECTOR
-#define RILL_STRUCTURES_VECTOR
+#ifndef RILL_VECTOR
+#define RILL_VECTOR
 
 namespace Rill {
-namespace Structures {
 
     template <typename T> class Vector {
 
@@ -51,7 +50,6 @@ namespace Structures {
 
     };
 
-}
 }
 
 #endif

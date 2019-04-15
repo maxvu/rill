@@ -1,6 +1,10 @@
 #ifndef RILL_BUFFER
 #define RILL_BUFFER
 
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
 namespace Rill {
 
     class ByteBuffer;
@@ -11,16 +15,13 @@ namespace Rill {
 
         protected:
 
-        uint8_t * bytes;
-        size_t len;
-        size_t cap;
+        std::vector<uint8_t> bytes;
 
         public:
 
-        static Buffer fromChars ( const char * cstr );
-        static Buffer fromBytes ( const uint8_t * bytes );
-
         Buffer ();
+        Buffer ( size_t init_size );
+        Buffer ( const char * cstr );
         Buffer ( const Buffer & that );
         Buffer ( const Buffer && that );
         ~Buffer ();
@@ -33,6 +34,7 @@ namespace Rill {
 
         Buffer & operator+= ( const Buffer & that );
 
+        Buffer & operator= ( const Buffer & that );
         bool operator== ( const Buffer & that ) const;
         operator bool () const;
 
@@ -58,7 +60,6 @@ namespace Rill {
 
     class CharBuffer : public Buffer {
 
-
         CharBuffer & operator= ( const char * cstr );
         CharBuffer & operator+= ( const char * cstr );
         char operator[] ( size_t index );
@@ -68,16 +69,18 @@ namespace Rill {
 
     class UTF8Buffer : public Buffer {
 
+        public:
+
         class Iter {
 
             protected:
 
-            const Buffer & buffer;
-            size_t position;
+            std::vector<uint8_t>::const_iterator it;
+            std::vector<uint8_t>::const_iterator end;
 
             public:
 
-            Iter ( const Buffer & buffer );
+            Iter ( const UTF8Buffer & buffer );
 
             Iter & operator++ (int) const;
             operator bool () const;
@@ -85,7 +88,7 @@ namespace Rill {
 
         };
 
-        Iter & begin () const;
+        Iter begin () const;
         size_t length () const;
 
     };

@@ -108,9 +108,7 @@ int rlexchr_numbody ( int c ) {
         return 1;
     switch ( c ) {
         case RILL_LEX_CHAR_EXPONENT_MARK_LOWER:
-        case RILL_LEX_CHAR_EXPONENT_MARK_UPPER:
         case RILL_LEX_CHAR_HEX_ESCAPE_LOWER:
-        case RILL_LEX_CHAR_HEX_ESCAPE_UPPER:
             return 1;
     }
     return 0;

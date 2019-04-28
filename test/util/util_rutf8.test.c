@@ -23,7 +23,7 @@ void rill_test_util_utf8 () {}
 // };
 //
 // void run_utf8_test_case ( const utf8_testcase * testcase ) {
-//     RVal s = rbuf( 10 );
+//     rval s = rbuf( 10 );
 //     rbuf_strcpy( &s, testcase->str );
 //     uint8_t * begin = ( uint8_t * ) rbuf_strget( &s );
 //     uint8_t * end = begin + rbuf_len( &s );

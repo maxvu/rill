@@ -10,8 +10,8 @@
 #define RILL_LEX_INVALID_UTF8          5
 #define RILL_LEX_UNDERLYING_ERROR      6
 
-typedef struct RVal RVal;
+typedef struct rval rval;
 
-int rlex ( RVal * result, RVal * input, int * status );
+int rlex ( rval * result, rval * input, int * status );
 
 #endif

@@ -3,18 +3,18 @@
 
 typedef struct REnv {
     RVM * vm;
-    RVal words;  // hash, word-name -> word-def (compiled bit, it offset, arity, text)
-    RVal constants;
-    RVal     it;          // instruction table
-    RVal     ct;          // constant table
-    RVal     nt;          // native function map
-    RVal constants;
-    RVal blocks;
+    rval words;  // hash, word-name -> word-def (compiled bit, it offset, arity, text)
+    rval constants;
+    rval     it;          // instruction table
+    rval     ct;          // constant table
+    rval     nt;          // native function map
+    rval constants;
+    rval blocks;
 } REnv;
 
 REnv * renv ();
 
-int renv_add_word ( REnv * env, RVal * worddef );
+int renv_add_word ( REnv * env, rval * worddef );
 int renv_recompile ( REnv * env );
 
 void renv_destroy ( REnv * env );

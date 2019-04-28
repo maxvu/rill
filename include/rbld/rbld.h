@@ -2,12 +2,12 @@
 #define RILL_RBLD
 
 typedef struct RBld {
-    RVal constants;
-    RVal blocks;
+    rval constants;
+    rval blocks;
 } RBld;
 
 typedef struct RBldBlk {
-    RVal ops;
+    rval ops;
 } RBldBlk;
 
 /*
@@ -18,11 +18,11 @@ typedef struct RBldBlk {
     map buf -> bb
 */
 
-RVal rbld ();
-RVal rbld_bb ( RVal * bld );
-RVal rbld_bb_op ( RVal * bb, uint8_t op );
-RVal rbld_bb_jump ( RVal * bb, uint8_t op );
-int rbld_compile ( RVal * prg, RVal * bld );
+rval rbld ();
+rval rbld_bb ( rval * bld );
+rval rbld_bb_op ( rval * bb, uint8_t op );
+rval rbld_bb_jump ( rval * bb, uint8_t op );
+int rbld_compile ( rval * prg, rval * bld );
 
 /*
     basic block
@@ -31,6 +31,6 @@ int rbld_compile ( RVal * prg, RVal * bld );
     vec< uxx bytes | buf block name >
 */
 
-RVal rbb_create()
+rval rbb_create()
 
 #endif

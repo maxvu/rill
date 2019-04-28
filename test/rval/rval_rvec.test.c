@@ -7,8 +7,8 @@
 void rill_test_rval_rvec () {
 
     RTEST_BEGIN( "rval / vec / push, pop, get, set" )  {
-        RVal vec = rvec();
-        RVal item = rnil();
+        rval vec = rvec();
+        rval item = rnil();
         INSIST( rvec_len( &vec ) == 0 );
         for ( size_t i = 0; i < 10; i++ ) {
             item = rixx( i );
@@ -25,9 +25,9 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / fill, contain recursive vals" )  {
-        RVal vec = rvec();
-        RVal subvec = rvec();
-        RVal item = rnil();
+        rval vec = rvec();
+        rval subvec = rvec();
+        rval item = rnil();
         INSIST( rvec_push( &subvec, &item ) );
         INSIST( rvec_fill( &vec, &subvec, 10 ) );
         INSIST( rvec_len( &vec ) == 10 );
@@ -37,15 +37,15 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / copy" )  {
-        RVal vec = rvec();
+        rval vec = rvec();
 
-        RVal item = rnil();
+        rval item = rnil();
         for ( size_t i = 0; i < 10; i++ ) {
             item = rixx( i );
             INSIST( rvec_push( &vec, &item ) );
         }
 
-        RVal vec2 = rnil();
+        rval vec2 = rnil();
         INSIST( rval_copy( &vec2, &vec ) );
         INSIST( rvec_get( &vec, 5 ) == rvec_get( &vec2, 5 ) );
 
@@ -54,15 +54,15 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / clone" )  {
-        RVal vec = rvec();
+        rval vec = rvec();
 
-        RVal item = rnil();
+        rval item = rnil();
         for ( size_t i = 0; i < 10; i++ ) {
             item = rixx( i );
             INSIST( rvec_push( &vec, &item ) );
         }
 
-        RVal vec2 = rnil();
+        rval vec2 = rnil();
         INSIST( rvec_clone( &vec2, &vec ) );
         INSIST( rvec_get( &vec, 5 ) != rvec_get( &vec2, 5 ) );
         INSIST( rixx_get( rvec_get( &vec, 5 ) ) == 5 );
@@ -72,8 +72,8 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / reverse" )  {
-        RVal vec = rvec();
-        RVal item = rnil();
+        rval vec = rvec();
+        rval item = rnil();
 
         item = rixx( 1 );
         INSIST( rvec_push( &vec, &item ) );
@@ -104,8 +104,8 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / survives resizing" )  {
-        RVal vec = rnil();
-        RVal item = rnil();
+        rval vec = rnil();
+        rval item = rnil();
         INSIST( rvec_init( &vec, 30 ) );
 
         for ( size_t i = 0; i < 50; i++ ) {

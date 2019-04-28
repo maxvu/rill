@@ -3,10 +3,10 @@
 
 #include "config/arch.h"
 
-typedef struct RVal RVal;
+typedef struct rval rval;
 
-RVal ruxx ( RILL_UXX_TYPE u );
-void ruxx_set ( RVal * val, RILL_UXX_TYPE u );
-RILL_UXX_TYPE ruxx_get ( RVal * val );
+rval ruxx ( RILL_UXX_TYPE u );
+void ruxx_set ( rval * val, RILL_UXX_TYPE u );
+RILL_UXX_TYPE ruxx_get ( rval * val );
 
 #endif

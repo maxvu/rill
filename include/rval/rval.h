@@ -18,17 +18,17 @@
           invalidated whenever a reallocation happens (e.g. _exclude(),
           _reserve()).
         - Whenever a mutating function fails, it must leave the operand value
-          in a valid state. (CTRL+F for an `RVal tmp;` pattern.)
+          in a valid state. (CTRL+F for an `rval tmp;` pattern.)
 */
 
-typedef enum RValType RValType;
-typedef struct RVal RVal;
+typedef enum rvalType rvalType;
+typedef struct rval rval;
 typedef struct RBuf RBuf;
 typedef struct RVec RVec;
 typedef struct RMap RMap;
 typedef struct RMapSlot RMapSlot;
 
-enum RValType {
+enum rvalType {
     RVT_NIL = 0, // non-value
     RVT_IXX = 1, // signed integer
     RVT_UXX = 2, // unsigned integer
@@ -39,8 +39,8 @@ enum RValType {
     RVT_MAP = 7  // map
 };
 
-struct RVal {
-    RValType typ;
+struct rval {
+    rvalType typ;
     union {
         RILL_IXX_TYPE ixx;
         RILL_UXX_TYPE uxx;
@@ -52,22 +52,22 @@ struct RVal {
     };
 };
 
-int rval_type ( RVal * val );
-int rval_lease ( RVal * val );
-int rval_release ( RVal * val );
-int rval_exclude ( RVal * val );
-int rval_copy ( RVal * dst, RVal * src );
-int rval_clone ( RVal * dst, RVal * src );
-int rval_move ( RVal * dst, RVal * src );
-int rval_swap ( RVal * a, RVal * b );
-int rval_eq ( RVal * a, RVal * b );
-int rval_truthy ( RVal * val );
-int rval_isnil ( RVal * val );
-int rval_cyclesto ( RVal * haystack, RVal * needle );
-int rval_pack ( RVal * bytes, RVal * val );
-int rval_unpack ( RVal * val, RVal * bytes );
-void rval_dump ( RVal * val );
+int rval_type ( rval * val );
+int rval_lease ( rval * val );
+int rval_release ( rval * val );
+int rval_exclude ( rval * val );
+int rval_copy ( rval * dst, rval * src );
+int rval_clone ( rval * dst, rval * src );
+int rval_move ( rval * dst, rval * src );
+int rval_swap ( rval * a, rval * b );
+int rval_eq ( rval * a, rval * b );
+int rval_truthy ( rval * val );
+int rval_isnil ( rval * val );
+int rval_cyclesto ( rval * haystack, rval * needle );
+int rval_pack ( rval * bytes, rval * val );
+int rval_unpack ( rval * val, rval * bytes );
+void rval_dump ( rval * val );
 
-RVal rnil ();
+rval rnil ();
 
 #endif

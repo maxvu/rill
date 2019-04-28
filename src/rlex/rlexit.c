@@ -83,6 +83,6 @@ int rlexit_done ( rlexit * it ) {
     return rutf8it_done( &it->uit );
 }
 
-int rlexit_range ( RVal * token, rlexit * begin, rlexit * end, int type ) {
+int rlexit_range ( rval * token, rlexit * begin, rlexit * end, int type ) {
 
 }

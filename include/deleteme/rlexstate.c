@@ -7,7 +7,7 @@
 #include "rval/rvec.h"
 #include "util/rutf8.h"
 
-int rlexstate_init ( rlexstate * state, RVal * buf ) {
+int rlexstate_init ( rlexstate * state, rval * buf ) {
     if ( !state || !buf ) {
         rerr_set( RILL_ERR_NULLARG );
         return 0;
@@ -74,7 +74,7 @@ int rlexstate_add_token ( rlexstate * state, uint8_t * begin, uint8_t type ) {
         rerr_set( RILL_ERR_NULLARG );
         return 0;
     }
-    RVal token_buf = rnil();
+    rval token_buf = rnil();
     size_t n = state->buf + state->pos - begin;
     if ( !rbuf_init( &token_buf, n ) )
         return 0;
@@ -83,7 +83,7 @@ int rlexstate_add_token ( rlexstate * state, uint8_t * begin, uint8_t type ) {
         return 0;
     }
 
-    RVal token = rnil();
+    rval token = rnil();
     char ok = rlextok(
         &token,
         type,

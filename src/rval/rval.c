@@ -6,13 +6,13 @@
 #include "rval/ruxx.h"
 #include "rval/rvec.h"
 
-int rval_type ( RVal * val ) {
+int rval_type ( rval * val ) {
     if ( !val )
         return 0;
     return val->typ;
 }
 
-int rval_lease ( RVal * val ) {
+int rval_lease ( rval * val ) {
     if ( !val )
         return 0;
     switch ( rval_type( val ) ) {
@@ -28,7 +28,7 @@ int rval_lease ( RVal * val ) {
     return 1;
 }
 
-int rval_release ( RVal * val ) {
+int rval_release ( rval * val ) {
     if ( !val )
         return 0;
     switch ( rval_type( val ) ) {
@@ -45,7 +45,7 @@ int rval_release ( RVal * val ) {
     return 1;
 }
 
-int rval_exclude ( RVal * val ) {
+int rval_exclude ( rval * val ) {
     if ( !val )
         return 0;
     switch ( rval_type( val ) ) {
@@ -61,7 +61,7 @@ int rval_exclude ( RVal * val ) {
     }
 }
 
-int rval_copy ( RVal * dst, RVal * src ) {
+int rval_copy ( rval * dst, rval * src ) {
     if ( !dst )
         return 0;
     if ( !src )
@@ -85,20 +85,20 @@ int rval_copy ( RVal * dst, RVal * src ) {
             break;
         case RVT_VDP:
             rval_release( dst );
-            *dst = ( RVal ) { .typ = RVT_VDP, .vdp = src->vdp };
+            *dst = ( rval ) { .typ = RVT_VDP, .vdp = src->vdp };
         case RVT_BUF:
             rval_release( dst );
-            *dst = ( RVal ) { .typ = RVT_BUF, .buf = src->buf };
+            *dst = ( rval ) { .typ = RVT_BUF, .buf = src->buf };
             dst->buf->ref++;
             break;
         case RVT_VEC:
             rval_release( dst );
-            *dst = ( RVal ) { .typ = RVT_VEC, .vec = src->vec };
+            *dst = ( rval ) { .typ = RVT_VEC, .vec = src->vec };
             dst->vec->ref++;
             break;
         case RVT_MAP:
             rval_release( dst );
-            *dst = ( RVal ) { .typ = RVT_MAP, .map = src->map };
+            *dst = ( rval ) { .typ = RVT_MAP, .map = src->map };
             dst->map->ref++;
             break;
         default:
@@ -108,7 +108,7 @@ int rval_copy ( RVal * dst, RVal * src ) {
     return 1;
 }
 
-int rval_clone ( RVal * dst, RVal * src ) {
+int rval_clone ( rval * dst, rval * src ) {
     if ( !dst )
         return 0;
     if ( !src )
@@ -122,7 +122,7 @@ int rval_clone ( RVal * dst, RVal * src ) {
             return rval_copy( dst, src );
             break;
         case RVT_BUF: {
-            RVal tmp = rnil();
+            rval tmp = rnil();
             if ( !rbuf_init( &tmp, rbuf_len( src ) ) )
                 return 0;
             if ( !rbuf_cpy( &tmp, src ) )
@@ -143,7 +143,7 @@ int rval_clone ( RVal * dst, RVal * src ) {
     }
 }
 
-int rval_move ( RVal * dst, RVal * src ) {
+int rval_move ( rval * dst, rval * src ) {
     if ( !dst )
         return 0;
     if ( !src )
@@ -153,19 +153,19 @@ int rval_move ( RVal * dst, RVal * src ) {
     return 1;
 }
 
-int rval_swap ( RVal * a, RVal * b ) {
+int rval_swap ( rval * a, rval * b ) {
     if ( !a )
         return 0;
     if ( !b )
         return 0;
-    RVal tmp = rnil();
+    rval tmp = rnil();
     rval_move( &tmp, a );
     rval_move( a, b );
     rval_move( b, &tmp );
     return 1;
 }
 
-int rval_eq ( RVal * a, RVal * b ) {
+int rval_eq ( rval * a, rval * b ) {
     if ( !a )
         return 0;
     if ( !b )
@@ -192,8 +192,8 @@ int rval_eq ( RVal * a, RVal * b ) {
                 return 0;
             RMapIter it = rmap_begin( a );
             while ( it ) {
-                RVal * a_val = rmap_iter_val( it );
-                RVal * b_val = rmap_get( b, rmap_iter_key( it ) );
+                rval * a_val = rmap_iter_val( it );
+                rval * b_val = rmap_get( b, rmap_iter_key( it ) );
                 if ( !rval_eq( a_val, b_val ) )
                     return 0;
                 it = rmap_iter_next( a, it );
@@ -204,7 +204,7 @@ int rval_eq ( RVal * a, RVal * b ) {
     }
 }
 
-int rval_truthy ( RVal * val ) {
+int rval_truthy ( rval * val ) {
     if ( !val )
         return 0;
     switch ( rval_type( val ) ) {
@@ -220,13 +220,13 @@ int rval_truthy ( RVal * val ) {
     }
 }
 
-int rval_isnil ( RVal * val ) {
+int rval_isnil ( rval * val ) {
     if ( !val )
         return 0;
     return val->typ == RVT_NIL;
 }
 
-int rval_cyclesto ( RVal * haystack, RVal * needle ) {
+int rval_cyclesto ( rval * haystack, rval * needle ) {
     if ( !haystack )
         return 0;
     if ( !needle )
@@ -263,8 +263,8 @@ int rval_cyclesto ( RVal * haystack, RVal * needle ) {
     }
 }
 
-RVal rnil () {
-    return ( RVal ) {
+rval rnil () {
+    return ( rval ) {
         .typ = RVT_NIL,
         .uxx = 0
     };

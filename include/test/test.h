@@ -12,8 +12,8 @@ struct {
     struct {
         size_t n;
         size_t n_pass;
-        RVal name;
-        RVal msg;
+        rval name;
+        rval msg;
     } cur;
 } __rts;
 

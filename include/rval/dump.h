@@ -1,3 +1,3 @@
-typedef struct RVal RVal;
+typedef struct rval rval;
 
-void rval_dump ( RVal * val );
+void rval_dump ( rval * val );

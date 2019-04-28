@@ -3,7 +3,7 @@
 #include "rval/rval.h"
 
 RILL_UXX_TYPE ___rill_error_code;
-RVal ___rill_error_info;
+rval ___rill_error_info;
 
 void rerr_init () {
     ___rill_error_code = 0;
@@ -22,10 +22,10 @@ RILL_UXX_TYPE rerr_get () {
     return ___rill_error_code;
 }
 
-void rerrinfo_set ( RVal * info ) {
+void rerrinfo_set ( rval * info ) {
     rval_copy( &___rill_error_info, info );
 }
 
-int rerrinfo_get ( RVal * dst ) {
+int rerrinfo_get ( rval * dst ) {
     return rval_copy( dst, &___rill_error_info );
 }

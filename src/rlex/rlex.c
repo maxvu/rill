@@ -1,7 +1,7 @@
 #include "rlex/rlex.h"
 
-int rlex_ws ( RVal * result );
+int rlex_ws ( rval * result );
 
-int rlex ( RVal * result, RVal * input, int * status ) {
+int rlex ( rval * result, rval * input, int * status ) {
     return 1;
 }

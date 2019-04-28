@@ -14,24 +14,24 @@ typedef struct RBuf {
     uint8_t   bts[];
 } RBuf;
 
-RVal rbuf ();
-int rbuf_init ( RVal * val, size_t cap );
-size_t rbuf_len ( RVal * val );
-uint8_t * rbuf_get ( RVal * bufval );
-char * rbuf_strget ( RVal * bufval );
-int rbuf_reserve ( RVal * buf, size_t cap );
-int rbuf_compact ( RVal * buf );
-int rbuf_release ( RVal * buf );
-int rbuf_exclude ( RVal * buf );
-int rbuf_memcpy ( RVal * buf, uint8_t * mem, size_t mem_len );
-int rbuf_memcat ( RVal * buf, uint8_t * mem, size_t mem_len );
-int rbuf_memcmp ( RVal * buf, uint8_t * mem, size_t mem_len );
-int rbuf_cpy ( RVal * dst, RVal * src );
-int rbuf_cat ( RVal * dst, RVal * src );
-int rbuf_cmp ( RVal * a, RVal * b ); // need to check rerr
-int rbuf_strcpy ( RVal * buf, const char * cstr );
-int rbuf_strcat ( RVal * buf, const char * cstr );
-int rbuf_strcmp ( RVal * buf, const char * cstr );
-int rbuf_clear ( RVal * buf );
+rval rbuf ();
+int rbuf_init ( rval * val, size_t cap );
+size_t rbuf_len ( rval * val );
+uint8_t * rbuf_get ( rval * bufval );
+char * rbuf_strget ( rval * bufval );
+int rbuf_reserve ( rval * buf, size_t cap );
+int rbuf_compact ( rval * buf );
+int rbuf_release ( rval * buf );
+int rbuf_exclude ( rval * buf );
+int rbuf_memcpy ( rval * buf, uint8_t * mem, size_t mem_len );
+int rbuf_memcat ( rval * buf, uint8_t * mem, size_t mem_len );
+int rbuf_memcmp ( rval * buf, uint8_t * mem, size_t mem_len );
+int rbuf_cpy ( rval * dst, rval * src );
+int rbuf_cat ( rval * dst, rval * src );
+int rbuf_cmp ( rval * a, rval * b ); // need to check rerr
+int rbuf_strcpy ( rval * buf, const char * cstr );
+int rbuf_strcat ( rval * buf, const char * cstr );
+int rbuf_strcmp ( rval * buf, const char * cstr );
+int rbuf_clear ( rval * buf );
 
 #endif

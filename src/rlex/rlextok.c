@@ -9,13 +9,13 @@
 #include <stdio.h>
 
 int rlextok (
-    RVal * tok,
+    rval * tok,
     unsigned int type,
     RILL_UXX_TYPE line,
     RILL_UXX_TYPE pos,
-    RVal * text
+    rval * text
 ) {
-    RVal tmp = rnil();
+    rval tmp = rnil();
     if ( !rvec_init( tok, 4 ) )
         return 0;
 
@@ -33,33 +33,33 @@ int rlextok (
     return 1;
 }
 
-int rlextok_type ( RVal * token ) {
+int rlextok_type ( rval * token ) {
     RILL_ASSERT_ARGNOTNULL( token )
     if ( rvec_len( token ) != 4 )
         return -1;
     return ruxx_get( rvec_get( token, 0 ) );
 }
 
-RVal * rlextok_line ( RVal * token ) {
+rval * rlextok_line ( rval * token ) {
     RILL_ASSERT_ARGNOTNULL( token )
     if ( rvec_len( token ) != 4 )
         return NULL;
     return rvec_get( token, 1 );
 }
 
-RVal * rlextok_pos  ( RVal * token ) {
+rval * rlextok_pos  ( rval * token ) {
     RILL_ASSERT_ARGNOTNULL( token )
     if ( rvec_len( token ) != 4 )
         return NULL;
     return rvec_get( token, 2 );
 }
 
-RVal * rlextok_text  ( RVal * token ) {
+rval * rlextok_text  ( rval * token ) {
     RILL_ASSERT_ARGNOTNULL( token )
     if ( rvec_len( token ) != 4 )
         return NULL;
     return rvec_get( token, 3 );
 }
 
-int rlextok_dump ( RVal * token ) {
+int rlextok_dump ( rval * token ) {
 }

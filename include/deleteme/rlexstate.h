@@ -13,10 +13,10 @@ typedef struct rlexstate {
     RUTF8Peek peek;       // UTF-8 cursor result
     uint8_t * buf;        // buffer begin
     uint8_t * buf_end;    // buffer end
-    RVal result;          // rvec of rlextok's
+    rval result;          // rvec of rlextok's
 } rlexstate;
 
-int rlexstate_init ( rlexstate * state, RVal * buf );
+int rlexstate_init ( rlexstate * state, rval * buf );
 void rlexstate_retire ( rlexstate * state );
 int rlexstate_step ( rlexstate * state );
 int rlexstate_peek ( rlexstate * state );

@@ -1,13 +1,13 @@
 #ifndef RILL_RWRD
 #define RILL_RWRD
 
-RVal rwrd (
-    RVal * name
+rval rwrd (
+    rval * name
 );
 
-int rcb_add_word ( RVal * rcb, RVal * word );
-int rcb_recompile ( RVal * rcb );
+int rcb_add_word ( rval * rcb, rval * word );
+int rcb_recompile ( rval * rcb );
 
-void rcb_destroy( RVal * rcb );
+void rcb_destroy( rval * rcb );
 
 #endif

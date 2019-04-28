@@ -11,24 +11,24 @@ typedef struct RVec {
     size_t len;
     size_t cap;
     size_t ref;
-    RVal   vls[];
+    rval   vls[];
 } RVec;
 
-RVal rvec ();
-int rvec_init ( RVal * val, size_t cap );
-size_t rvec_len ( RVal * vec );
-int rvec_reserve ( RVal * vec, size_t cap );
-int rvec_compact ( RVal * vec );
-int rvec_clone ( RVal * dst, RVal * src );
-int rvec_exclude ( RVal * vec );
-int rvec_release ( RVal * vec );
-int rvec_push ( RVal * vec, RVal * item );
-int rvec_pop ( RVal * vec );
-RVal * rvec_get ( RVal * vec, size_t idx );
-int rvec_set ( RVal * vec, size_t idx, RVal * item );
-int rvec_fill ( RVal * vec, RVal * item, size_t n );
-int rvec_reverse ( RVal * vec );
-int rvec_concat ( RVal * dst, RVal * src );
-int rvec_clear ( RVal * vec );
+rval rvec ();
+int rvec_init ( rval * val, size_t cap );
+size_t rvec_len ( rval * vec );
+int rvec_reserve ( rval * vec, size_t cap );
+int rvec_compact ( rval * vec );
+int rvec_clone ( rval * dst, rval * src );
+int rvec_exclude ( rval * vec );
+int rvec_release ( rval * vec );
+int rvec_push ( rval * vec, rval * item );
+int rvec_pop ( rval * vec );
+rval * rvec_get ( rval * vec, size_t idx );
+int rvec_set ( rval * vec, size_t idx, rval * item );
+int rvec_fill ( rval * vec, rval * item, size_t n );
+int rvec_reverse ( rval * vec );
+int rvec_concat ( rval * dst, rval * src );
+int rvec_clear ( rval * vec );
 
 #endif

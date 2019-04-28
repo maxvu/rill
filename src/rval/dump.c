@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-void rval_dump ( RVal * val ) {
+void rval_dump ( rval * val ) {
     if ( !val )
         printf( "(NULL)" );
     switch ( rval_type( val ) ) {
@@ -52,7 +52,7 @@ void rmapslot_dbgprint ( RMapSlot * slot ) {
     }
 }
 
-void rmap_dbgprint ( RVal * map ) {
+void rmap_dbgprint ( rval * map ) {
     if ( !map )
         return;
     printf( "occ %lu cap %lu\n", map->map->occ, map->map->cap );

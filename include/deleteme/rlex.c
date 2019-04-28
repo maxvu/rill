@@ -44,7 +44,7 @@ int rlex_string ( rlexstate * state );
 int rlex_comment ( rlexstate * state );
 int rlex_numeric ( rlexstate * state );
 
-int rlex ( RVal * dst, RVal * lexbuf ) {
+int rlex ( rval * dst, rval * lexbuf ) {
     if ( !dst || !lexbuf ) {
         rerr_set( RILL_ERR_NULLARG );
         return 0;
@@ -85,8 +85,8 @@ int rlex ( RVal * dst, RVal * lexbuf ) {
         return 0;
 }
 
-int rlex_dump ( RVal * lexbuf ) {
-    RVal result = rnil();
+int rlex_dump ( rval * lexbuf ) {
+    rval result = rnil();
     if ( !rlex( &result, lexbuf ) ) {
         printf( "lex failed with code %x\n", rerr_get() );
         rerr_clear();

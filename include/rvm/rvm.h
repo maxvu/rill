@@ -10,12 +10,12 @@
 
 typedef struct RVM {
     size_t   pc;          // program counter
-    RVal     it;          // instruction table
-    RVal     ps;          // data stack, primary
-    RVal     ss;          // data stack, secondary
-    RVal     cs;          // call stack
-    RVal     ct;          // constant table
-    RVal     nt;          // native function map
+    rval     it;          // instruction table
+    rval     ps;          // data stack, primary
+    rval     ss;          // data stack, secondary
+    rval     cs;          // call stack
+    rval     ct;          // constant table
+    rval     nt;          // native function map
     uint32_t mf;          // machine flags (debug?, num behavior?)
 } RVM;
 

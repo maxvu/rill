@@ -1,11 +1,11 @@
 #ifndef RILL_RCB
 #define RILL_RCB
 
-RVal rcb ();
+rval rcb ();
 
-int rcb_add_word ( RVal * rcb, RVal * word );
-int rcb_recompile ( RVal * rcb );
+int rcb_add_word ( rval * rcb, rval * word );
+int rcb_recompile ( rval * rcb );
 
-void rcb_release( RVal * rcb );
+void rcb_release( rval * rcb );
 
 #endif

@@ -27,6 +27,6 @@ int rlexit_ok ( rlexit * it );
 int rlexit_eof ( rlexit * it );
 int rlexit_done ( rlexit * it );
 
-int rlexit_range ( RVal * token, rlexit * begin, rlexit * end, int type );
+int rlexit_range ( rval * token, rlexit * begin, rlexit * end, int type );
 
 #endif

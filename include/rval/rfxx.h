@@ -3,13 +3,13 @@
 
 #include "config/arch.h"
 
-typedef struct RVal RVal;
+typedef struct rval rval;
 
-RVal rfxx ( RILL_FXX_TYPE f );
-void rfxx_set ( RVal * val, RILL_FXX_TYPE f );
-RILL_FXX_TYPE rfxx_get ( RVal * val );
-int rfxx_isfinite ( RVal * val );
-int rfxx_isinf ( RVal * val );
-int rfxx_isnan ( RVal * val );
+rval rfxx ( RILL_FXX_TYPE f );
+void rfxx_set ( rval * val, RILL_FXX_TYPE f );
+RILL_FXX_TYPE rfxx_get ( rval * val );
+int rfxx_isfinite ( rval * val );
+int rfxx_isinf ( rval * val );
+int rfxx_isnan ( rval * val );
 
 #endif

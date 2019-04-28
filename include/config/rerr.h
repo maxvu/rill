@@ -6,7 +6,7 @@
 // TODO: make thread-local
 // TODO: setting that info struct after the code's been set can clobber...
 
-typedef struct RVal RVal;
+typedef struct rval rval;
 
 /* system errors (global) */
 #define RILL_ERR_OK      0x00  // absence of an error
@@ -44,7 +44,7 @@ void rerr_set ( RILL_UXX_TYPE errno );
 void rerr_clear ();
 RILL_UXX_TYPE rerr_get ();
 
-void rerrinfo_set ( RVal * info );
-int rerrinfo_get ( RVal * dst );
+void rerrinfo_set ( rval * info );
+int rerrinfo_get ( rval * dst );
 
 #endif

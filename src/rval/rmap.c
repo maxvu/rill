@@ -6,8 +6,8 @@
 
 #include <string.h>
 
-RVal rmap () {
-    RVal tmp = rnil();
+rval rmap () {
+    rval tmp = rnil();
     rmap_init( &tmp, RILL_RMAP_DEFSIZ );
     return tmp;
 }
@@ -57,8 +57,8 @@ void rmapslot_swap ( RMapSlot * a, RMapSlot * b ) {
     rval_swap( &a->val, &b->val );
 }
 
-int rmap_realloc ( RVal * mapval, size_t new_cap ) {
-    RVal tmp = rnil();
+int rmap_realloc ( rval * mapval, size_t new_cap ) {
+    rval tmp = rnil();
     if ( !rmap_init( &tmp, new_cap / RILL_RMAP_MAXLOD ) )
         return 0;
     RMapIter it = rmap_begin( mapval );
@@ -73,7 +73,7 @@ int rmap_realloc ( RVal * mapval, size_t new_cap ) {
     return 1;
 }
 
-int rmap_init ( RVal * mapval, size_t cap ) {
+int rmap_init ( rval * mapval, size_t cap ) {
     if ( !mapval )
         return 0;
     if ( rval_type( mapval ) == RVT_MAP ) {
@@ -100,20 +100,20 @@ int rmap_init ( RVal * mapval, size_t cap ) {
         };
     }
     rmap_release( mapval );
-    *mapval = ( RVal ) {
+    *mapval = ( rval ) {
         .typ = RVT_MAP,
         .map = map
     };
     return 1;
 }
 
-size_t rmap_size ( RVal * mapval ) {
+size_t rmap_size ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     return mapval->map->occ;
 }
 
-int rmap_reserve ( RVal * mapval, size_t cap ) {
+int rmap_reserve ( rval * mapval, size_t cap ) {
 
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
@@ -122,7 +122,7 @@ int rmap_reserve ( RVal * mapval, size_t cap ) {
     return rmap_realloc( mapval, cap );
 }
 
-int rmap_compact ( RVal * mapval ) {
+int rmap_compact ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     RMap * map = mapval->map;
@@ -134,12 +134,12 @@ int rmap_compact ( RVal * mapval ) {
     return rmap_realloc( mapval, target );
 }
 
-int rmap_clone ( RVal * dst, RVal * src_mapval ) {
+int rmap_clone ( rval * dst, rval * src_mapval ) {
     if ( !src_mapval || rval_type( src_mapval ) != RVT_MAP )
         return 0;
     if ( !dst )
         return 0;
-    RVal tmp = rnil();
+    rval tmp = rnil();
     if ( !rmap_init( &tmp, rmap_size( src_mapval ) ) )
         return 0;
     RMapIter it = rmap_begin( src_mapval );
@@ -156,13 +156,13 @@ int rmap_clone ( RVal * dst, RVal * src_mapval ) {
     return 1;
 }
 
-int rmap_exclude ( RVal * mapval ) {
+int rmap_exclude ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     return rmap_realloc( mapval, mapval->map->occ );
 }
 
-int rmap_release ( RVal * mapval ) {
+int rmap_release ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     RMap * map = mapval->map;
@@ -179,7 +179,7 @@ int rmap_release ( RVal * mapval ) {
     return 1;
 }
 
-int rmap_set ( RVal * mapval, RVal * keyval, RVal * item ) {
+int rmap_set ( rval * mapval, rval * keyval, rval * item ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( !keyval || rval_type( keyval ) != RVT_BUF )
@@ -187,7 +187,7 @@ int rmap_set ( RVal * mapval, RVal * keyval, RVal * item ) {
 
     // if key already exists, just replace its value
     {
-        RVal * hit;
+        rval * hit;
         if ( ( hit = rmap_get( mapval, keyval ) ) ) {
             if ( rval_cyclesto( item, mapval ) && !rval_exclude( mapval ) )
                 return 0;
@@ -252,7 +252,7 @@ int rmap_set ( RVal * mapval, RVal * keyval, RVal * item ) {
     }
 }
 
-RVal * rmap_get ( RVal * mapval, RVal * keyval ) {
+rval * rmap_get ( rval * mapval, rval * keyval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return NULL;
     if ( !keyval || rval_type( keyval ) != RVT_BUF )
@@ -276,18 +276,18 @@ RVal * rmap_get ( RVal * mapval, RVal * keyval ) {
     return NULL;
 }
 
-RVal * rmap_getc ( RVal * mapval, const char * key ) {
+rval * rmap_getc ( rval * mapval, const char * key ) {
     if ( !key )
         return NULL;
-    RVal keyval = rbuf();
+    rval keyval = rbuf();
     if ( !rbuf_strcpy( &keyval, key ) )
         return NULL;
-    RVal * result = rmap_get( mapval, &keyval );
+    rval * result = rmap_get( mapval, &keyval );
     rval_release( &keyval );
     return result;
 }
 
-int rmap_unset ( RVal * mapval, RVal * keyval ) {
+int rmap_unset ( rval * mapval, rval * keyval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( !keyval || rval_type( keyval ) != RVT_BUF )
@@ -327,12 +327,12 @@ int rmap_unset ( RVal * mapval, RVal * keyval ) {
     return 0;
 }
 
-int rmap_keys ( RVal * dstval, RVal * src_mapval ) {
+int rmap_keys ( rval * dstval, rval * src_mapval ) {
     if ( !src_mapval || rval_type( src_mapval ) != RVT_MAP )
         return 0;
     if ( !dstval )
         return 0;
-    RVal tmp = rnil();
+    rval tmp = rnil();
     if ( !rvec_init( &tmp, rmap_size( src_mapval ) ) )
         return 0;
     RMapIter it = rmap_begin( src_mapval );
@@ -347,12 +347,12 @@ int rmap_keys ( RVal * dstval, RVal * src_mapval ) {
     return 1;
 }
 
-int rmap_vals ( RVal * dstval, RVal * src_mapval ) {
+int rmap_vals ( rval * dstval, rval * src_mapval ) {
     if ( !src_mapval || rval_type( src_mapval ) != RVT_MAP )
         return 0;
     if ( !dstval )
         return 0;
-    RVal tmp = rnil();
+    rval tmp = rnil();
     if ( !rvec_init( &tmp, rmap_size( src_mapval ) ) )
         return 0;
     RMapIter it = rmap_begin( src_mapval );
@@ -367,13 +367,13 @@ int rmap_vals ( RVal * dstval, RVal * src_mapval ) {
     return 1;
 }
 
-int rmap_merge ( RVal * dstval, RVal * srcval ) {
+int rmap_merge ( rval * dstval, rval * srcval ) {
     if ( !dstval || rval_type( dstval ) != RVT_MAP )
         return 0;
     if ( !srcval || rval_type( srcval ) != RVT_MAP )
         return 0;
     // TODO: can you safely rmap_merge without copying?
-    RVal tmp = rnil();
+    rval tmp = rnil();
     if ( !rmap_init( &tmp, rmap_size( srcval ) ) )
         return 0;
     RMapIter it = rmap_begin( srcval );
@@ -388,7 +388,7 @@ int rmap_merge ( RVal * dstval, RVal * srcval ) {
     return 1;
 }
 
-int rmap_clear ( RVal * mapval ) {
+int rmap_clear ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     RMapIter it = rmap_begin( mapval );
@@ -399,7 +399,7 @@ int rmap_clear ( RVal * mapval ) {
     return 1;
 }
 
-RMapIter rmap_begin ( RVal * mapval ) {
+RMapIter rmap_begin ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     RMap * map = mapval->map;
@@ -409,7 +409,7 @@ RMapIter rmap_begin ( RVal * mapval ) {
     return it;
 }
 
-RMapIter rmap_iter_next ( RVal * mapval, RMapIter it ) {
+RMapIter rmap_iter_next ( rval * mapval, RMapIter it ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( !it )
@@ -424,7 +424,7 @@ RMapIter rmap_iter_next ( RVal * mapval, RMapIter it ) {
     return it;
 }
 
-RVal * rmap_iter_key ( RMapIter it ) {
+rval * rmap_iter_key ( RMapIter it ) {
     if ( !it )
         return NULL;
     if ( rval_isnil( &it->key ) )
@@ -432,7 +432,7 @@ RVal * rmap_iter_key ( RMapIter it ) {
     return &it->key;
 }
 
-RVal * rmap_iter_val ( RMapIter it ) {
+rval * rmap_iter_val ( RMapIter it ) {
     if ( !it )
         return NULL;
     if ( rval_isnil( &it->key ) )
@@ -440,7 +440,7 @@ RVal * rmap_iter_val ( RMapIter it ) {
     return &it->val;
 }
 
-RMapIter rmap_iter_del ( RVal * mapval, RMapIter it ) {
+RMapIter rmap_iter_del ( rval * mapval, RMapIter it ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( !it )

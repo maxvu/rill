@@ -1,5 +1,6 @@
 #include "config/rerr.h"
-#include "rlex/rlex.h"
+#include "rlex/rlexit.h"
+#include "rlex/rlexchr.h"
 #include "rval/dump.h"
 #include "rval/rvec.h"
 #include "test/test.h"
@@ -8,11 +9,11 @@
 
 void rill_test_rlex_debug () {
 
-    RTEST_BEGIN( "rlex / debug" )  {
-        RVal buf = rbuf();
-        INSIST( rbuf_strcpy( &buf, "   some-word'somestring'" ) );
-        rlex_dump( &buf );
-        printf( "\n" );
-    } RTEST_END;
+    // RTEST_BEGIN( "rlex / debug" )  {
+    //     RVal buf = rbuf();
+    //     INSIST( rbuf_strcpy( &buf, "   some-word'somestring'" ) );
+    //     rlex_dump( &buf );
+    //     printf( "\n" );
+    // } RTEST_END;
 
 }

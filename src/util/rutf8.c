@@ -42,7 +42,7 @@ uint32_t GET_QUADRU_VAL( uint8_t * byt ) {
     return *byt & ~MASK_MSB[5];
 }
 
-uint8_t rutf8_continue_byte ( RUTF8Peek * peek, uint8_t * cb ) {
+uint8_t rutf8_continue_byte ( rutf8peek * peek, uint8_t * cb ) {
     if ( !IS_CONTIN_BYTE( cb ) ) {
         rerr_set( RILL_ERR_UTF8EOFTRUNC );
         return 0;
@@ -51,12 +51,12 @@ uint8_t rutf8_continue_byte ( RUTF8Peek * peek, uint8_t * cb ) {
     return 1;
 }
 
-int rutf8_peek ( RUTF8Peek * peek, uint8_t * pos, uint8_t * end ) {
+int rutf8_peek ( rutf8peek * peek, uint8_t * pos, uint8_t * end ) {
     if ( !peek || !pos || !end ) {
         rerr_set( RILL_ERR_NULLARG );
         return 0;
     }
-    *peek = ( RUTF8Peek ) {
+    *peek = ( rutf8peek ) {
         .n_bytes = 0,
         .codepoint = 0
     };
@@ -113,7 +113,7 @@ int rutf8_scan ( size_t * length, uint8_t * pos, uint8_t * end ) {
         return 0;
     }
     *length = 0;
-    RUTF8Peek peek;
+    rutf8peek peek;
     while ( pos < end ) {
         if ( !rutf8_peek( &peek, pos, end ) )
             return 0;

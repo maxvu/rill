@@ -8,3 +8,4 @@
 - fuzz
 - Computer Language Benchmark Game
 - add extensions
+- ask Rob Kleffner what he thinks

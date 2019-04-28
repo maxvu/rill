@@ -1,0 +1,322 @@
+# primitive types
+
+int uint double buf vec map
+
+# declarations
+
+- type
+- interface
+- membership
+
+class Eq T
+    eq? T :: T, T -> Bool
+
+eq? :: Double, Double -> Bool
+
+[ 1 2 3 ] [ 1 + ] map
+
+================================================================================
+
+net stack effect is the sum
+consumptive effect is the min of effects
+
+all values default to any
+
+================================================================================
+
+# primitive types
+
+int uint double buf vec map
+
+# words
+
+<< stack shuffler words >>
+
+dup
+drop
+swap
+rot
+rrot
+dup2
+drop2
+swap2
+nip
+
+ss<
+ss>
+
+<< super stack shuffler words >>
+
+
+
+<< base control flow words >>
+
+switch
+??
+?
+loop
+forever
+
+<< generic words >>
+
+type
+nil?
+and
+or
+nor
+not
+xor
+
+<< vector words >>
+
+@>
+@<
+@>l
+@<l
+
+@?
+@#
+@.
+@+
+@rev
+@sort
+@shuffle
+@zip
+@unzip
+@map
+@reduce
+@empty?
+@pad
+@n
+@flatten
+@compact
+@uniq
+@pack
+@join
+
+select
+reject
+reduce
+aseq
+gseq
+seq
+
+<< generator words >>
+
+<< string words >>
+
+length
+eq?
+concat
+is-string
+pad
+split
+lowercase
+uppercase
+substring
+position
+pack
+unpack
+
+$#
+$eq?
+$?
+$+
+$n
+$split
+$lc
+$uc
+$sub
+$pos
+$.
+$unpack
+
+<< map words >>
+
+%#
+%?
+%.?
+%keys
+%vals
+%>
+%<
+%x
+%inv
+%+
+
+: @rev ( [a,b,c] -- [c,b,a] ) ;
+
+================================================================================
+
+parens functions
+braces lists
+square quotations
+
+{  }
+?
+|
+[]
+{,}
+
+type Pair T :: { T, T } ;
+
+: interleave-dots
+    {} ()
+;
+
+: interleave-dots
+    : subfunction
+    ;
+
+    subfunction
+
+    {  } %
+    ( sdf )
+    $x [ @# ] keep [ '.' ] swap @pad @zip
+;
+
+: true ( -> Bool )
+    1 "bool" imbue
+;
+: false ( -> Bool ) ;
+: ! ( Bool -> Bool ) ;
+: xor ( Bool, Bool -> Bool ) ;
+
+: map [ T ], ( T -> U ) -> [ U ]
+
+: reswap ( T, U -> U, T )
+
+;
+
+"Int" type ;
+
+================================================================================
+
+: some-word ( a b -- c )
+    : inner-word (  ) ;
+;
+
+================================================================================
+
+public enum Suit
+    Heart Club Spade Diamond ;
+public enum Rank
+    Ace Two Three Four Five Six Seven Eight Nine Ten Jack Queen King ;
+
+private type Card { Suit, Rank } ;
+
+: card ( Suit, Rank -> Card ) Card ;
+: suit ( Card -> Suit ) @0 ! ;
+: rank ( Card -> Rank ) @1 ! ;
+
+type MapFn T U ( [ T ], ( T -> U ) -> [ U ] ) ;
+type Maybe T ( T | Nil ) ;
+
+type Pair T { T, T } ;
+type Point2D Pair Double ;
+
+class IAdd T
+    : + ( T, T -> T ) ;
+;
+
+: + ( Point2D, Point2D -> Point2D ) ;
+
+: swap T U ( T, ( U -> U ), T ) ;
+: swap T U ( ( T, U ) -> U, T ) ;
+
+================================================================================
+
+template <typename T> Addable {
+    virtual T operator+ ( const T & that ) const =0;
+}
+
+class Point2D : public Addable {
+    double x;
+    double y;
+
+    Point2D () : x(0), y(0) {
+
+    }
+
+    Point2D operator+ ( const Point2D & that ) const {
+        return Point2D( this.x + that.x, this.y + that.y );
+    }
+}
+
+================================================================================
+
+class IAdd T
+    + :: T, T -> T
+
+class IEq T
+    eq? :: T, T -> Bool
+ne? = eq? not
+
+type LT ;
+type EQ ;
+type GT ;
+
+type Ordering = LT | EQ | GT ;
+
+class ICmp T {
+    cmp ( T, T -> Ordering )
+}
+
+: gt? cmp GT eq? ;
+: ge? cmp LT not ;
+: lt? ge? not ;
+: le? gt? not ;
+
+type Point2D = Double, Double ;
+
+: x ( Point2D -> Double ) @0 ;
+: y ( Point2D -> Double ) @1 ;
+
+: eq? [ x ] [ bi@ eq? ] magic eq? ;
+: +   [ [ x ] [ y ] bi2 ] dup dip + ;
+
+IMPORT std.arrext ;
+
+: some-word ()
+    : some-subroutine () ;
+
+    some-subroutine
+;
+
+type Maybe T = T | Nil ;
+: nil ( -> Nil ) ;
+
+: get-some-point ( -> Maybe Point2D )
+
+;
+
+: sum ( [ T ] -> T => T : IAdd )
+
+;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.

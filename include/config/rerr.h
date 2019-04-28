@@ -18,11 +18,6 @@ typedef struct RVal RVal;
 #define RILL_ERR_VALALLOC    0x10  // allocation failure during rval operations
 #define RILL_ERR_TYPEACCESS  0x12  // access to a val of the wrong type
 
-/* UTF-8 decoding errors */
-#define RILL_ERR_UTF8EOFTRUNC   0x20
-#define RILL_ERR_UTF8EARLYTRUNC 0x21
-#define RILL_ERR_UTF8INVALIDBYT 0x22
-
 /* lexer errors (local) */
 #define RILL_ERR_LEXOK           0x30
 #define RILL_ERR_LEXSTREAMEND    0x31

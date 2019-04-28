@@ -98,38 +98,38 @@ typedef enum rop {
 
     /* immediate ops */
 
-    DU00 = 69,  // load immediate value 00
-    DU01 = 70,  // load immediate value 01
-    DU00 = 71,  // load immediate value 00
-    DU01 = 72,  // load immediate value 01
-    DU02 = 73,  // load immediate value 02
-    DU03 = 74,  // load immediate value 03
-    DU04 = 75,  // load immediate value 04
-    DU05 = 76,  // load immediate value 05
-    DU06 = 77,  // load immediate value 06
-    DU07 = 78,  // load immediate value 07
-    DU08 = 79,  // load immediate value 08
-    DU09 = 80,  // load immediate value 09
-    DU10 = 81,  // load immediate value 10
-    DU13 = 82,  // load immediate value 13
-    DU14 = 83,  // load immediate value 14
-    DU15 = 84,  // load immediate value 15
-    DU16 = 85,  // load immediate value 16
-    DU17 = 86,  // load immediate value 17
-    DU18 = 87,  // load immediate value 18
-    DU19 = 88,  // load immediate value 19
-    DU20 = 89,  // load immediate value 20
-    DU21 = 90,  // load immediate value 21
-    DU22 = 91,  // load immediate value 22
-    DU23 = 92,  // load immediate value 23
-    DU24 = 93,  // load immediate value 24
-    DU25 = 94,  // load immediate value 25
-    DU26 = 95,  // load immediate value 26
-    DU27 = 96,  // load immediate value 27
-    DU28 = 97,  // load immediate value 28
-    DU29 = 98,  // load immediate value 29
-    DU30 = 99,  // load immediate value 30
-    DU31 = 100, // load immediate value 31
+    DU00 = 69,  // load immediate value unsigned 00
+    DU01 = 70,  // load immediate value unsigned 01
+    DU00 = 71,  // load immediate value unsigned 00
+    DU01 = 72,  // load immediate value unsigned 01
+    DU02 = 73,  // load immediate value unsigned 02
+    DU03 = 74,  // load immediate value unsigned 03
+    DU04 = 75,  // load immediate value unsigned 04
+    DU05 = 76,  // load immediate value unsigned 05
+    DU06 = 77,  // load immediate value unsigned 06
+    DU07 = 78,  // load immediate value unsigned 07
+    DU08 = 79,  // load immediate value unsigned 08
+    DU09 = 80,  // load immediate value unsigned 09
+    DU10 = 81,  // load immediate value unsigned 10
+    DU13 = 82,  // load immediate value unsigned 13
+    DU14 = 83,  // load immediate value unsigned 14
+    DU15 = 84,  // load immediate value unsigned 15
+    DU16 = 85,  // load immediate value unsigned 16
+    DU17 = 86,  // load immediate value unsigned 17
+    DU18 = 87,  // load immediate value unsigned 18
+    DU19 = 88,  // load immediate value unsigned 19
+    DU20 = 89,  // load immediate value unsigned 20
+    DU21 = 90,  // load immediate value unsigned 21
+    DU22 = 91,  // load immediate value unsigned 22
+    DU23 = 92,  // load immediate value unsigned 23
+    DU24 = 93,  // load immediate value unsigned 24
+    DU25 = 94,  // load immediate value unsigned 25
+    DU26 = 95,  // load immediate value unsigned 26
+    DU27 = 96,  // load immediate value unsigned 27
+    DU28 = 97,  // load immediate value unsigned 28
+    DU29 = 98,  // load immediate value unsigned 29
+    DU30 = 99,  // load immediate value unsigned 30
+    DU31 = 100, // load immediate value unsigned 31
     DNIL = 101, // load immediate nil
     DPK4 = 102, // pack three unsigned values into a 15-bit unsigned integer
     DPK8 = 103, // pack seven unsigned values into a 35-bit unsigned integer
@@ -137,6 +137,8 @@ typedef enum rop {
 
     /* special */
     SYSC = 105, // invoke native function
+    IMBU = 106, // imbue a value with a UXX subtype
+    SBTP = 106, // query and imbued subtype
 
 } ROp;
 

@@ -5,7 +5,7 @@ int rlexchr_ws ( int c ) {
         case RILL_LEX_CHAR_BACKSPACE:
         case RILL_LEX_CHAR_TAB:
         case RILL_LEX_CHAR_LINE_FEED:
-        case RILL_LEX_CHAR_LINE_TABE:
+        case RILL_LEX_CHAR_LINE_TAB:
         case RILL_LEX_CHAR_FORM_FEED:
         case RILL_LEX_CHAR_CARRIAGE_RETURN:
         case RILL_LEX_CHAR_SPACE:
@@ -67,12 +67,13 @@ int rlexchr_idbody ( int c ) {
     if ( rlexchr_strdelim( c ) )
         return 0;
     switch ( c ) {
-        case RILL_LEX_CHAR_ENUM_BEGIN:
-        case RILL_LEX_CHAR_ENUM_END:
+        case RILL_LEX_CHAR_HASH_BEGIN:
+        case RILL_LEX_CHAR_HASH_END:
+        case RILL_LEX_CHAR_LIST_BEGIN:
+        case RILL_LEX_CHAR_LIST_END:
         case RILL_LEX_CHAR_QUOTE_BEGIN:
         case RILL_LEX_CHAR_QUOTE_END:
         case RILL_LEX_CHAR_COMMENT_BEGIN:
-        case RILL_LEX_CHAR_COMMENT_END:
         case RILL_LEX_CHAR_COMPILE_MODE_BEGIN:
         case RILL_LEX_CHAR_COMPILE_MODE_END:
         case RILL_LEX_CHAR_STRING_DELIM_SINGLE:

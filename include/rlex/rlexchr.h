@@ -1,11 +1,11 @@
-#ifndef RILL_RLEX_CHARS
-#define RILL_RLEX_CHARS
+#ifndef RILL_RLEX_CHR
+#define RILL_RLEX_CHR
 
 /* whitespace characters */
 #define RILL_LEX_CHAR_BACKSPACE                  0x0008
 #define RILL_LEX_CHAR_TAB                        0x0009
 #define RILL_LEX_CHAR_LINE_FEED                  0x000A
-#define RILL_LEX_CHAR_LINE_TABE                  0x000B
+#define RILL_LEX_CHAR_LINE_TAB                   0x000B
 #define RILL_LEX_CHAR_FORM_FEED                  0x000C
 #define RILL_LEX_CHAR_CARRIAGE_RETURN            0x000D
 #define RILL_LEX_CHAR_SPACE                      0x0020
@@ -54,10 +54,12 @@
 #define RILL_LEX_CHAR_RIGHT_ROUND_BRACE  ')'
 #define RILL_LEX_CHAR_COLON              ':'
 #define RILL_LEX_CHAR_SEMICOLON          ';'
+#define RILL_LEX_CHAR_OCTOTHORPE         '#'
 #define RILL_LEX_CHAR_DOT                '.'
 #define RILL_LEX_CHAR_DASH               '-'
 #define RILL_LEX_CHAR_E_LOWER            'e'
 #define RILL_LEX_CHAR_X_LOWER            'x'
+#define RILL_LEX_CHAR_U_LOWER            'u'
 #define RILL_LEX_CHAR_B_LOWER            'b'
 #define RILL_LEX_CHAR_V_LOWER            'v'
 #define RILL_LEX_CHAR_T_LOWER            't'
@@ -69,12 +71,13 @@
 #define RILL_LEX_CHAR_QUOTEMARK_DOUBLE   '"'
 
 /* language syntax */
-#define RILL_LEX_CHAR_ENUM_BEGIN             RILL_LEX_CHAR_LEFT_CURLY_BRACE
-#define RILL_LEX_CHAR_ENUM_END               RILL_LEX_CHAR_RIGHT_CURLY_BRACE
-#define RILL_LEX_CHAR_QUOTE_BEGIN            RILL_LEX_CHAR_LEFT_SQUARE_BRACE
-#define RILL_LEX_CHAR_QUOTE_END              RILL_LEX_CHAR_RIGHT_SQUARE_BRACE
-#define RILL_LEX_CHAR_COMMENT_BEGIN          RILL_LEX_CHAR_LEFT_ROUND_BRACE
-#define RILL_LEX_CHAR_COMMENT_END            RILL_LEX_CHAR_RIGHT_ROUND_BRACE
+#define RILL_LEX_CHAR_HASH_BEGIN             RILL_LEX_CHAR_LEFT_CURLY_BRACE
+#define RILL_LEX_CHAR_HASH_END               RILL_LEX_CHAR_RIGHT_CURLY_BRACE
+#define RILL_LEX_CHAR_LIST_BEGIN             RILL_LEX_CHAR_LEFT_SQUARE_BRACE
+#define RILL_LEX_CHAR_LIST_END               RILL_LEX_CHAR_RIGHT_SQUARE_BRACE
+#define RILL_LEX_CHAR_QUOTE_BEGIN            RILL_LEX_CHAR_LEFT_ROUND_BRACE
+#define RILL_LEX_CHAR_QUOTE_END              RILL_LEX_CHAR_RIGHT_ROUND_BRACE
+#define RILL_LEX_CHAR_COMMENT_BEGIN          RILL_LEX_CHAR_OCTOTHORPE
 #define RILL_LEX_CHAR_COMPILE_MODE_BEGIN     RILL_LEX_CHAR_COLON
 #define RILL_LEX_CHAR_COMPILE_MODE_END       RILL_LEX_CHAR_SEMICOLON
 #define RILL_LEX_CHAR_NUMERIC_DECIMAL        RILL_LEX_CHAR_DOT

@@ -2,17 +2,11 @@
 #define RILL_RLEXTOK
 
 #include "config/arch.h"
+#include "rval/rval.h"
 
 /*
-    [
-        type
-        text (source)
-        start line
-        start pos
-    ]
+    [ type, text (source), start line, start pos ]
 */
-
-typedef struct RVal RVal;
 
 int rlextok (
     RVal * tok,

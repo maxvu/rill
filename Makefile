@@ -1,4 +1,4 @@
-CC := gcc
+CC := clang
 
 CC_INCLUDE := -I include/
 
@@ -11,25 +11,42 @@ CC_FLAGS_COVERAGE := --coverage -fprofile-dir="coverage/" \
 CC_COMPILE = $(CC) $(CC_INCLUDE) $(CC_FLAGS)
 CC_COMPILE_OBJECT = $(CC) $(CC_INCLUDE) -c $(CC_FLAGS)
 
-CONFIG := $(patsubst "src/config/%c", "build/config/%.o", $(wildcard src/config/*.c))
-build/config/%.o : src/config/%.c
+bin/ :
+	mkdir $@
+build/ :
+	mkdir $@
+
+CONFIG_SRC = $(wildcard src/config/*.c)
+CONFIG_OBJ = $(CONFIG_SRC:src/%.c=build/%.o)
+build/config/ : | build/
+	mkdir $@
+build/config/%.o : src/config/%.c | build/config/
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
-RVAL := $(patsubst "src/rval/%c", "build/rval/%.o", $(wildcard src/rval/*.c))
-build/rval/%.o : src/rval/%.c
+RVAL_SRC = $(wildcard src/rval/*.c)
+RVAL_OBJ = $(RVAL_SRC:src/%.c=build/%.o)
+build/rval/ : | build/
+	mkdir $@
+build/rval/%.o : src/rval/%.c | build/rval/
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
-RLEX := $(patsubst "src/rlex/%c", "build/rlex/%.o", $(wildcard src/rlex/*.c))
-build/rlex/%.o : src/rlex/%.c
+RLEX_SRC = $(wildcard src/rlex/*.c)
+RLEX_OBJ = $(RLEX_SRC:src/%.c=build/%.o)
+build/rlex/ : | build/
+	mkdir $@
+build/rlex/%.o : src/rlex/%.c | build/rlex/
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
-UTIL := $(patsubst "src/util/%c", "build/util/%.o", $(wildcard src/util/*.c))
-build/util/%.o : src/util/%.c
+UTIL_SRC = $(wildcard src/util/*.c)
+UTIL_OBJ = $(UTIL_SRC:src/%.c=build/%.o)
+build/util/ : | build/
+	mkdir $@
+build/util/%.o : src/util/%.c | build/util/
 	$(CC_COMPILE_OBJECT) $^ -o $@
 
 TESTS := $(shell find test/ | grep \.test\.c)
 
-RILL := $(CONFIG) $(RVAL) $(RLEX) $(UTIL)
+OBJ := $(CONFIG_OBJ) $(RVAL_OBJ) $(RLEX_OBJ) $(UTIL_OBJ)
 
 entry:
 	@echo $(RVAL)
@@ -41,7 +58,7 @@ rill : bin/rill
 release : CC_FLAGS += $(CC_FLAGS_RELEASE)
 release : bin/rill
 
-bin/rill : $(RILL) src/rill/main.c
+bin/rill : $(OBJ) src/rill/main.c | bin/
 	$(CC_COMPILE) $^ -o $@
 
 # Requires gcov, lcov and genhtml.
@@ -63,11 +80,12 @@ test : CC_FLAGS += $(CC_FLAGS_DEVELOP)
 test : bin/rill-test
 
 bin/rill-test : CC_INCLUDE += -I test/
-bin/rill-test : $(RILL) $(TESTS) src/test/main.c src/test/test.c src/test/manifest.c
+bin/rill-test : $(OBJ) $(TESTS) src/test/main.c src/test/test.c src/test/manifest.c | bin/
 	$(CC_COMPILE) $^ -o $@
 
 clean :
-	rm -f bin/*
+	rm -rf bin/
+	rm -rf build/
 	rm -f $(shell find build/ | grep \\.o$)
 	rm -rf coverage/*
 	rm -rf coverage/.profile-output

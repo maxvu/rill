@@ -7,7 +7,7 @@
 void rill_test_rval_rvec () {
 
     RTEST_BEGIN( "rval / vec / push, pop, get, set" )  {
-        rval vec = rvec();
+        rval vec = rvecq();
         rval item = rnil();
         INSIST( rvec_len( &vec ) == 0 );
         for ( size_t i = 0; i < 10; i++ ) {
@@ -25,8 +25,8 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / fill, contain recursive vals" )  {
-        rval vec = rvec();
-        rval subvec = rvec();
+        rval vec = rvecq();
+        rval subvec = rvecq();
         rval item = rnil();
         INSIST( rvec_push( &subvec, &item ) );
         INSIST( rvec_fill( &vec, &subvec, 10 ) );
@@ -37,7 +37,7 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / copy" )  {
-        rval vec = rvec();
+        rval vec = rvecq();
 
         rval item = rnil();
         for ( size_t i = 0; i < 10; i++ ) {
@@ -54,7 +54,7 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / clone" )  {
-        rval vec = rvec();
+        rval vec = rvecq();
 
         rval item = rnil();
         for ( size_t i = 0; i < 10; i++ ) {
@@ -72,7 +72,7 @@ void rill_test_rval_rvec () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / vec / reverse" )  {
-        rval vec = rvec();
+        rval vec = rvecq();
         rval item = rnil();
 
         item = rixx( 1 );

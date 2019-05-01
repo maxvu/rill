@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-rval rbuf () {
+rval rbufq () {
     rval tmp = rnil();
     rbuf_init( &tmp, RILL_RBUF_DEFSIZ );
     return tmp;
@@ -34,12 +34,12 @@ int rbuf_init ( rval * val, size_t cap ) {
     }
     if ( cap < RILL_RBUF_MINSIZ )
         cap = RILL_RBUF_MINSIZ;
-    RBuf * buf = RILL_ALLOC( sizeof( RBuf ) + sizeof( uint8_t ) * cap + 1 );
+    rbuf * buf = RILL_ALLOC( sizeof( rbuf ) + sizeof( uint8_t ) * cap + 1 );
     if ( !buf ) {
         rerr_set( RILL_ERR_ALLOC );
         return 0;
     }
-    *buf = ( RBuf ) {
+    *buf = ( rbuf ) {
         .len = 0,
         .cap = cap,
         .ref = 1
@@ -92,7 +92,7 @@ int rbuf_compact ( rval * bufval ) {
 
 int rbuf_release ( rval * bufval ) {
     RILL_ASSERT_ISBUF( bufval );
-    RBuf * buf = bufval->buf;
+    rbuf * buf = bufval->buf;
     if ( --buf->ref )
         return 1;
     rbuf_clear( bufval );
@@ -112,7 +112,7 @@ int rbuf_memcpy ( rval * bufval, uint8_t * mem, size_t mem_len ) {
         return 0;
     if ( !rbuf_exclude( bufval ) )
         return 0;
-    RBuf * buf = bufval->buf;
+    rbuf * buf = bufval->buf;
     memcpy( buf->bts, mem, mem_len );
     buf->len = mem_len;
     buf->bts[ buf->len ] = 0;
@@ -128,7 +128,7 @@ int rbuf_memcat ( rval * bufval, uint8_t * mem, size_t mem_len ) {
         return 0;
     if ( !rbuf_exclude( bufval ) )
         return 0;
-    RBuf * buf = bufval->buf;
+    rbuf * buf = bufval->buf;
     memcpy( buf->bts + buf->len, mem, mem_len );
     buf->len += mem_len;
     buf->bts[ buf->len ] = 0;

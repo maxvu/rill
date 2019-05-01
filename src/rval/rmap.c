@@ -6,13 +6,13 @@
 
 #include <string.h>
 
-rval rmap () {
+rval rmapq () {
     rval tmp = rnil();
     rmap_init( &tmp, RILL_RMAP_DEFSIZ );
     return tmp;
 }
 
-RMapSlot * rmap_hash_a ( RMap * map, RBuf * keybuf ) {
+rmapSlot * rmap_hash_a ( rmap * map, rbuf * keybuf ) {
     size_t hash = 0; // sdbm
     uint8_t * key = keybuf->bts;
     size_t len = keybuf->len;
@@ -22,7 +22,7 @@ RMapSlot * rmap_hash_a ( RMap * map, RBuf * keybuf ) {
     return map->slt + idx;
 }
 
-RMapSlot * rmap_hash_b ( RMap * map, RBuf * keybuf ) {
+rmapSlot * rmap_hash_b ( rmap * map, rbuf * keybuf ) {
     size_t hash = 5381; // djb
     uint8_t * key = keybuf->bts;
     size_t len = keybuf->len;
@@ -32,7 +32,7 @@ RMapSlot * rmap_hash_b ( RMap * map, RBuf * keybuf ) {
     return map->slt + idx;
 }
 
-RMapSlot * rmap_hash_c ( RMap * map, RBuf * keybuf ) {
+rmapSlot * rmap_hash_c ( rmap * map, rbuf * keybuf ) {
     size_t hash = 56923; // hand-rolled
     uint8_t * key = keybuf->bts;
     size_t len = keybuf->len;
@@ -42,7 +42,7 @@ RMapSlot * rmap_hash_c ( RMap * map, RBuf * keybuf ) {
     return map->slt + idx;
 }
 
-RMapSlot * rmap_hash_d ( RMap * map, RBuf * keybuf ) {
+rmapSlot * rmap_hash_d ( rmap * map, rbuf * keybuf ) {
     size_t hash = 77317; // one-at-a-time
     uint8_t * key = keybuf->bts;
     size_t len = keybuf->len;
@@ -52,7 +52,7 @@ RMapSlot * rmap_hash_d ( RMap * map, RBuf * keybuf ) {
     return map->slt + idx;
 }
 
-void rmapslot_swap ( RMapSlot * a, RMapSlot * b ) {
+void rmapslot_swap ( rmapSlot * a, rmapSlot * b ) {
     rval_swap( &a->key, &b->key );
     rval_swap( &a->val, &b->val );
 }
@@ -61,7 +61,7 @@ int rmap_realloc ( rval * mapval, size_t new_cap ) {
     rval tmp = rnil();
     if ( !rmap_init( &tmp, new_cap / RILL_RMAP_MAXLOD ) )
         return 0;
-    RMapIter it = rmap_begin( mapval );
+    rmapIter it = rmap_begin( mapval );
     while ( it ) {
         if ( !rmap_set( &tmp, rmap_iter_key( it ), rmap_iter_val( it ) ) ) {
             rval_release( &tmp );
@@ -85,16 +85,16 @@ int rmap_init ( rval * mapval, size_t cap ) {
     if ( cap < RILL_RMAP_MINSIZ )
         cap = RILL_RMAP_MINSIZ;
     cap += 4 - ( cap % 4 );
-    RMap * map = RILL_ALLOC( sizeof( RMap ) + sizeof( RMapSlot ) * cap );
+    rmap * map = RILL_ALLOC( sizeof( rmap ) + sizeof( rmapSlot ) * cap );
     if ( !map )
         return 0;
-    *map = ( RMap ) {
+    *map = ( rmap ) {
         .occ = 0,
         .cap = cap,
         .ref = 1
     };
     for ( size_t i = 0; i < cap; i++ ) {
-        *( map->slt + i ) = ( RMapSlot ) {
+        *( map->slt + i ) = ( rmapSlot ) {
             .key = rnil(),
             .val = rnil()
         };
@@ -125,7 +125,7 @@ int rmap_reserve ( rval * mapval, size_t cap ) {
 int rmap_compact ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
-    RMap * map = mapval->map;
+    rmap * map = mapval->map;
     size_t target = map->occ / RILL_RMAP_MAXLOD;
     if ( target < RILL_RMAP_MINSIZ / RILL_RMAP_MAXLOD )
         target = RILL_RMAP_MINSIZ / RILL_RMAP_MAXLOD;
@@ -142,7 +142,7 @@ int rmap_clone ( rval * dst, rval * src_mapval ) {
     rval tmp = rnil();
     if ( !rmap_init( &tmp, rmap_size( src_mapval ) ) )
         return 0;
-    RMapIter it = rmap_begin( src_mapval );
+    rmapIter it = rmap_begin( src_mapval );
     while ( it ) {
         // TODO: call rval_clone() here
         if ( !rmap_set( &tmp, rmap_iter_key( it ), rmap_iter_val( it ) ) ) {
@@ -165,10 +165,10 @@ int rmap_exclude ( rval * mapval ) {
 int rmap_release ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
-    RMap * map = mapval->map;
+    rmap * map = mapval->map;
     if ( --map->ref )
         return 1;
-    RMapIter it = rmap_begin( mapval );
+    rmapIter it = rmap_begin( mapval );
     while ( it ) {
         rval_release( &it->key );
         rval_release( &it->val );
@@ -197,7 +197,7 @@ int rmap_set ( rval * mapval, rval * keyval, rval * item ) {
     }
 
     // resize preemptively
-    RMap * map = mapval->map;
+    rmap * map = mapval->map;
     double new_load = ( ( double ) map->occ + 1 ) / ( double ) map->cap;
     if ( new_load > RILL_RMAP_MAXLOD ) {
         if ( !rmap_reserve( mapval, ( double ) map->occ * RILL_RMAP_GROWTH ) )
@@ -215,7 +215,7 @@ int rmap_set ( rval * mapval, rval * keyval, rval * item ) {
         return 0;
     map = mapval->map;
 
-    RMapSlot juggle = ( RMapSlot ) {
+    rmapSlot juggle = ( rmapSlot ) {
         .key = *keyval,
         .val = *item
     };
@@ -257,9 +257,9 @@ rval * rmap_get ( rval * mapval, rval * keyval ) {
         return NULL;
     if ( !keyval || rval_type( keyval ) != RVT_BUF )
         return NULL;
-    RMap * map = mapval->map;
-    RBuf * key = keyval->buf;
-    RMapSlot * hit;
+    rmap * map = mapval->map;
+    rbuf * key = keyval->buf;
+    rmapSlot * hit;
 
     hit = rmap_hash_a( map, key );
     if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 )
@@ -279,7 +279,7 @@ rval * rmap_get ( rval * mapval, rval * keyval ) {
 rval * rmap_getc ( rval * mapval, const char * key ) {
     if ( !key )
         return NULL;
-    rval keyval = rbuf();
+    rval keyval = rbufq();
     if ( !rbuf_strcpy( &keyval, key ) )
         return NULL;
     rval * result = rmap_get( mapval, &keyval );
@@ -292,9 +292,9 @@ int rmap_unset ( rval * mapval, rval * keyval ) {
         return 0;
     if ( !keyval || rval_type( keyval ) != RVT_BUF )
         return 0;
-    RMap * map = mapval->map;
-    RBuf * key = keyval->buf;
-    RMapSlot * hit;
+    rmap * map = mapval->map;
+    rbuf * key = keyval->buf;
+    rmapSlot * hit;
 
     hit = rmap_hash_a( map, key );
     if ( !rval_isnil( &hit->key ) && rbuf_cmp( &hit->key, keyval ) == 0 ) {
@@ -335,7 +335,7 @@ int rmap_keys ( rval * dstval, rval * src_mapval ) {
     rval tmp = rnil();
     if ( !rvec_init( &tmp, rmap_size( src_mapval ) ) )
         return 0;
-    RMapIter it = rmap_begin( src_mapval );
+    rmapIter it = rmap_begin( src_mapval );
     while ( it ) {
         if ( !rvec_push( &tmp, rmap_iter_key( it ) ) ) {
             rvec_release( &tmp );
@@ -355,7 +355,7 @@ int rmap_vals ( rval * dstval, rval * src_mapval ) {
     rval tmp = rnil();
     if ( !rvec_init( &tmp, rmap_size( src_mapval ) ) )
         return 0;
-    RMapIter it = rmap_begin( src_mapval );
+    rmapIter it = rmap_begin( src_mapval );
     while ( it ) {
         if ( !rvec_push( &tmp, rmap_iter_val( it ) ) ) {
             rvec_release( &tmp );
@@ -376,7 +376,7 @@ int rmap_merge ( rval * dstval, rval * srcval ) {
     rval tmp = rnil();
     if ( !rmap_init( &tmp, rmap_size( srcval ) ) )
         return 0;
-    RMapIter it = rmap_begin( srcval );
+    rmapIter it = rmap_begin( srcval );
     while ( it ) {
         if ( !rmap_set( &tmp, rmap_iter_key( it ), rmap_iter_val( it ) ) ) {
             rval_release( &tmp );
@@ -391,7 +391,7 @@ int rmap_merge ( rval * dstval, rval * srcval ) {
 int rmap_clear ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
-    RMapIter it = rmap_begin( mapval );
+    rmapIter it = rmap_begin( mapval );
     while ( it ) {
         rmap_iter_del( mapval, it );
         it = rmap_iter_next( mapval, it );
@@ -399,23 +399,23 @@ int rmap_clear ( rval * mapval ) {
     return 1;
 }
 
-RMapIter rmap_begin ( rval * mapval ) {
+rmapIter rmap_begin ( rval * mapval ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
-    RMap * map = mapval->map;
-    RMapIter it = map->slt;
+    rmap * map = mapval->map;
+    rmapIter it = map->slt;
     if ( !rmap_iter_key( it ) )
         it = rmap_iter_next( mapval, it );
     return it;
 }
 
-RMapIter rmap_iter_next ( rval * mapval, RMapIter it ) {
+rmapIter rmap_iter_next ( rval * mapval, rmapIter it ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( !it )
         return NULL;
-    RMap * map = mapval->map;
-    RMapSlot * end = map->slt + map->cap;
+    rmap * map = mapval->map;
+    rmapSlot * end = map->slt + map->cap;
     it++;
     while ( it < end && rval_isnil( &it->key ) )
         it++;
@@ -424,7 +424,7 @@ RMapIter rmap_iter_next ( rval * mapval, RMapIter it ) {
     return it;
 }
 
-rval * rmap_iter_key ( RMapIter it ) {
+rval * rmap_iter_key ( rmapIter it ) {
     if ( !it )
         return NULL;
     if ( rval_isnil( &it->key ) )
@@ -432,7 +432,7 @@ rval * rmap_iter_key ( RMapIter it ) {
     return &it->key;
 }
 
-rval * rmap_iter_val ( RMapIter it ) {
+rval * rmap_iter_val ( rmapIter it ) {
     if ( !it )
         return NULL;
     if ( rval_isnil( &it->key ) )
@@ -440,7 +440,7 @@ rval * rmap_iter_val ( RMapIter it ) {
     return &it->val;
 }
 
-RMapIter rmap_iter_del ( rval * mapval, RMapIter it ) {
+rmapIter rmap_iter_del ( rval * mapval, rmapIter it ) {
     if ( !mapval || rval_type( mapval ) != RVT_MAP )
         return 0;
     if ( !it )

@@ -27,7 +27,7 @@ void rval_dump ( rval * val ) {
         } break;
         case RVT_MAP: {
             printf( "map( occ %lu cap %lu {", val->map->occ, val->map->cap );
-            RMapIter it = rmap_begin( val );
+            rmapIter it = rmap_begin( val );
             while ( it ) {
                 rval_dump( rmap_iter_key( it ) );
                 printf( " " );
@@ -44,7 +44,7 @@ void rval_dump ( rval * val ) {
     }
 }
 
-void rmapslot_dbgprint ( RMapSlot * slot ) {
+void rmapslot_dbgprint ( rmapSlot * slot ) {
     if ( rval_isnil( &slot->key ) ) {
         printf( "(empty)" );
     } else {
@@ -59,7 +59,7 @@ void rmap_dbgprint ( rval * map ) {
     for ( size_t i = 0; i < map->map->cap; i++ ) {
         if ( i != 0 && i % ( map->map->cap / 4 ) == 0 )
             printf( "\n" );
-        RMapSlot * slot = map->map->slt + i;
+        rmapSlot * slot = map->map->slt + i;
         rmapslot_dbgprint( slot );
     }
     printf( "\n" );

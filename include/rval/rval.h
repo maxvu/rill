@@ -11,10 +11,10 @@
         - All null-pointer arguments should be immediately rejected.
         - Except _init() functions, and fixed-width _set()'s, invocations on
           arguments on wrong-typed values should be rejected.
-        - Recursive values (i.e. RVec's and RMap's) must check - before
+        - Recursive values (i.e. rvec's and rmap's) must check - before
           accepting a new member value - that it does not eventually _cycleto()
           itself. If it does, _exclude() must be called on the container.
-        - Convenience inner-pointers (e.g. `RVec vec = vecval->vec`) must be
+        - Convenience inner-pointers (e.g. `rvec vec = vecval->vec`) must be
           invalidated whenever a reallocation happens (e.g. _exclude(),
           _reserve()).
         - Whenever a mutating function fails, it must leave the operand value
@@ -23,10 +23,10 @@
 
 typedef enum rvalType rvalType;
 typedef struct rval rval;
-typedef struct RBuf RBuf;
-typedef struct RVec RVec;
-typedef struct RMap RMap;
-typedef struct RMapSlot RMapSlot;
+typedef struct rbuf rbuf;
+typedef struct rvec rvec;
+typedef struct rmap rmap;
+typedef struct rmapSlot rmapSlot;
 
 enum rvalType {
     RVT_NIL = 0, // non-value
@@ -46,9 +46,9 @@ struct rval {
         RILL_UXX_TYPE uxx;
         RILL_FXX_TYPE fxx;
         void *        vdp;
-        RBuf *        buf;
-        RVec *        vec;
-        RMap *        map;
+        rbuf *        buf;
+        rvec *        vec;
+        rmap *        map;
     };
 };
 

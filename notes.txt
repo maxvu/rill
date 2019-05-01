@@ -1,3 +1,25 @@
+IMPORT std.arrext ;
+
+: some-word ()
+    : some-subroutine ;
+
+    ( this is a comment )
+    ( hello )
+
+    ( this is an quotation )
+    [ 1 2 swap ]
+
+    ( this is vector )
+    { 'one' 1 'two' 2 }
+
+    ( this is a map )
+    { 'one' 1 'two' 2 } %
+
+    some-subroutine
+;
+
+================================================================================
+
 # primitive types
 
 int uint double buf vec map

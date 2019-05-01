@@ -8,19 +8,19 @@
 #define RILL_RMAP_GROWTH 2.0
 #define RILL_RMAP_MAXLOD 0.90
 
-struct RMapSlot {
+struct rmapSlot {
     rval key;
     rval val;
 };
 
-struct RMap {
+struct rmap {
     size_t     occ;
     size_t     cap;
     size_t     ref;
-    RMapSlot   slt[];
+    rmapSlot   slt[];
 };
 
-rval rmap ();
+rval rmapq ();
 int rmap_init ( rval * map, size_t cap );
 size_t rmap_size ( rval * map );
 int rmap_reserve ( rval * map, size_t cap );
@@ -36,14 +36,14 @@ int rmap_keys ( rval * dst_vec, rval * src_map );
 int rmap_vals ( rval * dst_vec, rval * src_map );
 int rmap_merge ( rval * dst, rval * src );
 int rmap_clear ( rval * map );
-void rmapslot_dbgprint ( RMapSlot * slot );
+void rmapslot_dbgprint ( rmapSlot * slot );
 void rmap_dbgprint ( rval * map );
 
-typedef RMapSlot * RMapIter;
-RMapIter rmap_begin ( rval * map );
-RMapIter rmap_iter_next ( rval * map, RMapIter it );
-rval * rmap_iter_key ( RMapIter it );
-rval * rmap_iter_val ( RMapIter it );
-RMapIter rmap_iter_del ( rval * map, RMapIter it );
+typedef rmapSlot * rmapIter;
+rmapIter rmap_begin ( rval * map );
+rmapIter rmap_iter_next ( rval * map, rmapIter it );
+rval * rmap_iter_key ( rmapIter it );
+rval * rmap_iter_val ( rmapIter it );
+rmapIter rmap_iter_del ( rval * map, rmapIter it );
 
 #endif

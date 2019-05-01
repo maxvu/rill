@@ -64,16 +64,13 @@ int rlexchr_idopen ( int c ) {
 int rlexchr_idbody ( int c ) {
     if ( rlexchr_ws( c ) )
         return 0;
-    if ( rlexchr_strdelim( c ) )
-        return 0;
     switch ( c ) {
-        case RILL_LEX_CHAR_HASH_BEGIN:
-        case RILL_LEX_CHAR_HASH_END:
-        case RILL_LEX_CHAR_LIST_BEGIN:
-        case RILL_LEX_CHAR_LIST_END:
+        case RILL_LEX_CHAR_STRUCT_BEGIN:
+        case RILL_LEX_CHAR_STRUCT_END:
         case RILL_LEX_CHAR_QUOTE_BEGIN:
         case RILL_LEX_CHAR_QUOTE_END:
         case RILL_LEX_CHAR_COMMENT_BEGIN:
+        case RILL_LEX_CHAR_COMMENT_END:
         case RILL_LEX_CHAR_COMPILE_MODE_BEGIN:
         case RILL_LEX_CHAR_COMPILE_MODE_END:
         case RILL_LEX_CHAR_STRING_DELIM_SINGLE:
@@ -87,7 +84,6 @@ int rlexchr_idbody ( int c ) {
 int rlexchr_numopen ( int c ) {
     switch ( c ) {
         case RILL_LEX_CHAR_NUMERIC_NEGATOR:
-        case RILL_LEX_CHAR_NUMERIC_DECIMAL:
         case RILL_LEX_CHAR_ZERO:
         case RILL_LEX_CHAR_ONE:
         case RILL_LEX_CHAR_TWO:

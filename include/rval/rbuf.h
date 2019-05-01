@@ -7,14 +7,14 @@
 #define RILL_RBUF_DEFSIZ 16
 #define RILL_RBUF_GROWTH 2.0
 
-typedef struct RBuf {
+typedef struct rbuf {
     size_t    len;
     size_t    cap;
     size_t    ref;
     uint8_t   bts[];
-} RBuf;
+} rbuf;
 
-rval rbuf ();
+rval rbufq ();
 int rbuf_init ( rval * val, size_t cap );
 size_t rbuf_len ( rval * val );
 uint8_t * rbuf_get ( rval * bufval );

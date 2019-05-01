@@ -18,7 +18,7 @@ int rlexit_init ( rlexit * it, uint8_t * begin, uint8_t * end ) {
 int rlexit_copy ( rlexit * dst, rlexit * src ) {
     RILL_ASSERT_ARGNOTNULL( dst )
     RILL_ASSERT_ARGNOTNULL( src )
-    if ( !rutf8it_copy( &dst->uit, &src->uit) )
+    if ( !rutf8it_copy( &dst->uit, &src->uit ) )
         return 0;
     dst->lno = src->lno;
     dst->lps = src->lps;
@@ -46,6 +46,11 @@ int rlexit_step ( rlexit * it ) {
 int rlexit_cdpt ( rlexit * it ) {
     RILL_ASSERT_ARGNOTNULL( it )
     return it->uit.peek.codepoint;
+}
+
+uint8_t * rlexit_text ( rlexit * it ) {
+    RILL_ASSERT_ARGNOTNULL( it )
+    return rutf8it_pos( &it->uit );
 }
 
 size_t rlexit_pos ( rlexit * it ) {

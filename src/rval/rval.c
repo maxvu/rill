@@ -190,7 +190,7 @@ int rval_eq ( rval * a, rval * b ) {
         case RVT_MAP: {
             if ( rmap_size( a ) != rmap_size( b ) )
                 return 0;
-            RMapIter it = rmap_begin( a );
+            rmapIter it = rmap_begin( a );
             while ( it ) {
                 rval * a_val = rmap_iter_val( it );
                 rval * b_val = rmap_get( b, rmap_iter_key( it ) );
@@ -251,7 +251,7 @@ int rval_cyclesto ( rval * haystack, rval * needle ) {
             if ( rval_type( needle ) == RVT_MAP )
                 if ( haystack->map == needle->map )
                     return 1;
-            RMapIter it = rmap_begin( haystack );
+            rmapIter it = rmap_begin( haystack );
             while ( it ) {
                 if ( rval_cyclesto( rmap_iter_val( it ), needle ) )
                     return 1;

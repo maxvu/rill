@@ -7,8 +7,8 @@
 void rill_test_rval_rmap () {
 
     RTEST_BEGIN( "rval / map / set, get, unset, resize, keys, vals" )  {
-        rval map = rmap();
-        rval k = rbuf();
+        rval map = rmapq();
+        rval k = rbufq();
         rval v = rixx( 0 );
 
         const char * numbers[ 17 ] = {

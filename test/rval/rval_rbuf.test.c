@@ -8,13 +8,13 @@
 void rill_test_rval_rbuf () {
 
     RTEST_BEGIN( "rval / buf / initialization" )  {
-        rval buf = rbuf();
+        rval buf = rbufq();
         INSIST( rbuf_len( &buf ) == 0 );
         rval_release( &buf );
     } RTEST_END;
 
     RTEST_BEGIN( "rval / buf / strcpy, strcat, strcmp" )  {
-        rval buf = rbuf();
+        rval buf = rbufq();
         INSIST( rbuf_strcpy( &buf, "hello" ) );
         INSIST( rbuf_strcat( &buf, " " ) );
         INSIST( rbuf_strcat( &buf, "world" ) );
@@ -27,7 +27,7 @@ void rill_test_rval_rbuf () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / buf / strcpy, strcat, strcmp (zero-length cstr)" )  {
-        rval buf = rbuf();
+        rval buf = rbufq();
         INSIST( rbuf_strcpy( &buf, "hello" ) );
         INSIST( rbuf_strcat( &buf, "" ) );
         INSIST( rbuf_strcmp( &buf, "hello" ) == 0 );
@@ -41,7 +41,7 @@ void rill_test_rval_rbuf () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / buf / strcpy, strcat, strcmp (null cstr)" )  {
-        rval buf = rbuf();
+        rval buf = rbufq();
         INSIST( rbuf_strcpy( &buf, "hello" ) );
 
         INSIST( !rbuf_strcat( &buf, 0 ) );
@@ -55,8 +55,8 @@ void rill_test_rval_rbuf () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / buf / cpy, cat, cmp" )  {
-        rval a = rbuf();
-        rval b = rbuf();
+        rval a = rbufq();
+        rval b = rbufq();
         INSIST( rbuf_strcat( &a, "hello" ) );
         INSIST( rbuf_strcpy( &b, " world!" ) );
 
@@ -73,7 +73,7 @@ void rill_test_rval_rbuf () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / buf / clear" )  {
-        rval buf = rbuf();
+        rval buf = rbufq();
         INSIST( rbuf_strcpy( &buf, "hello" ) );
         INSIST( rbuf_clear( &buf ) );
         INSIST( rbuf_clear( &buf ) );
@@ -82,7 +82,7 @@ void rill_test_rval_rbuf () {
     } RTEST_END;
 
     RTEST_BEGIN( "rval / buf / survives resizing" )  {
-        rval buf = rbuf();
+        rval buf = rbufq();
         INSIST( rbuf_strcpy( &buf, "hello" ) );
         INSIST( rbuf_reserve( &buf, 100 ) );
         INSIST( rbuf_compact( &buf ) );

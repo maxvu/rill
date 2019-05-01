@@ -19,6 +19,7 @@ int rlexit_retire ( rlexit * it );
 int rlexit_step ( rlexit * it );
 
 int rlexit_cdpt ( rlexit * it );
+uint8_t * rlexit_text ( rlexit * it );
 size_t rlexit_pos ( rlexit * it );
 size_t rlexit_lineno ( rlexit * it );
 int rlexit_linepos ( rlexit * it );

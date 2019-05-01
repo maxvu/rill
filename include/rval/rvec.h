@@ -7,14 +7,14 @@
 #define RILL_RVEC_DEFSIZ 12
 #define RILL_RVEC_GROWTH 2.0
 
-typedef struct RVec {
+typedef struct rvec {
     size_t len;
     size_t cap;
     size_t ref;
     rval   vls[];
-} RVec;
+} rvec;
 
-rval rvec ();
+rval rvecq ();
 int rvec_init ( rval * val, size_t cap );
 size_t rvec_len ( rval * vec );
 int rvec_reserve ( rval * vec, size_t cap );

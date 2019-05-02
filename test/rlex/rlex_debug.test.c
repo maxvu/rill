@@ -1,5 +1,4 @@
 #include "config/rerr.h"
-#include "rlex/rlexit.h"
 #include "rlex/rlexchr.h"
 #include "rval/dump.h"
 #include "rval/rvec.h"

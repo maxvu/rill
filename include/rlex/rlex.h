@@ -1,6 +1,8 @@
 #ifndef RILL_LEX_RLEX
 #define RILL_LEX_RLEX
 
+#include "util/rutf8it.h"
+
 #define RILL_LEX_DEFAULT_BUFFER_SIZE 64
 
 #define RILL_LEX_OK                    1
@@ -12,6 +14,6 @@
 
 typedef struct rval rval;
 
-int rlex ( rval * result, rval * input, int * status );
+int rlex ( rval * result, rutf8it * it, int * status );
 
 #endif

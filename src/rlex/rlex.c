@@ -60,6 +60,7 @@ int rlex_num ( rlexstate * state );
 int rlex_str ( rlexstate * state );
 int rlex_cmt ( rlexstate * state );
 int rlex_single ( rlexstate * state, int type );
+int rlex_token ( rlexstate * state, int (*test)(int), int type );
 
 int rlex ( rval * result, rutf8it * it, int * status ) {
     RILL_ASSERT_ARGNOTNULL( result )
@@ -87,12 +88,17 @@ int rlex ( rval * result, rutf8it * it, int * status ) {
     while ( !rutf8it_done( it ) ) {
         c = rutf8it_cdpt( it );
 
-        if ( rlexchr_ws( c ) && !rlex_ws( &state ) )
-            return 0;
-        if ( rlexchr_idopen( c ) && !rlex_id( &state ) )
-            return 0;
-        if ( rlexchr_numopen( c ) && !rlex_num( &state ) )
-            return 0;
+        if ( rlexchr_ws( c ) )
+            if ( !rlex_token( &state, rlexchr_ws, RILL_LEXTOK_WHITESPACE ) )
+                return 0;
+
+        if ( rlexchr_idopen( c ) )
+            if ( !rlex_token( &state, rlexchr_idbody, RILL_LEXTOK_IDENTIFIER ) )
+                return 0;
+
+        if ( rlexchr_idopen( c ) )
+            if ( !rlex_token( &state, rlexchr_numbody, RILL_LEXTOK_NUMBER ) )
+                return 0;
 
         switch ( c ) {
             case RILL_LEX_CHAR_STRING_DELIM_SINGLE:
@@ -130,16 +136,43 @@ int rlex ( rval * result, rutf8it * it, int * status ) {
                 break;
         }
     }
+    goto done;
 
     err:
         ok = 0;
-    // copy state.uit back to it
+    done:
+        *it = state.uit;
+        return ok;
 }
 
-int rlex_ws ( rlexstate * state ) {
+int rlex_single ( rlexstate * state, int type ) {
+    int ok = 1;
+    rval text = rnil();
+    rval token = rnil();
+
+    if ( !rbuf_init( &text, 1 ) )
+        goto err;
+    if ( !rbuf_memcpy( &text, rutf8it_pos( &state->uit ), 1 ) )
+        goto err;
+    if ( !rlextok( &token, type, state->line, state->offset, &text ) )
+        goto err;
+    if ( !rvec_push( state->result, &token ) )
+        goto err;
+
+    goto done;
+
+    err:
+        ok = 0;
+    done:
+        rval_release( &text );
+        rval_release( &token );
+        return ok;
+}
+
+int rlex_token ( rlexstate * state, int (*test)(int), int type ) {
     rlexstate begin = *state;
     while ( !rutf8it_done( &state->uit ) &&
-        rlexchr_ws( rutf8it_cdpt( &state->uit ) )
+        test( rutf8it_cdpt( &state->uit ) )
     ) {
         rlexstate_step( state );
     }
@@ -147,39 +180,67 @@ int rlex_ws ( rlexstate * state ) {
         *state->status = RILL_LEX_INVALID_UTF8;
         return 0;
     }
-    if ( !rlexstate_range( &begin, state, RILL_LEXTOK_WHITESPACE ) ) {
+    if ( !rlexstate_range( &begin, state, type ) ) {
         *state->status = RILL_LEX_UNDERLYING_ERROR;
         return 0;
     }
     return 1;
-}
-
-int rlex_id ( rlexstate * state ) {
-    rlexstate begin = *state;
-    while ( !rutf8it_done( &state->uit ) &&
-        rlexchr_idbody( rutf8it_cdpt( &state->uit ) )
-    ) {
-        rlexstate_step( state );
-    }
-    if ( !rutf8it_ok( &state->uit ) ) {
-        *state->status = RILL_LEX_INVALID_UTF8;
-        return 0;
-    }
-    if ( !rlexstate_range( &begin, state, RILL_LEXTOK_IDENTIFIER ) ) {
-        *state->status = RILL_LEX_UNDERLYING_ERROR;
-        return 0;
-    }
-    return 1;
-}
-
-int rlex_num ( rlexstate * state ) {
-    // copy to save begin
 }
 
 int rlex_str ( rlexstate * state ) {
-    // copy to save begin
+    int prev = 0;
+    int curr = 0;
+    int delim = rutf8it_cdpt( &state->uit );
+
+    rlexstate begin = *state;
+
+    while ( !rutf8it_done( &state->uit ) ) {
+        if ( !rlexstate_step( state ) )
+            break;
+        curr = rutf8it_cdpt( &state->uit );
+        if ( curr == delim && prev != RILL_LEX_CHAR_STRING_ESCAPE )
+            break;
+        prev = curr;
+    }
+
+    if ( rutf8it_done( &state->uit ) ) {
+        *state->status = RILL_LEX_UNCLOSED_STRING;
+        return 0;
+    }
+    if ( !rutf8it_ok( &state->uit ) ) {
+        *state->status = RILL_LEX_INVALID_UTF8;
+        return 0;
+    }
+    if ( !rlexstate_range( &begin, state, RILL_LEXTOK_STRING ) ) {
+        *state->status = RILL_LEX_UNDERLYING_ERROR;
+        return 0;
+    }
+
+    rlexstate_step( state );
+    return 1;
 }
 
 int rlex_cmt ( rlexstate * state ) {
+    rlexstate begin = *state;
+    while ( !rutf8it_done( &state->uit ) ) {
+        rlexstate_step( state );
+        if ( rutf8it_cdpt( &state->uit ) == RILL_LEX_CHAR_COMMENT_END )
+            break;
+    }
 
+    if ( rutf8it_done( &state->uit ) ) {
+        *state->status = RILL_LEX_UNCLOSED_COMMENT;
+        return 0;
+    }
+    if ( !rutf8it_ok( &state->uit ) ) {
+        *state->status = RILL_LEX_INVALID_UTF8;
+        return 0;
+    }
+    if ( !rlexstate_range( &begin, state, RILL_LEX_UNCLOSED_COMMENT ) ) {
+        *state->status = RILL_LEX_UNDERLYING_ERROR;
+        return 0;
+    }
+
+    rlexstate_step( state );
+    return 1;
 }

@@ -1,5 +1,4 @@
 #include "config/rerr.h"
-// #include "rlex/rlex.h"
 #include "rlex/rlextok.h"
 #include "rval/rval.h"
 #include "rval/rbuf.h"
@@ -22,13 +21,13 @@ int rlextok (
     ruxx_set( &tmp, type );
     rvec_push( tok, &tmp );
 
+    rvec_push( tok, text );
+
     ruxx_set( &tmp, line );
     rvec_push( tok, &tmp );
 
     ruxx_set( &tmp, pos );
     rvec_push( tok, &tmp );
-
-    rvec_push( tok, text );
 
     return 1;
 }
@@ -44,22 +43,23 @@ rval * rlextok_line ( rval * token ) {
     RILL_ASSERT_ARGNOTNULL( token )
     if ( rvec_len( token ) != 4 )
         return NULL;
-    return rvec_get( token, 1 );
+    return rvec_get( token, 2 );
 }
 
 rval * rlextok_pos  ( rval * token ) {
     RILL_ASSERT_ARGNOTNULL( token )
     if ( rvec_len( token ) != 4 )
         return NULL;
-    return rvec_get( token, 2 );
+    return rvec_get( token, 3 );
 }
 
 rval * rlextok_text  ( rval * token ) {
     RILL_ASSERT_ARGNOTNULL( token )
     if ( rvec_len( token ) != 4 )
         return NULL;
-    return rvec_get( token, 3 );
+    return rvec_get( token, 1 );
 }
 
-int rlextok_dump ( rval * token ) {
+int rlextok_dump ( rval * token ) { // TODO
+    return 1;
 }

@@ -20,7 +20,6 @@ int rutf8it_init ( rutf8it * it, uint8_t * begin, uint8_t * end ) {
 int rutf8it_copy ( rutf8it * dst, rutf8it * src ) {
     RILL_ASSERT_ARGNOTNULL( dst )
     RILL_ASSERT_ARGNOTNULL( src )
-
     *dst = *src;
     return 1;
 }
@@ -29,10 +28,10 @@ int rutf8it_step ( rutf8it * it ) {
     RILL_ASSERT_ARGNOTNULL( it )
     if ( it->err != RILL_ERR_UTFOK )
         return 0;
-    if ( !rutf8_peek( &it->peek, it->cur, it->end ) )
-        return 0;
     it->cur += it->peek.n_bytes;
     it->pos++;
+    if ( !rutf8_peek( &it->peek, it->cur, it->end ) )
+        return 0;
     return 1;
 }
 

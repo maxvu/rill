@@ -9,4 +9,8 @@
 #define RILL_PRSSTT_UNCLOSED_WORD
 #define RILL_PRSSTT_UNBALANCED_HASH
 
+typedef struct rprsres {
+    rval words;
+} rprsres;
+
 #endif

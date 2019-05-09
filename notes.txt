@@ -1,3 +1,12 @@
+mark-and-sweep for dead code
+build a table of globally-available words
+halt on: unidentifiable words, words within structures
+load builtin extensions
+BFS for compilable targets
+aggressively inline
+
+================================================================================
+
 IMPORT std.arrext ;
 
 : some-word ()

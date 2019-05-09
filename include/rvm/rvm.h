@@ -16,7 +16,7 @@ typedef struct RVM {
     rval     cs;          // call stack
     rval     ct;          // constant table
     rval     nt;          // native function map
-    uint32_t mf;          // machine flags (debug?, num behavior?)
+    size_t   mf;          // machine flags (debug?, num behavior?)
 } RVM;
 
 RVM * rvm_create ();

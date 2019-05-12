@@ -33,11 +33,7 @@ Buffer::Buffer ( size_t initial_capacity ) {
     this->cap = initial_capacity;
 }
 
-Buffer::Buffer ( uint8_t * mem, size_t mem_length ) : Buffer( mem_length ) {
-    this->set( mem, mem_length );
-}
-
-Buffer::Buffer ( const Buffer & that ) : Buffer( that.length() + 1 ) {
+Buffer::Buffer ( const Buffer & that ) : Buffer( that.len + 1 ) {
     *this = that;
 }
 
@@ -89,59 +85,26 @@ Buffer & Buffer::operator= ( const Buffer & that ) {
     return this->set( that.bytes, that.len );
 }
 
-Buffer & Buffer::set ( uint8_t * mem, size_t mem_length ) {
-    if ( !mem_length )
-        return this->clear();
-    this->reserve( mem_length );
-    memcpy( this->bytes, mem, mem_length );
-    this->bytes[ this->len ] = 0;
-    return *this;
-}
-
-Buffer & Buffer::cat ( uint8_t * mem, size_t mem_length ) {
-    if ( !mem_length )
-        return *this;
-    this->reserve( this->len + mem_length );
-    memcpy( this->bytes + this->len, mem, mem_length );
-    this->bytes[ this->len ] = 0;
-    return *this;
-}
-
-bool Buffer::eq ( uint8_t * mem, size_t mem_length ) const {
-    if ( this->len != mem_length )
-        return 0;
-    return memcmp( this->bytes, mem, mem_length ) == 0;
-}
-
-uint8_t & Buffer::operator[] ( size_t index ) {
-    if ( index >= this->len )
-        throw OOBError();
-    return this->bytes[ index ];
-}
-
-uint8_t Buffer::operator[] ( size_t index ) const {
-    if ( index >= this->len )
-        throw OOBError();
-    return this->bytes[ index ];
-}
-
-Buffer::operator uint8_t * () {
-    return this->bytes;
-}
-
-Buffer::operator const uint8_t * () const {
-    return this->bytes;
-}
-
-Buffer & Buffer::fill ( uint8_t byte ) {
-    memset( this->bytes, byte, this->len );
-    return *this;
-}
-
 Buffer & Buffer::clear () {
     this->bytes[ 0 ] = 0;
     this->len = 0;
     return *this;
+}
+
+BufferCharView & Buffer::asChar () {
+    return static_cast<BufferCharView&>( *this );
+}
+
+const BufferCharView & Buffer::asChar () const {
+    return static_cast<const BufferCharView&>( *this );
+}
+
+BufferUTF8View & Buffer::asUTF8 () {
+    return static_cast<BufferUTF8View&>( *this );
+}
+
+const BufferUTF8View & Buffer::asUTF8 () const {
+    return static_cast<const BufferUTF8View&>( *this );
 }
 
 }

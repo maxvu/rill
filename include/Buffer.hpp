@@ -1,13 +1,12 @@
 #ifndef RILL_BUFFER
 #define RILL_BUFFER
 
-#include <type_traits>
-
 #define RILL_BUFFER_MINIMUM_SIZE 4
 #define RILL_BUFFER_DEFAULT_SIZE 16
 
 namespace Rill {
 
+    class BufferBytesView;
     class BufferCharView;
     class BufferUTF8View;
 
@@ -22,80 +21,83 @@ namespace Rill {
         public:
         Buffer ();
         Buffer ( size_t initial_capacity );
-        Buffer ( uint8_t * mem, size_t mem_length );
         Buffer ( const Buffer & that );
         Buffer ( const Buffer && that );
         ~Buffer ();
 
-        size_t length () const;
         Buffer & reserve ( size_t new_capacity );
         Buffer & compact ();
-
-        Buffer operator+ ( const Buffer & that ) const;
-        Buffer & operator+= ( const Buffer & that );
-        bool operator== ( const Buffer & that ) const;
-        bool operator!= ( const Buffer & that ) const;
-        Buffer & operator= ( const Buffer & that );
-
-        Buffer & set ( uint8_t * mem, size_t mem_length );
-        Buffer & cat ( uint8_t * mem, size_t mem_length );
-        bool eq ( uint8_t * mem, size_t mem_length ) const;
-
-        uint8_t & operator[] ( size_t index );
-        uint8_t operator[] ( size_t index ) const;
-        operator uint8_t * ();
-        operator const uint8_t * () const;
-        Buffer & fill ( uint8_t byte );
         Buffer & clear ();
 
-        template <bool isConst>
-        class BufferCharView {
+        BufferBytesView & asBytes ();
+        const BufferBytesView & asBytes () const;
 
-            typedef typename
-            std::conditional<isConst, const Buffer &, Buffer &> BufferRefT;
+        BufferCharView & asChar ();
+        const BufferCharView & asChar () const;
 
-            BufferRefT buffer;
-
-            public:
-            BufferCharView ( BufferRefT buffer );
-            char & operator[] ( size_t index );
-            char & operator[] ( size_t index ) const;
-            size_t length () const;
-            BufferCharView & operator+= ( const char * cstr );
-            bool operator== ( const char * cstr );
-            bool operator!= ( const char * cstr );
-            bool operator> ( const char * cstr );
-            bool operator< ( const char * cstr );
-
-        };
-
-        BufferCharView<false> & asChar ();
-        BufferCharView<true> & asChar () const;
-
-        class BufferUTF8View {
-
-            public:
-
-            BufferUTF8View ( const Buffer & buffer );
-            size_t length () const;
-
-            class Iter {
-
-                protected:
-                const Buffer & buffer;
-                size_t index;
-
-                public:
-                Iter ( BufferUTF8View & view );
-                Iter & operator++ (int);
-                int codepoint () const;
-                operator bool () const;
-
-            };
-
-        };
-
+        BufferUTF8View & asUTF8 ();
         const BufferUTF8View & asUTF8 () const;
+
+    };
+
+    class BufferBytesView : public Buffer {
+
+        public:
+
+        size_t length () const;
+
+        BufferBytesView & operator= ( BufferBytesView & that );
+        BufferBytesView & operator+= ( BufferBytesView & that );
+        bool operator== ( BufferBytesView & that ) const;
+        bool operator!= ( BufferBytesView & that ) const;
+
+        BufferBytesView & set ( uint8_t * mem, size_t mem_length );
+        BufferBytesView & cat ( uint8_t * mem, size_t mem_length );
+        bool eq ( uint8_t * mem, size_t mem_length );
+
+    };
+
+    class BufferCharView : public Buffer {
+
+        public:
+
+        size_t length () const;
+
+        BufferCharView & operator= ( const char * that );
+        BufferCharView & operator+= ( const char * that );
+        bool operator== ( const char * that ) const;
+        bool operator!= ( const char * that ) const;
+
+    };
+
+    class BufferUTF8Iter {
+
+        protected:
+
+        const Buffer & buffer;
+
+        public:
+
+        BufferUTF8Iter ( const Buffer & buffer );
+
+        BufferUTF8Iter & operator++ () const;
+        operator bool () const;
+        int operator* () const;
+
+    };
+
+    class BufferUTF8View : public Buffer {
+
+        public:
+
+        size_t length () const;
+
+        BufferUTF8View & operator= ( const char * that );
+        BufferUTF8View & operator+= ( const char * that );
+        bool operator== ( const char * that ) const;
+        bool operator!= ( const char * that ) const;
+
+        BufferUTF8Iter begin () const;
 
     };
 

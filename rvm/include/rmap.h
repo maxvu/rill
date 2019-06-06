@@ -1,12 +1,19 @@
 #ifndef RVM_RMAP
 #define RVM_RMAP
 
+#include "rval.h"
+
 typedef unsigned int rerr;
+
+#define RMAP_MINIMUM_SIZE 8
+#define RMAP_DEFAULT_SIZE 8
+#define RMAP_GROWTH       2.0
+#define RMAP_MAX_LOAD     0.9
 
 typedef struct rmap_slot {
     rval key;
     rval val;
-};
+} rmap_slot;
 
 typedef struct rmap {
     size_t      ref;
@@ -15,7 +22,7 @@ typedef struct rmap {
     size_t      cap;
 } rmap;
 
-rerr rmap_init ( rval * val size_t cap );
+rerr rmap_init ( rval * val, size_t cap );
 
 size_t rmap_size ( rval * val );
 double rmap_load ( rval * val );
@@ -25,7 +32,7 @@ rerr rmap_compact ( rval * val );
 
 rerr rmap_clone ( rval * dst, rval * src );
 
-rerr rmap_set ( rval * val, rval * key, rval * val );
+rerr rmap_set ( rval * val, rval * key, rval * item );
 char rmap_has ( rval * val, rval * key );
 rval * rmap_get ( rval * val, rval * key );
 rerr rmap_unset ( rval * val, rval * key );
@@ -35,19 +42,19 @@ rerr rmap_merge ( rval * dst, rval * src );
 rerr rmap_clear ( rval * val );
 
 rval * rmap_getq ( rval * val, const char * key );
-rval * rmap_setq ( rval * val, const char * key, rval * val );
-rval * rmap_unsetq ( rval * val, const char * key, rval * val );
+rval * rmap_setq ( rval * val, const char * key, rval * item );
+rval * rmap_unsetq ( rval * val, const char * key, rval * item );
 
 typedef struct rmapit {
     rval * val;
     size_t idx;
-} rmap_iter;
+} rmapit;
 
-rmap_iter rmap_begin ( rval * rmap );
+rmapit rmap_begin ( rval * rmap );
 char rmapit_done ( rmapit * it );
 void rmapit_next ( rmapit * it );
 rerr rmap_iter_del ( rmapit * it );
-rval * rmap_iter_key ( rmap_iter * it );
-rval * rmap_iter_val ( rmap_iter * it );
+const rval * rmap_iter_key ( rmapit * it );
+rval * rmap_iter_val ( rmapit * it );
 
 #endif

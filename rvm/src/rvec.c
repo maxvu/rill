@@ -9,6 +9,8 @@
 
 rerr rvec_init ( rval * val, size_t cap ) {
     ASSERT_NOT_NULL( val );
+    if ( IS_VEC( val ) )
+        return rvec_reserve( val, cap );
     if ( cap < RVEC_MINIMUM_SIZE )
         cap = RVEC_MINIMUM_SIZE;
     rval * vls = ( rval * ) malloc( sizeof( rval ) * cap );
@@ -37,11 +39,13 @@ size_t rvec_len ( rval * val ) {
 rerr rvec_clone ( rval * dst, rval * src ) {
     ASSERT_NOT_NULL( dst );
     ASSERT_VEC( src );
+    rvec * a = dst->vec;
+    rvec * b = src->vec;
     rval_release( dst );
-    ASSERT_OK( rvec_init( dst, src->vec->len ) );
-    memcpy( dst->vec->vls, src->vec->vls, sizeof( rval ) * src->vec->len );
-    for ( size_t i = 0; i < dst->vec->len; i++ )
-        rval_lease( dst->vec->vls );
+    ASSERT_OK( rvec_init( dst, b->len ) );
+    memcpy( a->vls, b->vls, sizeof( rval ) * b->len );
+    for ( size_t i = 0; i < a->len; i++ )
+        rval_lease( a->vls );
     return RERR_OK;
 }
 

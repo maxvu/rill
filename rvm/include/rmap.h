@@ -30,31 +30,33 @@ double rmap_load ( rval * val );
 rerr rmap_reserve ( rval * val, size_t cap );
 rerr rmap_compact ( rval * val );
 
-rerr rmap_clone ( rval * dst, rval * src );
-
-rerr rmap_set ( rval * val, rval * key, rval * item );
 char rmap_has ( rval * val, rval * key );
 rval * rmap_get ( rval * val, rval * key );
+rerr rmap_set ( rval * val, rval * key, rval * item );
 rerr rmap_unset ( rval * val, rval * key );
+
+char rmap_qhas ( rval * val, const char * key );
+rerr rmap_qget ( rval * val, const char * key );
+rerr rmap_qset ( rval * val, const char * key, rval * item );
+rerr rmap_qunset ( rval * val, const char * key, rval * item );
+
 rerr rmap_keys ( rval * dst, rval * map );
 rerr rmap_vals ( rval * dst, rval * map );
 rerr rmap_merge ( rval * dst, rval * src );
 rerr rmap_clear ( rval * val );
 
-rval * rmap_getq ( rval * val, const char * key );
-rval * rmap_setq ( rval * val, const char * key, rval * item );
-rval * rmap_unsetq ( rval * val, const char * key, rval * item );
 
 typedef struct rmapit {
-    rval * val;
-    size_t idx;
+    rmap_slot * pos;
+    rmap_slot * end;
+    rmap * map;
 } rmapit;
 
 rmapit rmap_begin ( rval * rmap );
-char rmapit_done ( rmapit * it );
 void rmapit_next ( rmapit * it );
-rerr rmap_iter_del ( rmapit * it );
-const rval * rmap_iter_key ( rmapit * it );
-rval * rmap_iter_val ( rmapit * it );
+char rmapit_done ( rmapit * it );
+rval * rmapit_key ( rmapit * it ); // TODO: make `const`?
+rval * rmapit_val ( rmapit * it );
+rerr rmapit_del ( rmapit * it );
 
 #endif

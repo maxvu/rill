@@ -42,7 +42,7 @@ rerr rval_setsubtype ( rval * val, unsigned int subtype );
 rerr rval_lease ( rval * val );
 rerr rval_release ( rval * val );
 rerr rval_exclude ( rval * val );
-int  rval_cyclesto ( rval * val );
+int  rval_cyclesto ( rval * to, rval * from );
 
 rerr rval_copy ( rval * dst, rval * src );
 rerr rval_clone ( rval * dst, rval * src );

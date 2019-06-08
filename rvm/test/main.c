@@ -1,5 +1,6 @@
 #include "rtest/rtest.h"
 
+#include "rerr.h"
 #include "rfxx.h"
 #include "rixx.h"
 #include "ruxx.h"
@@ -8,37 +9,38 @@
 #include "rvec.h"
 #include "rmap.h"
 
+#include <limits.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
+#include <time.h>
 
 int main ( int argc, char ** argv ) {
 
     RTEST_INIT;
-
+    
     RTEST( "sanity" ) {
-        ASSERT( 1 + 1 == 3 );
+        ASSERT( 1 + 1 == 2 );
     } RTEST_END;
     
-    RTEST( "rval / rnil / is falsy" ) {
-        rval nil = rnil();
-        ASSERT( !rval_truthy( &nil ) );
-    } RTEST_END;
+    clock_t begin = clock();
     
-    RTEST( "rval / ruxx / access" ) {
-        rval u = ruxxq( 12 );
-        ASSERT( ruxx_get( &u ) == 12 );
-    } RTEST_END;
+    #include "rval.test.inc"
+    #include "rixx.test.inc"
+    #include "ruxx.test.inc"
+    #include "rfxx.test.inc"
+    #include "rstr.test.inc"
+    #include "rvec.test.inc"
+    #include "rmap.test.inc"
     
-    RTEST( "rval / rixx / access" ) {
-        rval u = rixxq( 37 );
-        ASSERT( rixx_get( &u ) == 37 );
-    } RTEST_END;
+    clock_t end = clock();
     
-    RTEST( "rval / rifx / access" ) {
-        rval u = rfxxq( 95.0 );
-        ASSERT( rfxx_get( &u ) - 95.0 < 0.001 );
-    } RTEST_END;
+    printf(
+        "%lu / %lu assertions passed in %fs\n",
+        RTEST_NUM_PASSED,
+        RTEST_NUM_TESTS,
+        ( end - begin ) / ( double ) CLOCKS_PER_SEC
+    );
     
     return RTEST_OK ? 0 : 1;
 

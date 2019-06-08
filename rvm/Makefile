@@ -9,6 +9,7 @@ OBJECTS = $(patsubst src/%.c,build/%.o,$(SOURCES))
 release : CFLAGS += -O3
 release : all
 all : $(OBJECTS)
+test : CFLAGS += -g
 test : bin/test
 
 build/ :
@@ -16,7 +17,7 @@ build/ :
 bin/ :
 	mkdir $@
 
-bin/test : $(OBJECTS) test/main.c | bin/
+bin/test : $(OBJECTS) test/main.c ../rtest/rtest.h $(wildcard test/*.test.inc)| bin/
 	$(CC_BIN) -o $@ $(OBJECTS) -I ../ test/main.c
 
 build/%.o : src/%.c include/%.h | build/

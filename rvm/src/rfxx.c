@@ -22,7 +22,8 @@ rerr rfxx_set ( rval * val, double f ) {
 }
 
 double rfxx_get ( rval * val ) {
-    ASSERT_NOT_NULL( val );
+    if ( !val )
+        return 0.0;
     if ( !IS_FXX( val ) )
         return NAN;
     return val->fxx;

@@ -46,10 +46,11 @@ int  rval_cyclesto ( rval * to, rval * from );
 
 rerr rval_copy ( rval * dst, rval * src );
 rerr rval_clone ( rval * dst, rval * src );
+// rerr rval_deepclone ( rval * dst, rval * src );
 rerr rval_move ( rval * dst, rval * src );
 rerr rval_swap ( rval * a, rval * b );
 
-int rval_eq ( rval * a, rval * b );
+char rval_eq ( rval * a, rval * b );
 int rval_truthy ( rval * val );
 
 rval rnil ();

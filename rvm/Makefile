@@ -9,14 +9,20 @@ OBJECTS = $(patsubst src/%.c,build/%.o,$(SOURCES))
 release : CFLAGS += -O3
 release : all
 all : $(OBJECTS)
+test : bin/test
 
 build/ :
-	mkdir build
+	mkdir $@
+bin/ :
+	mkdir $@
+
+bin/test : $(OBJECTS) test/main.c | bin/
+	$(CC_BIN) -o $@ $^
 
 build/%.o : src/%.c include/%.h | build/
 	$(CC_OBJ) $< -o $@
 
 clean :
-	rm -rf build/
+	rm -rf build/ bin/
 
 .PHONY : clean release

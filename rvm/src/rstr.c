@@ -142,3 +142,10 @@ int rstr_qcmp ( rval * val, const char * cstr ) {
     ASSERT_NOT_NULL( cstr );
     return rstr_mcmp( val, ( uint8_t * ) cstr, strlen( cstr ) );
 }
+
+rerr rstr_clear ( rval * val ) {
+    ASSERT_STR( val );
+    val->str->buf[ 0 ] = 0;
+    val->str->len = 0;
+    return RERR_OK;
+}

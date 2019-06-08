@@ -35,7 +35,6 @@ rval * rmap_get ( rval * val, rval * key );
 rerr rmap_set ( rval * val, rval * key, rval * item );
 rerr rmap_unset ( rval * val, rval * key );
 
-char rmap_qhas ( rval * val, const char * key );
 rerr rmap_qget ( rval * val, const char * key );
 rerr rmap_qset ( rval * val, const char * key, rval * item );
 rerr rmap_qunset ( rval * val, const char * key, rval * item );
@@ -44,7 +43,6 @@ rerr rmap_keys ( rval * dst, rval * map );
 rerr rmap_vals ( rval * dst, rval * map );
 rerr rmap_merge ( rval * dst, rval * src );
 rerr rmap_clear ( rval * val );
-
 
 typedef struct rmapit {
     rmap_slot * pos;

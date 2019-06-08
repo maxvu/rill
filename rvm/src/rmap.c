@@ -232,7 +232,11 @@ rerr rmap_unset ( rval * val, rval * key ) {
     return RERR_OK;
 }
 
-rerr rmap_keys ( rval * dst, rval * map ) {
+rerr rmap_qget ( rval * val, const char * key );
+rerr rmap_qset ( rval * val, const char * key, rval * item );
+rerr rmap_qunset ( rval * val, const char * key, rval * item );
+
+rerr rmap_collect ( rval * dst, rval * map, rval * (*get)( rmapit * ) ) {
     ASSERT_MAP( map );
     ASSERT_NOT_NULL( dst );
     rval tmp = rnil();
@@ -240,7 +244,7 @@ rerr rmap_keys ( rval * dst, rval * map ) {
     rmapit it = rmap_begin( map );
     rerr err;
     while ( !rmapit_done( &it ) ) {
-        if ( RERR_OK != ( err = rvec_push( &tmp, rmapit_key( &it ) ) ) ) {
+        if ( RERR_OK != ( err = rvec_push( &tmp, get( &it ) ) ) ) {
             rval_release( &tmp );
             return err;
         }
@@ -250,22 +254,12 @@ rerr rmap_keys ( rval * dst, rval * map ) {
     return RERR_OK;
 }
 
+rerr rmap_keys ( rval * dst, rval * map ) {
+    return rmap_collect( dst, map, rmapit_key );
+}
+
 rerr rmap_vals ( rval * dst, rval * map ) {
-    ASSERT_MAP( map );
-    ASSERT_NOT_NULL( dst );
-    rval tmp = rnil();
-    ASSERT_OK( rvec_init( &tmp, rmap_size( map ) ) );
-    rmapit it = rmap_begin( map );
-    rerr err;
-    while ( !rmapit_done( &it ) ) {
-        if ( RERR_OK != ( err = rvec_push( &tmp, rmapit_val( &it ) ) ) ) {
-            rval_release( &tmp );
-            return err;
-        }
-        rmapit_next( &it );
-    }
-    rval_move( dst, &tmp );
-    return RERR_OK;
+    return rmap_collect( dst, map, rmapit_val );
 }
 
 rerr rmap_merge ( rval * dst, rval * src ) {

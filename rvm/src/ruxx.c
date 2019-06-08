@@ -2,11 +2,7 @@
 #include "ruxx.h"
 #include "rval.h"
 
-rval ruxxq () {
-    return ruxxqv( 0 );
-}
-
-rval ruxxqv ( unsigned int i ) {
+rval ruxxq ( unsigned int i ) {
     return ( rval ) {
         .info = RVT_UXX,
         .uxx  = i
@@ -17,7 +13,7 @@ rerr ruxx_set ( rval * val, unsigned int i ) {
     ASSERT_NOT_NULL( val );
     if ( !IS_UXX( val ) )
         rval_release( val );
-    *val = ruxxqv( i );
+    *val = ruxxq( i );
     return RERR_OK;
 }
 

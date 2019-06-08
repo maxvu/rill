@@ -1,24 +1,45 @@
-#include "../../test/test.h"
+#include "rtest/rtest.h"
+
+#include "rfxx.h"
+#include "rixx.h"
+#include "ruxx.h"
+#include "rstr.h"
+#include "rval.h"
+#include "rvec.h"
+#include "rmap.h"
 
 #include <stdio.h>
 #include <string.h>
-
-#define RILL_BUFFER_LENGTH 1024
-char ___RILL_TEST_NAME[ RILL_BUFFER_LENGTH ];
-char ___RILL_ASSERT_TEXT[ RILL_BUFFER_LENGTH ];
-#define __TO_STRING(i) #i
-#define TO_STRING(i) __TO_STRING(i)
-
-#define RTEST( name ) strncpy( ___RILL_TEST_NAME, name, RILL_BUFFER_LENGTH );
-#define RMUST( cond ) if ( cond ) { printf( "[ OK ] "); } else { printf( "[ !! ]"); } printf( "%s / %s @ %s:%d", ___RILL_TEST_NAME, #cond, __FILE__, __LINE__ )
-#define RTEST_END ___RILL_TEST_NAME[ 0 ] = 0;
+#include <math.h>
 
 int main ( int argc, char ** argv ) {
 
-    #include "sanity.inc"
+    RTEST_INIT;
+
+    RTEST( "sanity" ) {
+        ASSERT( 1 + 1 == 3 );
+    } RTEST_END;
     
-    printf( "\n" );
+    RTEST( "rval / rnil / is falsy" ) {
+        rval nil = rnil();
+        ASSERT( !rval_truthy( &nil ) );
+    } RTEST_END;
     
-    return 0;
+    RTEST( "rval / ruxx / access" ) {
+        rval u = ruxxq( 12 );
+        ASSERT( ruxx_get( &u ) == 12 );
+    } RTEST_END;
+    
+    RTEST( "rval / rixx / access" ) {
+        rval u = rixxq( 37 );
+        ASSERT( rixx_get( &u ) == 37 );
+    } RTEST_END;
+    
+    RTEST( "rval / rifx / access" ) {
+        rval u = rfxxq( 95.0 );
+        ASSERT( rfxx_get( &u ) - 95.0 < 0.001 );
+    } RTEST_END;
+    
+    return RTEST_OK ? 0 : 1;
 
 }

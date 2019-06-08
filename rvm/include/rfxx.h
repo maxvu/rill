@@ -5,6 +5,7 @@
 
 typedef unsigned int rerr;
 
+rval rfxxq ( double f );
 rerr rfxx_set ( rval * val, double i );
 double rfxx_get ( rval * val );
 

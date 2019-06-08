@@ -3,6 +3,13 @@
 
 #include <math.h>
 
+rval rfxxq ( double f ) {
+    return ( rval ) {
+        .info = RVT_FXX,
+        .fxx  = f
+    };
+}
+
 rerr rfxx_set ( rval * val, double f ) {
     ASSERT_NOT_NULL( val );
     if ( !IS_FXX( val ) )

@@ -17,7 +17,7 @@ bin/ :
 	mkdir $@
 
 bin/test : $(OBJECTS) test/main.c | bin/
-	$(CC_BIN) -o $@ $^
+	$(CC_BIN) -o $@ $(OBJECTS) -I ../ test/main.c
 
 build/%.o : src/%.c include/%.h | build/
 	$(CC_OBJ) $< -o $@

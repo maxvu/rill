@@ -5,8 +5,7 @@
 
 typedef unsigned int rerr;
 
-rval rixxq ();
-rval rixxqv ( int i );
+rval rixxq ( int i );
 rerr rixx_set ( rval * val, int i );
 int rixx_get ( rval * val );
 

@@ -13,21 +13,21 @@
 
 #define ASSERT_NOT_NULL( x ) if ( !x ) return RERR_USE_NULLARG
 #define ASSERT_TYPE( x, t ) ASSERT_NOT_NULL( x ); if ( rval_type( x ) != t ) return RERR_USE_VALTYPE
-#define ASSERT_OK( expr ) { rerr _err; if ( !( _err = ( expr ) ) ) return _err; }
+#define ASSERT_OK( expr ) { rerr _err; _err = ( expr ); if ( _err != RERR_OK ) return _err; }
 #define ASSERT_NIL( x ) ASSERT_TYPE( x, RVT_NIL )
 #define ASSERT_IXX( x ) ASSERT_TYPE( x, RVT_IXX )
 #define ASSERT_UXX( x ) ASSERT_TYPE( x, RVT_UXX )
 #define ASSERT_FXX( x ) ASSERT_TYPE( x, RVT_FXX )
-#define ASSERT_STR( x ) ASSERT_TYPE( x, RVT_FXX )
+#define ASSERT_STR( x ) ASSERT_TYPE( x, RVT_STR )
 #define ASSERT_VEC( x ) ASSERT_TYPE( x, RVT_VEC )
 #define ASSERT_MAP( x ) ASSERT_TYPE( x, RVT_MAP )
 
-#define IS_NIL( x ) ( rval_type( x ) == RVT_NIL )
-#define IS_IXX( x ) ( rval_type( x ) == RVT_IXX )
-#define IS_UXX( x ) ( rval_type( x ) == RVT_UXX )
-#define IS_FXX( x ) ( rval_type( x ) == RVT_FXX )
-#define IS_STR( x ) ( rval_type( x ) == RVT_FXX )
-#define IS_VEC( x ) ( rval_type( x ) == RVT_VEC )
-#define IS_MAP( x ) ( rval_type( x ) == RVT_MAP )
+#define IS_NIL( x ) ( x != NULL && ( rval_type( x ) == RVT_NIL ) )
+#define IS_IXX( x ) ( x != NULL && ( rval_type( x ) == RVT_IXX ) )
+#define IS_UXX( x ) ( x != NULL && ( rval_type( x ) == RVT_UXX ) )
+#define IS_FXX( x ) ( x != NULL && ( rval_type( x ) == RVT_FXX ) )
+#define IS_STR( x ) ( x != NULL && ( rval_type( x ) == RVT_STR ) )
+#define IS_VEC( x ) ( x != NULL && ( rval_type( x ) == RVT_VEC ) )
+#define IS_MAP( x ) ( x != NULL && ( rval_type( x ) == RVT_MAP ) )
 
 #endif

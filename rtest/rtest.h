@@ -1,6 +1,7 @@
 #ifndef __RTEST
 #define __RTEST
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,12 +69,20 @@ int rtest_assert (
     return 1;
 }
 
+void rtest_end ( rtest * test ) {
+    
+}
+
 void rtest_print ( rtest * test ) {
     const char * green = "\033[1;32m";
     const char * red   = "\033[1;31m";
     const char * clear = "\033[0m";
     if ( test->pass ) {
-        printf( "%s[ OK ] %s%s\n", green, test->name, clear );
+        printf(
+            "%s[ OK ] %s%s\n",
+            green, test->name,
+            clear
+        );
     } else {
         printf( "[ !! ] %s%s\n", test->name, clear );
         rassert * assert;
@@ -103,7 +112,10 @@ void rtest_print ( rtest * test ) {
 #define RTEST_INIT do { n_tests_run = 0; n_tests_passed = 0; rtest_init( &___test ); } while ( 0 )
 #define RTEST( name ) rtest_set( &___test, name, __FILE__ );
 #define ASSERT( cond ) rtest_assert( &___test, #cond, __LINE__, cond )
-#define RTEST_END do { rtest_print( &___test ); } while ( 0 )
+#define RTEST_END do { rtest_end( &___test ); rtest_print( &___test ); } while ( 0 )
 #define RTEST_OK ( n_tests_run == n_tests_passed )
+#define RTEST_NUM_TESTS ( n_tests_run )
+#define RTEST_NUM_PASSED ( n_tests_passed )
+#define DEBUGGER raise( SIGINT );
 
 #endif

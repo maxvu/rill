@@ -120,9 +120,9 @@ rerr rstr_mcat ( rval * val, uint8_t * mem, size_t mem_len ) {
 }
 
 int rstr_mcmp ( rval * val, uint8_t * mem, size_t mem_len ) {
-    ASSERT_STR( val );
-    ASSERT_NOT_NULL( mem );
-    return memcmp( val, mem, mem_len );
+    if ( !val || !mem )
+        return -7;
+    return memcmp( rstr_buf( val ), mem, mem_len );
 }
 
 rerr rstr_qcpy ( rval * val, const char * cstr ) {
@@ -138,9 +138,9 @@ rerr rstr_qcat ( rval * val, const char * cstr ) {
 }
 
 int rstr_qcmp ( rval * val, const char * cstr ) {
-    ASSERT_STR( val );
-    ASSERT_NOT_NULL( cstr );
-    return rstr_mcmp( val, ( uint8_t * ) cstr, strlen( cstr ) );
+    if ( !IS_STR( val ) || !cstr )
+        return -7;
+    return rstr_mcmp( val, ( uint8_t * ) cstr, rstr_len( val ) );
 }
 
 rerr rstr_clear ( rval * val ) {

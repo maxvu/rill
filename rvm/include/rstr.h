@@ -9,7 +9,6 @@
 typedef unsigned int rerr;
 typedef struct rval rval;
 
-#define RSTR_DEFAULT_SIZE 16
 #define RSTR_MINIMUM_SIZE 5
 #define RSTR_GROWTH       2.0
 

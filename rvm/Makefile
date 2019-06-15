@@ -8,7 +8,9 @@ OBJECTS = $(patsubst src/%.c,build/%.o,$(SOURCES))
 
 release : CFLAGS += -O3
 release : all
+
 all : $(OBJECTS)
+
 test : CFLAGS += -g
 test : bin/test
 

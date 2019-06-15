@@ -18,13 +18,13 @@
 int main ( int argc, char ** argv ) {
 
     RTEST_INIT;
-    
+
     RTEST( "sanity" ) {
         ASSERT( 1 + 1 == 2 );
     } RTEST_END;
-    
+
     clock_t begin = clock();
-    
+
     #include "rval.test.inc"
     #include "rixx.test.inc"
     #include "ruxx.test.inc"
@@ -32,16 +32,16 @@ int main ( int argc, char ** argv ) {
     #include "rstr.test.inc"
     #include "rvec.test.inc"
     #include "rmap.test.inc"
-    
+
     clock_t end = clock();
-    
+
     printf(
         "%lu / %lu assertions passed in %fs\n",
         RTEST_NUM_PASSED,
         RTEST_NUM_TESTS,
         ( end - begin ) / ( double ) CLOCKS_PER_SEC
     );
-    
+
     return RTEST_OK ? 0 : 1;
 
 }

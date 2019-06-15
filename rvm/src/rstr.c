@@ -9,6 +9,8 @@ typedef unsigned int rerr;
 
 rerr rstr_init ( rval * val, size_t cap ) {
     ASSERT_NOT_NULL( val );
+    if ( IS_STR( val ) )
+        return rstr_reserve( val, cap );
     if ( cap < RSTR_MINIMUM_SIZE )
         cap = RSTR_MINIMUM_SIZE;
     char * buf = ( char * ) malloc( sizeof( char ) * cap + 1 );
@@ -60,7 +62,7 @@ rerr rstr_reserve ( rval * val, size_t new_cap ) {
     ASSERT_STR( val );
     if ( val->str->cap >= new_cap )
         return RERR_OK;
-    return rstr_resize( val, new_cap * RSTR_GROWTH );
+    return rstr_resize( val, new_cap );
 }
 
 rerr rstr_compact ( rval * val ) {
@@ -96,7 +98,7 @@ rerr rstr_mcpy ( rval * val, uint8_t * mem, size_t mem_len ) {
         rstr_clear( val );
         return RERR_OK;
     }
-    ASSERT_OK( rstr_reserve( val, mem_len ) );
+    ASSERT_OK( rstr_reserve( val, mem_len * RSTR_GROWTH ) );
     ASSERT_OK( rval_exclude( val ) );
     rstr * str = val->str;
     memcpy( str->buf, mem, mem_len );
@@ -111,7 +113,7 @@ rerr rstr_mcat ( rval * val, uint8_t * mem, size_t mem_len ) {
     if ( !mem_len )
         return RERR_OK;
     rstr * str = val->str;
-    ASSERT_OK( rstr_reserve( val, str->len + mem_len ) );
+    ASSERT_OK( rstr_reserve( val, ( str->len + mem_len ) * RSTR_GROWTH ) );
     ASSERT_OK( rval_exclude( val ) );
     memcpy( str->buf + str->len, mem, mem_len );
     str->len += mem_len;

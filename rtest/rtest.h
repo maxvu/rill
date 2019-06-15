@@ -8,7 +8,7 @@
 
 #define RILL_TEST_TESTNAME_LIMIT    64
 #define RILL_TEST_FILENAME_LIMIT    64
-#define RILL_TEST_ASSERT_LIMIT      16
+#define RILL_TEST_ASSERT_LIMIT      32
 #define RILL_TEST_ASSERT_TEXT_LIMIT 128
 
 static size_t n_tests_run;
@@ -70,7 +70,7 @@ int rtest_assert (
 }
 
 void rtest_end ( rtest * test ) {
-    
+
 }
 
 void rtest_print ( rtest * test ) {

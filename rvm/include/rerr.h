@@ -5,11 +5,11 @@
 #define RERR_USE 1
 #define RERR_SYS 2
 
-#define RERR_USE_NULLARG ( RERR_USE & ( 1 << 4 ) )
-#define RERR_USE_VALTYPE ( RERR_USE & ( 2 << 4 ) )
-#define RERR_USE_OOB     ( RERR_USE & ( 3 << 4 ) )
+#define RERR_USE_NULLARG ( RERR_USE | ( 1 << 4 ) )
+#define RERR_USE_VALTYPE ( RERR_USE | ( 2 << 4 ) )
+#define RERR_USE_OOB     ( RERR_USE | ( 3 << 4 ) )
 
-#define RERR_SYS_ALLOC ( RERR_SYS & ( 1 << 4 ) )
+#define RERR_SYS_ALLOC ( RERR_SYS | ( 1 << 4 ) )
 
 /* TODO: make ASSERT_* macros private? */
 

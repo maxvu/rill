@@ -17,6 +17,7 @@ typedef struct rvec {
     size_t cap;
 } rvec;
 
+rval rvecq ( size_t init_cap );
 rerr rvec_init ( rval * val, size_t cap );
 size_t rvec_len ( rval * val );
 rerr rvec_clone ( rval * dst, rval * src );

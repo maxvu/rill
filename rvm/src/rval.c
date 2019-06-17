@@ -61,17 +61,21 @@ rerr rval_release ( rval * val ) {
             }
         } break;
         case RVT_VEC: {
-            if ( !--val->vec->ref ) {
+            if ( val->vec->ref == 1 ) {
                 rvec_clear( val );
                 free( val->vec->vls );
                 free( val->vec );
+            } else {
+                val->vec->ref -= 1;
             }
         } break;
         case RVT_MAP: {
-            if ( !--val->map->ref ) {
+            if ( val->map->ref == 1 ) {
                 rmap_clear( val );
                 free( val->map->slt );
                 free( val->map );
+            } else {
+                val->map->ref -= 1;
             }
         } break;
         default: return RERR_USE_VALTYPE;
@@ -97,6 +101,7 @@ rerr rval_exclude ( rval * val ) {
             rval_move( val, &tmp );
         } break;
         case RVT_VEC: {
+            int i = val->vec->ref;
             if ( val->vec->ref == 1 )
                 return RERR_OK;
             if ( RERR_OK != ( err = rvec_clone( &tmp, val ) ) )

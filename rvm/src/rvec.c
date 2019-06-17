@@ -7,6 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+rval rvecq ( size_t init_cap ) {
+    rval tmp = rnil();
+    if ( init_cap < RVEC_DEFAULT_SIZE )
+        init_cap = RVEC_DEFAULT_SIZE;
+    rvec_init( &tmp, init_cap );
+    return tmp;
+}
+
 rerr rvec_init ( rval * val, size_t cap ) {
     ASSERT_NOT_NULL( val );
     if ( IS_VEC( val ) )
@@ -27,6 +35,10 @@ rerr rvec_init ( rval * val, size_t cap ) {
         .vls = vls,
         .len = 0,
         .cap = cap
+    };
+    *val = ( rval ) {
+        .info = RVT_VEC,
+        .vec = vec
     };
     return RERR_OK;
 }
@@ -82,6 +94,8 @@ rerr rvec_push ( rval * val, rval * item ) {
     ASSERT_NOT_NULL( item );
     ASSERT_OK( rval_exclude( val ) );
     ASSERT_OK( rvec_reserve( val, val->vec->len + 1 ) );
+    if ( rval_cyclesto( val, item ) )
+        ASSERT_OK( rval_clone( val, val ) );
     ASSERT_OK( rval_copy( val->vec->vls + val->vec->len++, item ) );
     rval_lease( item );
     return RERR_OK;
@@ -92,7 +106,9 @@ rerr rvec_pop ( rval * val ) {
     ASSERT_OK( rval_exclude( val ) );
     if ( !val->vec->len )
         return RERR_USE_OOB;
-    rval_release( val->vec->vls + val->vec->len-- );
+    rvec * v = val->vec;
+    val->vec->len -= 1;
+    rval_release( val->vec->vls + val->vec->len );
     return RERR_OK;
 }
 
@@ -102,6 +118,8 @@ rerr rvec_set ( rval * val, size_t index, rval * item ) {
         return RERR_USE_OOB;
     ASSERT_NOT_NULL( item );
     ASSERT_OK( rval_exclude( val ) );
+    if ( rval_cyclesto( val, item ) )
+        ASSERT_OK( rval_clone( val, val ) );
     rval tmp = rnil();
     ASSERT_OK( rval_copy( &tmp, item ) );
     rval_release( val->vec->vls + index );
@@ -122,6 +140,8 @@ rerr rvec_fill ( rval * val, rval * item, size_t n ) {
     ASSERT_NOT_NULL( item );
     ASSERT_OK( rval_exclude( val ) );
     ASSERT_OK( rvec_reserve( val, rvec_len( val ) + n ) );
+    if ( rval_cyclesto( val, item ) )
+        ASSERT_OK( rval_clone( val, val ) );
     while ( val->vec->len < n )
         ASSERT_OK( rvec_push( val, item ) )
     return RERR_OK;

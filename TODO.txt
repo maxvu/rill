@@ -1,0 +1,12 @@
+- README.md's for source navigation
+- comment c code (doxygen?)
+- user guide
+- style guide
+- rill doc generator
+- benchmarks
+- unit test coverage > 85%
+- fuzz
+- Computer Language Benchmark Game
+- add extensions
+- ask Rob Kleffner what he thinks
+- ask Bob Nystrom what he thinks

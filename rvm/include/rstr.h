@@ -10,7 +10,7 @@ typedef unsigned int rerr;
 typedef struct rval rval;
 
 #define RSTR_MINIMUM_SIZE 5
-#define RSTR_GROWTH       2.0
+#define RSTR_GROWTH       1.6
 
 typedef struct rstr {
     size_t ref;
@@ -19,6 +19,7 @@ typedef struct rstr {
     size_t cap;
 } rstr;
 
+rval rstrq ( const char * cstr );
 rerr rstr_init ( rval * val, size_t cap );
 size_t rstr_len ( rval * val );
 char * rstr_buf ( rval * val );

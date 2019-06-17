@@ -80,8 +80,8 @@ rerr rvec_compact ( rval * val ) {
 rerr rvec_push ( rval * val, rval * item ) {
     ASSERT_VEC( val );
     ASSERT_NOT_NULL( item );
-    ASSERT_OK( rvec_reserve( val, val->vec->len + 1 ) );
     ASSERT_OK( rval_exclude( val ) );
+    ASSERT_OK( rvec_reserve( val, val->vec->len + 1 ) );
     ASSERT_OK( rval_copy( val->vec->vls + val->vec->len++, item ) );
     rval_lease( item );
     return RERR_OK;
@@ -121,6 +121,7 @@ rerr rvec_fill ( rval * val, rval * item, size_t n ) {
     ASSERT_VEC( val );
     ASSERT_NOT_NULL( item );
     ASSERT_OK( rval_exclude( val ) );
+    ASSERT_OK( rvec_reserve( val, rvec_len( val ) + n ) );
     while ( val->vec->len < n )
         ASSERT_OK( rvec_push( val, item ) )
     return RERR_OK;
@@ -145,6 +146,7 @@ rerr rvec_concat ( rval * dst, rval * src ) {
     ASSERT_VEC( dst );
     ASSERT_VEC( src );
     ASSERT_OK( rval_exclude( dst ) );
+    ASSERT_OK( rvec_reserve( dst, rvec_len( dst ) + rvec_len( src ) ) );
     rvec * a = dst->vec;
     rvec * b = src->vec;
     if ( !src->vec->len )

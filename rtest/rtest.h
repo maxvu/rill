@@ -8,7 +8,7 @@
 
 #define RILL_TEST_TESTNAME_LIMIT    64
 #define RILL_TEST_FILENAME_LIMIT    64
-#define RILL_TEST_ASSERT_LIMIT      32
+#define RILL_TEST_ASSERT_LIMIT      64
 #define RILL_TEST_ASSERT_TEXT_LIMIT 128
 
 static size_t n_tests_run;
@@ -90,14 +90,14 @@ void rtest_print ( rtest * test ) {
             assert = &test->asserts[ i ];
             if ( assert->pass ) {
                 printf(
-                    "    [ OK ] %s (%s:%lu)\n",
+                    "    [ OK ] %s | %s:%lu\n",
                     assert->text,
                     test->filename,
                     assert->line
                 );
             } else {
                 printf(
-                    "    %s[ !! ] %s (%s:%lu)%s\n",
+                    "    %s[ !! ] %s | %s:%lu%s\n",
                     red,
                     assert->text,
                     test->filename,

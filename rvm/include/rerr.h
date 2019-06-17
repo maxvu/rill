@@ -11,6 +11,8 @@
 
 #define RERR_SYS_ALLOC ( RERR_SYS & ( 1 << 4 ) )
 
+/* TODO: make ASSERT_* macros private? */
+
 #define ASSERT_NOT_NULL( x ) if ( !x ) return RERR_USE_NULLARG
 #define ASSERT_TYPE( x, t ) ASSERT_NOT_NULL( x ); if ( rval_type( x ) != t ) return RERR_USE_VALTYPE
 #define ASSERT_OK( expr ) { rerr _err; _err = ( expr ); if ( _err != RERR_OK ) return _err; }

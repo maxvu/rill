@@ -123,7 +123,7 @@ int rval_cyclesto ( rval * to, rval * from ) {
         case RVT_NIL:
         case RVT_IXX:
         case RVT_UXX:
-        case RVT_FXX: 
+        case RVT_FXX:
         case RVT_STR: return 0; break;
         case RVT_VEC: {
             if ( to->vec == from->vec )
@@ -168,8 +168,12 @@ rerr rval_clone ( rval * dst, rval * src ) {
         case RVT_UXX:
         case RVT_FXX: return rval_copy( dst, src ); break;
         case RVT_STR: {
-            if ( RERR_OK != ( err = rstr_cpy( &tmp, src ) ) )
+            if ( RERR_OK != ( err = rstr_init( &tmp, rstr_len( src ) ) ) )
                 return err;
+            if ( RERR_OK != ( err = rstr_cpy( &tmp, src ) ) ) {
+                rval_release( &tmp );
+                return err;
+            }
             rval_move( dst, &tmp );
         } break;
         case RVT_VEC: {
@@ -191,9 +195,7 @@ rerr rval_clone ( rval * dst, rval * src ) {
 rerr rval_move ( rval * dst, rval * src ) {
     ASSERT_NOT_NULL( dst );
     ASSERT_NOT_NULL( src );
-    rerr err;
-    if ( RERR_OK != ( err = rval_copy( dst, src ) ) )
-        return err;
+    ASSERT_OK( rval_copy( dst, src ) );
     rval_release( src );
     return RERR_OK;
 }

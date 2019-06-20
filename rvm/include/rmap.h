@@ -22,27 +22,29 @@ typedef struct rmap {
     size_t      cap;
 } rmap;
 
-rerr rmap_init ( rval * val, size_t cap );
+rval rmapq ( size_t cap );
+rerr rmap_init ( rval * map, size_t cap );
 
-size_t rmap_size ( rval * val );
-double rmap_load ( rval * val );
+size_t rmap_size ( rval * map );
+double rmap_load ( rval * map );
 
-rerr rmap_reserve ( rval * val, size_t cap );
-rerr rmap_compact ( rval * val );
+rerr rmap_reserve ( rval * map, size_t cap );
+rerr rmap_compact ( rval * map );
 
-char rmap_has ( rval * val, rval * key );
-rval * rmap_get ( rval * val, rval * key );
-rerr rmap_set ( rval * val, rval * key, rval * item );
-rerr rmap_unset ( rval * val, rval * key );
+char rmap_has ( rval * map, rval * key );
+rval * rmap_peek ( rval * map, rval * key );
+rerr rmap_get ( rval * item, rval * key, rval * map );
+rerr rmap_set ( rval * map, rval * key, rval * item );
+rerr rmap_unset ( rval * map, rval * key );
 
-rerr rmap_qget ( rval * val, const char * key );
-rerr rmap_qset ( rval * val, const char * key, rval * item );
-rerr rmap_qunset ( rval * val, const char * key, rval * item );
+rerr rmap_qget ( rval * map, const char * key );
+rerr rmap_qset ( rval * map, const char * key, rval * item );
+rerr rmap_qunset ( rval * map, const char * key, rval * item );
 
 rerr rmap_keys ( rval * dst, rval * map );
 rerr rmap_vals ( rval * dst, rval * map );
 rerr rmap_merge ( rval * dst, rval * src );
-rerr rmap_clear ( rval * val );
+rerr rmap_clear ( rval * map );
 
 typedef struct rmapit {
     rmap_slot * pos;

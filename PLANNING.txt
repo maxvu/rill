@@ -1,0 +1,72 @@
+
+: min ( T, T -> T )
+    [ < ] keep2 [ nip ] [ drop ] ?? ;
+
+: min ( i32, i32 -> i32 )
+    min ;
+
+: ! ( u32 -> u32 )
+    1 swap aseq 1 [ * ] reduce ;
+
+: < ( i64, i64 -> i64 )
+    ;
+: i+ ( ixx, ixx -> ixx )
+    ;
+
+================================================================================
+
+Point2D is the type defined by ______ ;
+x is the function of type ______ defined by _____ ;
+
+# Type syntax
+
+    ()    grouping
+    .     composition
+    <     inheritance
+    |     union
+    []    array
+    T x   generic application
+    -> ,  function
+    ?     nullable
+
+    ()    grouping
+    *     composition
+    <     inheritance
+    |     union
+    []    array
+    T x   generic application
+    -> ,  function
+
+Nil = () ;
+Maybe T = T | Nil ;
+Pair T = T * T ;
+Triple T = T * T * T ;
+
+Point2D = Pair Float ;
+Point3D = Point2D > Float ;
+
+x :: Point2D -> fxx = <<0 ;
+y :: Point2D -> fxx = <<1 ;
+z :: Point3D -> fxx = <<2 ;
+
+map T U :: [ T ], ( T -> U ) -> [ U ] =
+    ;
+
+main :: [ String ] -> Int
+    pop ;
+
+IShow T {
+    show :: T -> () ;
+}
+
+IEq T = {
+    eq? :: T, T -> Bool ;
+}
+ne T = eq? not ;
+
+IOrd T < IEq {
+    gt? :: T, T -> Bool ;
+    le? :: T, T -> Bool ;
+}
+ge? = [ gt? ] [ eq? ] bi or ;
+lt? = [ lt? ] [ eq? ] bi or ;

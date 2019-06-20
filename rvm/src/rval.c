@@ -101,7 +101,6 @@ rerr rval_exclude ( rval * val ) {
             rval_move( val, &tmp );
         } break;
         case RVT_VEC: {
-            int i = val->vec->ref;
             if ( val->vec->ref == 1 )
                 return RERR_OK;
             if ( RERR_OK != ( err = rvec_clone( &tmp, val ) ) )
@@ -134,7 +133,7 @@ int rval_cyclesto ( rval * to, rval * from ) {
             if ( to->vec == from->vec )
                 return 1;
             for ( size_t i = 0; i < rvec_len( from ); i++ )
-                if ( rval_cyclesto( to, rvec_get( from, i ) ) )
+                if ( rval_cyclesto( to, rvec_peek( from, i ) ) )
                     return 1;
             return 0;
         } break;
@@ -156,6 +155,8 @@ int rval_cyclesto ( rval * to, rval * from ) {
 rerr rval_copy ( rval * dst, rval * src ) {
     ASSERT_NOT_NULL( dst );
     ASSERT_NOT_NULL( src );
+    if ( dst == src )
+        return RERR_OK;
     rval_release( dst );
     *dst = *src;
     rval_lease( dst );
@@ -230,7 +231,7 @@ char rval_eq ( rval * a, rval * b ) {
             if ( rvec_len( a ) != rvec_len( b ) )
                 return 0;
             for ( size_t i = 0; i < rvec_len( a ); i++ )
-                if ( !rval_eq( rvec_get( a, i ), rvec_get( b, i ) ) )
+                if ( !rval_eq( rvec_peek( a, i ), rvec_peek( b, i ) ) )
                     return 0;
             return 1;
         } break;
@@ -240,7 +241,7 @@ char rval_eq ( rval * a, rval * b ) {
             rmapit it = rmap_begin( a );
             while ( !rmapit_done( &it ) ) {
                 rval * av = rmapit_val( &it );
-                rval * bv = rmap_get( b, rmapit_key( &it ) );
+                rval * bv = NULL; // rmap_peek( b, rmapit_key( &it ) );
                 if ( !rval_eq( av, bv ) )
                     return 0;
                 rmapit_next( &it );

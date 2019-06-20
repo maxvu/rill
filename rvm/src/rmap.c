@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// TODO: fix up mapvals named "val" to "map"
+
 size_t hash_a ( rval * val ) {
     size_t hsh = 0;
     char * pos = rstr_buf( val );
@@ -98,6 +100,12 @@ rmap_slot * rmap_find_slot ( rval * val, rval * key ) {
     return NULL;
 }
 
+rval rmapq ( size_t cap ) {
+    rval tmp = rnil();
+    rmap_init( &tmp, cap );
+    return tmp;
+}
+
 rerr rmap_init ( rval * val, size_t cap ) {
     ASSERT_NOT_NULL( val );
     if ( cap < RMAP_MINIMUM_SIZE )
@@ -111,14 +119,16 @@ rerr rmap_init ( rval * val, size_t cap ) {
         return RERR_SYS_ALLOC;
     }
     memset( slt, 0, sizeof( rmap_slot ) * cap );
+    rval_release( val );
+    *map = ( rmap ) {
+        .ref = 1,
+        .slt = slt,
+        .occ = 0,
+        .cap = cap
+    };
     *val = ( rval ) {
         .info = RVT_MAP,
-        .map  = &( rmap ) {
-            .ref = 1,
-            .slt = slt,
-            .occ = 0,
-            .cap = cap
-        }
+        .map = map
     };
     return RERR_OK;
 }
@@ -165,18 +175,27 @@ char rmap_has ( rval * val, rval * key ) {
     return ( NULL != rmap_find_slot( val, key ) );
 }
 
-rval * rmap_get ( rval * val, rval * key ) {
+rval * rmap_peek ( rval * val, rval * key ) {
     if ( !IS_MAP( val ) ) return NULL;
     if ( !IS_STR( key ) ) return NULL;
     rmap_slot * slot = rmap_find_slot( val, key );
     return slot == NULL ? NULL : &slot->val;
 }
 
+rerr rmap_get ( rval * item, rval * key, rval * map ) {
+    ASSERT_NOT_NULL( item );
+    ASSERT_STR( key );
+    ASSERT_MAP( map );
+    rval tmp = rnil();
+    if ( )
+    return
+}
+
 rerr rmap_set ( rval * val, rval * key, rval * item ) {
     ASSERT_MAP( val );
     ASSERT_STR( key );
     ASSERT_NOT_NULL( item );
-    
+
     {
         rmap_slot * existing = rmap_find_slot( val, key );
         if ( rmap_slot_is_hit( existing, key ) ) {
@@ -186,12 +205,12 @@ rerr rmap_set ( rval * val, rval * key, rval * item ) {
             return RERR_OK;
         }
     }
-    
+
     if ( ( val->map->occ + 1 ) / val->map->cap > RMAP_MAX_LOAD )
         ASSERT_OK( rmap_reserve( val, val->map->occ * RMAP_GROWTH ) );
     if ( val->map->ref > 1 || rval_cyclesto( item, val ) )
         ASSERT_OK( rval_exclude( val ) );
-    
+
     rmap_slot juggle = ( rmap_slot ) { .key = *key, .val = *item };
     rmap_slot_swap( &juggle, rmap_slot_a( val, &juggle.key ) );
     while ( 1 ) {
@@ -208,14 +227,14 @@ rerr rmap_set ( rval * val, rval * key, rval * item ) {
             break;
         rmap_slot_swap( &juggle, rmap_slot_a( val, &juggle.key ) );
     }
-    
+
     if ( rval_type( &juggle.key ) == RVT_NIL ) {
         rval_lease( key );
         rval_lease( item );
         val->map->occ += 1;
         return RERR_OK;
     }
-    
+
     ASSERT_OK( rmap_reserve( val, val->map->cap * RMAP_GROWTH ) );
     return rmap_set( val, key, item );
 }
@@ -290,6 +309,8 @@ rerr rmap_merge ( rval * dst, rval * src ) {
     return RERR_OK;
 }
 
+#include <signal.h>
+
 rerr rmap_clear ( rval * val ) {
     ASSERT_MAP( val );
     rmapit it = rmap_begin( val );
@@ -312,31 +333,32 @@ rmapit rmap_begin ( rval * val ) {
 }
 
 void rmapit_next ( rmapit * it ) {
-    if ( !it )
+    if ( !it || it->pos >= it->end )
         return;
-    while ( IS_NIL( &it->pos->key ) && it->pos < it->end )
+    while ( it->pos < it->end && IS_NIL( &it->pos->key ) )
         it->pos++;
 }
 
 char rmapit_done ( rmapit * it ) {
-    if ( !it )
+    if ( !it || it->pos >= it->end )
         return 1;
     return it->pos >= it->end;
 }
 rval * rmapit_key ( rmapit * it ) {
-    if ( !it )
+    if ( !it || it->pos >= it->end )
         return NULL;
     return &it->pos->key;
 }
 
 rval * rmapit_val ( rmapit * it ) {
-    if ( !it )
+    if ( !it || it->pos >= it->end )
         return NULL;
     return &it->pos->val;
 }
 
 rerr rmapit_del ( rmapit * it ) {
-    ASSERT_NOT_NULL( it );
+    if ( !it || it->pos >= it->end )
+        return RERR_OK;
     rval_release( &it->pos->key );
     rval_release( &it->pos->val );
     it->map->occ--;

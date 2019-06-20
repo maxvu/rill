@@ -51,23 +51,30 @@ size_t rvec_len ( rval * val ) {
 rerr rvec_clone ( rval * dst, rval * src ) {
     ASSERT_NOT_NULL( dst );
     ASSERT_VEC( src );
-    rvec * a = dst->vec;
+    rval tmp = rnil();
+    ASSERT_OK( rvec_init( &tmp, src->vec->len ) );
+    rvec * a = tmp.vec;
     rvec * b = src->vec;
-    rval_release( dst );
-    ASSERT_OK( rvec_init( dst, b->len ) );
     memcpy( a->vls, b->vls, sizeof( rval ) * b->len );
-    for ( size_t i = 0; i < a->len; i++ )
+    for ( size_t i = 0; i < b->len; i++ )
         rval_lease( a->vls );
+    rval_move( dst, &tmp );
     return RERR_OK;
 }
 
 rerr rvec_resize ( rval * val, size_t new_cap ) {
-    if ( new_cap <= val->vec->len )
+    if ( new_cap < val->vec->len )
         return RERR_USE_OOB;
     rval * new_vls = ( rval * ) malloc( sizeof( rval ) * new_cap );
     if ( !new_vls )
         return RERR_SYS_ALLOC;
     memcpy( new_vls, val->vec->vls, sizeof( rval ) * val->vec->len );
+    {
+        size_t i = new_cap;
+        size_t j = val->vec->len;
+        size_t diff = i < j ? j - i : i - j;
+        memset( new_vls + j, 0, diff * sizeof( rval ) );
+    }
     free( val->vec->vls );
     val->vec->vls = new_vls;
     val->vec->cap = new_cap;
@@ -97,7 +104,6 @@ rerr rvec_push ( rval * val, rval * item ) {
     if ( rval_cyclesto( val, item ) )
         ASSERT_OK( rval_clone( val, val ) );
     ASSERT_OK( rval_copy( val->vec->vls + val->vec->len++, item ) );
-    rval_lease( item );
     return RERR_OK;
 }
 
@@ -106,10 +112,17 @@ rerr rvec_pop ( rval * val ) {
     ASSERT_OK( rval_exclude( val ) );
     if ( !val->vec->len )
         return RERR_USE_OOB;
-    rvec * v = val->vec;
     val->vec->len -= 1;
     rval_release( val->vec->vls + val->vec->len );
     return RERR_OK;
+}
+
+rval * rvec_peek ( rval * val, size_t index ) {
+    if ( !val || !IS_VEC( val ) )
+        return NULL;
+    if ( index >= val->vec->len )
+        return NULL;
+    return val->vec->vls + index;
 }
 
 rerr rvec_set ( rval * val, size_t index, rval * item ) {
@@ -127,12 +140,12 @@ rerr rvec_set ( rval * val, size_t index, rval * item ) {
     return RERR_OK;
 }
 
-rval * rvec_get ( rval * val, size_t index ) {
-    if ( !val )
-        return NULL;
+rerr rvec_get ( rval * dst, size_t index, rval * val ) {
+    ASSERT_NOT_NULL( dst );
+    ASSERT_VEC( val );
     if ( index >= val->vec->len )
-        return NULL;
-    return val->vec->vls + index;
+        return RERR_USE_OOB;
+    return rval_copy( dst, val->vec->vls + index );
 }
 
 rerr rvec_fill ( rval * val, rval * item, size_t n ) {

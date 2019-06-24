@@ -37,9 +37,9 @@ rerr rmap_get ( rval * item, rval * key, rval * map );
 rerr rmap_set ( rval * map, rval * key, rval * item );
 rerr rmap_unset ( rval * map, rval * key );
 
-rerr rmap_qget ( rval * map, const char * key );
+rerr rmap_qget ( rval * dst, const char * key, rval * map );
 rerr rmap_qset ( rval * map, const char * key, rval * item );
-rerr rmap_qunset ( rval * map, const char * key, rval * item );
+rerr rmap_qunset ( rval * map, const char * key );
 
 rerr rmap_keys ( rval * dst, rval * map );
 rerr rmap_vals ( rval * dst, rval * map );

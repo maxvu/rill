@@ -78,7 +78,8 @@ rmap_slot * rmap_slot_d ( rval * val, rval * key ) {
 }
 
 char rmap_slot_is_hit ( rmap_slot * slot, rval * key ) {
-    return rval_type( &slot->key ) != RVT_NIL
+    return slot
+        && rval_type( &slot->key ) != RVT_NIL
         && rstr_cmp( &slot->key, key ) == 0;
 }
 
@@ -187,21 +188,24 @@ rerr rmap_get ( rval * item, rval * key, rval * map ) {
     ASSERT_STR( key );
     ASSERT_MAP( map );
     rval tmp = rnil();
-    if ( )
-    return
+    rval * hit = rmap_peek( map, key );
+    if ( hit ) {
+        rval_copy( &tmp, hit );
+    }
+    rval_move( item, &tmp );
+    return RERR_OK;
 }
 
 rerr rmap_set ( rval * val, rval * key, rval * item ) {
     ASSERT_MAP( val );
     ASSERT_STR( key );
     ASSERT_NOT_NULL( item );
-
     {
         rmap_slot * existing = rmap_find_slot( val, key );
         if ( rmap_slot_is_hit( existing, key ) ) {
             if ( val->map->ref > 1 || rval_cyclesto( val, item ) )
                 ASSERT_OK( rval_exclude( val ) );
-            rval_move( &existing->val, item );
+            rval_copy( &existing->val, item );
             return RERR_OK;
         }
     }
@@ -251,9 +255,48 @@ rerr rmap_unset ( rval * val, rval * key ) {
     return RERR_OK;
 }
 
-rerr rmap_qget ( rval * val, const char * key );
-rerr rmap_qset ( rval * val, const char * key, rval * item );
-rerr rmap_qunset ( rval * val, const char * key, rval * item );
+rerr rmap_qget ( rval * dst, const char * key, rval * val ) {
+    ASSERT_MAP( val );
+    ASSERT_NOT_NULL( key );
+    rval tmp_key = rstrq( key );
+    if ( RVT_STR != rval_type( &tmp_key ) )
+        return RERR_SYS_ALLOC;
+    if ( RERR_OK != rstr_qcpy( &tmp_key, key ) )
+        return RERR_SYS_ALLOC;
+    rval * hit = rmap_peek( val, &tmp_key );
+    if ( hit != NULL )
+        rval_copy( dst, hit );
+    rval_release( &tmp_key );
+    return RERR_OK;
+}
+
+rerr rmap_qset ( rval * val, const char * key, rval * item ) {
+    ASSERT_MAP( val );
+    ASSERT_NOT_NULL( key );
+    ASSERT_NOT_NULL( item );
+    rval tmp_key = rstrq( key );
+    if ( RVT_STR != rval_type( &tmp_key ) )
+        return RERR_SYS_ALLOC;
+    if ( RERR_OK != rstr_qcpy( &tmp_key, key ) )
+        return RERR_SYS_ALLOC;
+    int err = rmap_set( val, &tmp_key, item );
+    rval_release( &tmp_key );
+    return err;
+}
+
+rerr rmap_qunset ( rval * val, const char * key ) {
+    ASSERT_MAP( val );
+    ASSERT_NOT_NULL( key );
+    rval tmp_key = rstrq( key );
+    if ( RVT_STR != rval_type( &tmp_key ) )
+        return RERR_SYS_ALLOC;
+    if ( RERR_OK != rstr_qcpy( &tmp_key, key ) )
+        return RERR_SYS_ALLOC;
+    int err = rmap_unset( val, &tmp_key );
+    rval_release( &tmp_key );
+    return err;
+}
+
 
 rerr rmap_collect ( rval * dst, rval * map, rval * (*get)( rmapit * ) ) {
     ASSERT_MAP( map );

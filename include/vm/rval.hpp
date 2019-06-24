@@ -36,6 +36,7 @@ namespace rill {
             rmap *       _map;
             void *       _udo;
         };
+        rval & dispose ();
 
         public:
         static rval nil ();

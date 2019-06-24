@@ -48,7 +48,7 @@ bin/extensions : | bin/
 	mkdir $@
 
 EXTENSIONS = $(wildcard extensions/.)
-bin/extensions/%.o : $(patsubst bin/extensions/%.o,extensions/%o/*.cpp.,$(EXTENSIONS))
+bin/extensions/%.o : $(patsubst bin/extensions/%.o,extensions/%o/.,$(EXTENSIONS))
 	$(CC_EXT) % -I  -o $@
 
 clean :

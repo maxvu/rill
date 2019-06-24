@@ -40,8 +40,9 @@ namespace rill {
         public:
         vm_extension_view ( vm & vm );
 
-        vm_extension_view & push ( const rval & val );
-        rval pop ();
+        vector<rval> & data_stack ();
+        vector<rval> & side_stack ();
+        flags & flags ();
 
     };
 

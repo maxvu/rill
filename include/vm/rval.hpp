@@ -16,7 +16,7 @@ namespace rill {
        STR,
        VEC,
        MAP,
-       UDO
+       EXT
    };
 
     class rstr : public string, public refcounted<rstr> {};
@@ -28,13 +28,13 @@ namespace rill {
         protected:
         unsigned int _info;
         union {
-            int          _ixx;
-            unsigned int _uxx;
-            double       _fxx;
-            rstr *       _str;
-            rvec *       _vec;
-            rmap *       _map;
-            void *       _udo;
+            int              _ixx;
+            unsigned int     _uxx;
+            double           _fxx;
+            rstr *           _str;
+            rvec *           _vec;
+            rmap *           _map;
+            extension_type * _ext;
         };
         rval & dispose ();
 
@@ -63,7 +63,7 @@ namespace rill {
         rval & subtype ( unsigned int new_subtype );
 
         bool equals ( const rval & val );
-        bool cycles_to ( const rval & val ) const;
+        bool contains_ref ( const rval & val ) const;
         rval clone ( const rval & val ) const;
 
         int & ixx ();

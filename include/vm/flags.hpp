@@ -12,8 +12,8 @@ namespace vm {
         public:
         flags ();
 
-        bool halt () const;
-        flags & halt ( bool on ) const;
+        bool suspend () const;
+        flags & suspend ( bool on ) const;
 
     };
 

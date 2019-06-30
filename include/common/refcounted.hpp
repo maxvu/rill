@@ -16,6 +16,23 @@ namespace rill {
 
     };
 
+    template <typename T> class ref {
+
+        protected:
+        refcounted<T> * _object;
+
+        public:
+        ref ();
+        ref ( const refcounted<T> * object );
+        ~ref ();
+
+        ref & operator= ( refcounted<T> * object );
+        ref & operator= ( const ref<T> & ref );
+        T & operator* ();
+        const T & operator* () const;
+
+    };
+
 }
 
 #endif

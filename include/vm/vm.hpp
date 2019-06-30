@@ -3,65 +3,48 @@
 
 namespace rill {
 
-    class vm {
+    class vm_ext_view;
+    typedef (*extension_word)(vm_ext_view&);
 
-        friend vm_builder;
+    class vm {
 
         protected:
         unsigned int           _counter;
-        program                _program;
+        string                 _code;
+        vector<rval>           _constants;
         vector<rval>           _data_stack;
         vector<rval>           _side_stack;
         vector<unsigned int>   _call_stack;
-        vector<extension_type> _extension_types;
         vector<extension_word> _extension_words;
         flags                  _flags;
 
-        vm ();
+        public:
+        vm (
+            const string & code,
+            const vector<rval> & constants,
+            const vector<extension_word> & extension_words
+        );
         vm ( const vm & that ) =0;
         vm ( vm && that ) =0;
         vm & operator= ( const vm & that ) =0;
         vm & operator= ( const vm && that ) =0;
-
-        public:
         ~vm ();
+
+        unsigned int counter () const;
+        const string & code () const;
+        const vector<rval> & constants () const;
+        const vector<rval> & data_stack ();
+        const vector<rval> & side_stack ();
+        const vector<rval> & call_stack ();
+        const vector<extension_word> & extension_words ();
+        flags & flags ();
+        const flags & flags () const;
 
         vm & step ();
         vm & run ();
         vm & reset ();
 
     };
-
-    class vm_ext_view {
-
-        protected:
-        vm & vm;
-
-        public:
-        vm_extension_view ( vm & vm );
-
-        vector<rval> & data_stack ();
-        vector<rval> & side_stack ();
-        flags & flags ();
-
-    };
-
-    class vm_builder {
-
-        protected:
-        vector<extension_type>     _extension_types;
-        map<string,extension_word> _extension_words;
-
-        public:
-        vm_builder ();
-
-        vm_builder & register_type ( const extension_type & type );
-        vm_builder & register_word ( const extension_word & type );
-
-        vm build ( program program ) const;
-
-    };
-
 
 }
 

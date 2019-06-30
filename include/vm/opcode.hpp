@@ -10,9 +10,9 @@ enum opcode {
     NOP  = 0,   // no operation
     CALL = 1,   // invoke subroutine ( % 4 or % 8 offset )
     RTRN = 2,   // end subroutine
-    JUMP = 3,   // unconditional jump
-    JMPT = 4,   // jump if TOS truthy
-    JMPQ = 5,   // jump is TOS and TOS-1 equal
+    JUMP = 3,   // unconditional jump (relative)
+    JMPT = 4,   // jump if TOS truthy (relative)
+    JMPQ = 5,   // jump is TOS and TOS-1 equal (relative)
     NOT  = 6,   // logical NOT TOS
     XOR  = 7,   // logical XOR TOS and TOS-1
 

@@ -201,8 +201,9 @@ rerr rval_clone ( rval * dst, rval * src ) {
 rerr rval_move ( rval * dst, rval * src ) {
     ASSERT_NOT_NULL( dst );
     ASSERT_NOT_NULL( src );
-    ASSERT_OK( rval_copy( dst, src ) );
-    rval_release( src );
+    rval_release( dst );
+    *dst = *src;
+    *src = rnil();
     return RERR_OK;
 }
 

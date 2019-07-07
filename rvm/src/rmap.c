@@ -53,50 +53,54 @@ size_t hash_d ( rval * val ) {
     return hsh;
 }
 
-rmap_slot * rmap_slot_a ( rval * val, rval * key ) {
+rmap_slot * slot_a ( rval * val, rval * key ) {
     return val->map->slt + (
         hash_a( key ) % val->map->cap
     );
 }
 
-rmap_slot * rmap_slot_b ( rval * val, rval * key ) {
+rmap_slot * slot_b ( rval * val, rval * key ) {
     return val->map->slt + (
-        hash_b( key ) % val->map->cap + ( val->map->cap / 4 )
+        hash_b( key ) % ( val->map->cap + ( val->map->cap / 4 ) )
     );
 }
 
-rmap_slot * rmap_slot_c ( rval * val, rval * key ) {
+rmap_slot * slot_c ( rval * val, rval * key ) {
     return val->map->slt + (
-        hash_c( key ) % val->map->cap + ( val->map->cap / 4 ) * 2
+        hash_c( key ) % ( val->map->cap + ( val->map->cap / 4 ) * 2 )
     );
 }
 
-rmap_slot * rmap_slot_d ( rval * val, rval * key ) {
+rmap_slot * slot_d ( rval * val, rval * key ) {
     return val->map->slt + (
-        hash_d( key ) % val->map->cap + ( val->map->cap / 4 ) * 3
+        hash_d( key ) % ( val->map->cap + ( val->map->cap / 4 ) * 3 )
     );
 }
 
-char rmap_slot_is_hit ( rmap_slot * slot, rval * key ) {
+char is_hit ( rmap_slot * slot, rval * key ) {
     return slot
         && rval_type( &slot->key ) != RVT_NIL
         && rstr_cmp( &slot->key, key ) == 0;
 }
 
-void rmap_slot_swap ( rmap_slot * a, rmap_slot * b ) {
+void swap_slot ( rmap_slot * a, rmap_slot * b ) {
     rval_swap( &a->key, &b->key );
     rval_swap( &a->val, &b->val );
 }
 
-rmap_slot * rmap_find_slot ( rval * val, rval * key ) {
+double load_of ( size_t cap ) {
+    return ( double ) cap / RMAP_MAX_LOAD;
+}
+
+rmap_slot * find_slot ( rval * val, rval * key ) {
     rmap_slot * slot;
-    if ( rmap_slot_is_hit( slot = rmap_slot_a( val, key ), key ) )
+    if ( is_hit( slot = slot_a( val, key ), key ) )
         return slot;
-    if ( rmap_slot_is_hit( slot = rmap_slot_b( val, key ), key ) )
+    if ( is_hit( slot = slot_b( val, key ), key ) )
         return slot;
-    if ( rmap_slot_is_hit( slot = rmap_slot_c( val, key ), key ) )
+    if ( is_hit( slot = slot_c( val, key ), key ) )
         return slot;
-    if ( rmap_slot_is_hit( slot = rmap_slot_d( val, key ), key ) )
+    if ( is_hit( slot = slot_d( val, key ), key ) )
         return slot;
     return NULL;
 }
@@ -145,10 +149,14 @@ double rmap_load ( rval * val ) {
 }
 
 rerr rmap_resize ( rval * val, size_t new_cap ) {
+    int err;
     rval tmp = rnil();
-    if ( !rmap_init( &tmp, new_cap / RMAP_MAX_LOAD ) )
+    if ( !rmap_init( &tmp, load_of( new_cap ) ) )
         return RERR_SYS_ALLOC;
-    ASSERT_OK( rmap_merge( &tmp, val ) );
+    if ( RERR_OK != ( err = rmap_merge( &tmp, val ) ) )  {
+        rval_release( &tmp );
+        return err;
+    }
     rval_move( val, &tmp );
     return RERR_OK;
 }
@@ -162,9 +170,10 @@ rerr rmap_reserve ( rval * val, size_t cap ) {
 
 rerr rmap_compact ( rval * val ) {
     ASSERT_MAP( val );
-    size_t target = val->map->occ / RMAP_MAX_LOAD;
-    if ( target < RMAP_MINIMUM_SIZE / RMAP_MAX_LOAD )
-        target = RMAP_MINIMUM_SIZE / RMAP_MAX_LOAD;
+    size_t target = load_of( val->map->occ < RMAP_MINIMUM_SIZE
+        ? RMAP_MINIMUM_SIZE
+        : val->map->occ
+    );
     if ( target == val->map->cap )
         return RERR_OK;
     return rmap_resize( val, target );
@@ -173,13 +182,13 @@ rerr rmap_compact ( rval * val ) {
 char rmap_has ( rval * val, rval * key ) {
     ASSERT_MAP( val );
     ASSERT_STR( key );
-    return ( NULL != rmap_find_slot( val, key ) );
+    return ( NULL != find_slot( val, key ) );
 }
 
 rval * rmap_peek ( rval * val, rval * key ) {
     if ( !IS_MAP( val ) ) return NULL;
     if ( !IS_STR( key ) ) return NULL;
-    rmap_slot * slot = rmap_find_slot( val, key );
+    rmap_slot * slot = find_slot( val, key );
     return slot == NULL ? NULL : &slot->val;
 }
 
@@ -189,9 +198,9 @@ rerr rmap_get ( rval * item, rval * key, rval * map ) {
     ASSERT_MAP( map );
     rval tmp = rnil();
     rval * hit = rmap_peek( map, key );
-    if ( hit ) {
-        rval_copy( &tmp, hit );
-    }
+    if ( !hit )
+        return RERR_USE_OOB;
+    rval_copy( &tmp, hit );
     rval_move( item, &tmp );
     return RERR_OK;
 }
@@ -200,9 +209,10 @@ rerr rmap_set ( rval * val, rval * key, rval * item ) {
     ASSERT_MAP( val );
     ASSERT_STR( key );
     ASSERT_NOT_NULL( item );
+
     {
-        rmap_slot * existing = rmap_find_slot( val, key );
-        if ( rmap_slot_is_hit( existing, key ) ) {
+        rmap_slot * existing = find_slot( val, key );
+        if ( is_hit( existing, key ) ) {
             if ( val->map->ref > 1 || rval_cyclesto( val, item ) )
                 ASSERT_OK( rval_exclude( val ) );
             rval_copy( &existing->val, item );
@@ -216,20 +226,20 @@ rerr rmap_set ( rval * val, rval * key, rval * item ) {
         ASSERT_OK( rval_exclude( val ) );
 
     rmap_slot juggle = ( rmap_slot ) { .key = *key, .val = *item };
-    rmap_slot_swap( &juggle, rmap_slot_a( val, &juggle.key ) );
+    swap_slot( &juggle, slot_a( val, &juggle.key ) );
     while ( 1 ) {
-        if ( rmap_slot_is_hit( &juggle, key ) )
+        if ( is_hit( &juggle, key ) )
             break;
-        rmap_slot_swap( &juggle, rmap_slot_b( val, &juggle.key ) );
-        if ( rmap_slot_is_hit( &juggle, key ) )
+        swap_slot( &juggle, slot_b( val, &juggle.key ) );
+        if ( is_hit( &juggle, key ) )
             break;
-        rmap_slot_swap( &juggle, rmap_slot_c( val, &juggle.key ) );
-        if ( rmap_slot_is_hit( &juggle, key ) )
+        swap_slot( &juggle, slot_c( val, &juggle.key ) );
+        if ( is_hit( &juggle, key ) )
             break;
-        rmap_slot_swap( &juggle, rmap_slot_d( val, &juggle.key ) );
-        if ( rmap_slot_is_hit( &juggle, key ) )
+        swap_slot( &juggle, slot_d( val, &juggle.key ) );
+        if ( is_hit( &juggle, key ) )
             break;
-        rmap_slot_swap( &juggle, rmap_slot_a( val, &juggle.key ) );
+        swap_slot( &juggle, slot_a( val, &juggle.key ) );
     }
 
     if ( rval_type( &juggle.key ) == RVT_NIL ) {
@@ -246,7 +256,7 @@ rerr rmap_set ( rval * val, rval * key, rval * item ) {
 rerr rmap_unset ( rval * val, rval * key ) {
     ASSERT_MAP( val );
     ASSERT_STR( key );
-    rmap_slot * slot = rmap_find_slot( val, key );
+    rmap_slot * slot = find_slot( val, key );
     if ( slot != NULL ) {
         rval_release( &slot->key );
         rval_release( &slot->val );

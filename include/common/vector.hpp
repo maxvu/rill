@@ -1,6 +1,8 @@
 #ifndef RILL_VECTOR
 #define RILL_VECTOR
 
+#include <initializer_list>
+
 namespace rill {
 
     template <typename T> class vector {
@@ -10,11 +12,14 @@ namespace rill {
         unsigned long _size;
         unsigned long _capacity;
 
+        vector & resize ( unsigned long new_capacity );
+
         public:
         vector ();
+        vector ( unsigned long initial_capacity );
         vector ( const vector<T> & other );
         vector ( vector<T> && other );
-        vector ( std::initializer_list init_list );
+        vector ( std::initializer_list<T> init_list );
         ~vector ();
 
         unsigned long size () const;

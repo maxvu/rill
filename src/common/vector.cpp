@@ -1,13 +1,12 @@
 #include "vector.hpp"
 
-#include <initializer_list>
 #include <stdexcept>
 
 namespace rill {
 
-template<typename T> unsigned long vector<T>::MINIMUM_SIZE = 2;
-template<typename T> unsigned long vector<T>::DEFAULT_SIZE = 8;
-template<typename T> double        vector<T>::GROWTH_RATE = 2.0;
+unsigned long MINIMUM_SIZE = 2;
+unsigned long DEFAULT_SIZE = 8;
+double        GROWTH_RATE  = 2.0;
 
 template<typename T>
 vector<T> & vector<T>::resize ( unsigned long new_capacity ) {

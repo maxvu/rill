@@ -35,15 +35,15 @@ namespace rill {
 
         protected:
         type          _type : 3;
-        unsigned long _tag  : 61;
+        unsigned long _tag  : 28;
         union {
-            long          _ixx;
-            unsigned long _uxx;
-            double        _fxx;
-            rstr *        _str;
-            rvec *        _vec;
-            rmap *        _map;
-            void *        _usr;
+            long             _ixx;
+            unsigned long    _uxx;
+            double           _fxx;
+            rstr *           _str;
+            rvec *           _vec;
+            rmap *           _map;
+            extension_type * _ext;
         };
 
         public:
@@ -62,6 +62,12 @@ namespace rill {
         rval & tag ( unsigned long new_tag );
 
         rval & operator= ( const rval & that );
+        rval & operator= ( long i );
+        rval & operator= ( unsigned long u );
+        rval & operator= ( double f );
+        rval & operator= ( const string & that );
+        rval & operator= ( const rvec & that );
+        rval & operator= ( const rmap & that );
 
         long & as_ixx ();
         unsigned long & as_uxx ();
@@ -69,7 +75,7 @@ namespace rill {
         rstr & as_str ();
         rvec & as_vec ();
         rmap & as_map ();
-        void * as_usr ();
+        void * as_ext ();
 
         long as_ixx () const;
         unsigned long as_uxx () const;
@@ -77,7 +83,7 @@ namespace rill {
         const rstr & as_str () const;
         const rvec & as_vec () const;
         const rmap & as_map () const;
-        const void * as_usr () const;
+        const void * as_ext () const;
 
     };
 

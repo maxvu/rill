@@ -1,0 +1,6 @@
+// rerr rnum_inv
+// rerr rnum_root
+// rerr rnum_isprime
+// rerr rnum_gcd
+// rerr rnum_lcm
+// rerr rnum_fac

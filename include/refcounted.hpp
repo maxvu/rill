@@ -2,19 +2,21 @@
 #define RILL_REFCOUNTED
 
 namespace rill {
-    
-    class refcounted {
-        
+
+    template <typename T> class refcounted {
+
         protected:
-            
+
         unsigned long _count;
-        
+
         public:
-            
-        unsigned long & refcount ();
-        
+
+        const unsigned long & refcount () const;
+        T & ref ();
+        void deref ();
+
     };
-    
+
 }
 
 #endif

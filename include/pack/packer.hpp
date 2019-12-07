@@ -1,6 +1,10 @@
 #ifndef RILL_PACK_PACK
 #define RILL_PACK_PACK
 
+#include "debug_info/debug_info.hpp"
+
+using debug_info = rill:debug_info::debug_info;
+
 namespace rill {
 namespace packer {
 
@@ -55,6 +59,14 @@ namespace packer {
         protected:
 
         debug_info _info;
+
+    };
+
+    class link_segment {
+
+        protected:
+
+
 
     };
 

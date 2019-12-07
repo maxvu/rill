@@ -20,7 +20,7 @@ namespace vm {
 
     class rstr : public string, public refcounted<rstr> {};
     class rvec : public vector<rval>, public refcounted<rstr> {};
-    class rmap : public map<rval>, public refcounted<rstr> {};
+    class rmap : public map<rstr,rval>, public refcounted<rstr> {};
 
     class rval {
 

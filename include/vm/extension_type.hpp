@@ -4,10 +4,11 @@
 namespace rill {
 namespace vm {
 
-    template <typename T> class extension_type : public refcounted<T> {
+    class extension_type {
 
         virtual const string & type () =0;
-        virtual T * clone () =0;
+        virtual extension_type * clone () =0;
+        virtual const string to_string () const =0;
         virtual ~extension_type () =0;
 
     };

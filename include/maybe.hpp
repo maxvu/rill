@@ -7,8 +7,7 @@ namespace rill {
 
         protected:
 
-        T    _entity;
-        bool _is;
+        T *  _entity;
 
         public:
 
@@ -20,7 +19,7 @@ namespace rill {
         operator const T & () const;
         operator T & ();
         const T & get () const;
-        T & get () const;
+        T & get ();
 
     };
 

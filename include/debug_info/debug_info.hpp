@@ -12,7 +12,7 @@ namespace debug_info {
 
         protected:
 
-        vector<string> _lines;
+        map<unsigned long,string> _lines;
 
         public:
 
@@ -49,8 +49,8 @@ namespace debug_info {
 
         protected:
 
-        map<source_file>     _lines;
-        vector<source_entry> _entries;
+        map<string,source_file> _files;
+        vector<source_entry>    _entries;
 
         public:
 

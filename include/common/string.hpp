@@ -1,7 +1,7 @@
 #ifndef RILL_STRING
 #define RILL_STRING
 
-#include "slab.hpp"
+#include "common/slab.hpp"
 
 namespace rill {
 

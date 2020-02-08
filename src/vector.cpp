@@ -151,7 +151,7 @@ vector<T> & vector<T>::reverse () {
 }
 
 template <typename T>
-vector<T> & vector<T>::empty () {
+vector<T> & vector<T>::clear () {
     for ( unsigned long i = 0; i < _len; i++ )
         _items[ i ] = T();
     _len = 0;

@@ -9,7 +9,7 @@ namespace rill {
     template <typename T> class vector {
 
         protected:
-        T * _items;
+        buffer<T>     _items;
         unsigned long _len;
         unsigned long _cap;
 
@@ -38,7 +38,7 @@ namespace rill {
         vector<T> & operator+= ( const vector<T> & other );
 
         vector<T> & reverse ();
-        vector<T> & empty ();
+        vector<T> & clear ();
 
     };
 

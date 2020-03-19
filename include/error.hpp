@@ -5,9 +5,9 @@
 
 namespace rill {
 
-    class arg_error : public std::exception {
-        const char * what () {
-            return "bad argument";
+    class internal_error : public std::exception {
+        virtual const char * what () const noexcept override {
+            return "internal error";
         }
     };
 

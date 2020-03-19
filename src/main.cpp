@@ -8,9 +8,12 @@
 #include "val.hpp"
 
 using rill::vector;
+using rill::numval;
+using rill::vecval;
+using rill::mapval;
 
 int main ( int argc, char ** argv ) {
-    vector<int*> ints;
+    printf( "sizeof %s: %lu\n", "numval", sizeof( numval ) );
     printf( "OK\n" );
     return 0;
 }

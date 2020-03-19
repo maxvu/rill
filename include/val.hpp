@@ -1,6 +1,8 @@
 #ifndef RILL_VAL
 #define RILL_VAL
 
+#include "platform.h"
+
 namespace rill {
 
     class string;
@@ -8,21 +10,20 @@ namespace rill {
     template <typename K, typename V> class map;
 
     enum rval_type {
-        IXX,
-        UXX,
-        FXX,
-        STR,
-        VEC,
-        MAP,
-        EXT
+        RVT_NUM,
+        RVT_STR,
+        RVT_VEC,
+        RVT_MAP,
+        RVT_EXT
     };
 
-    template <typename V> class rval {
+    class rval {
 
         private:
 
-            size_t _head;
-            size_t _ref;
+            int  _type : 3;
+            int  _ref  : REF_SIZE;
+            int  _tag  : TAG_SIZE;
 
         protected:
 
@@ -31,11 +32,11 @@ namespace rill {
 
         public:
 
-            V & lease ();
-            V & release ();
+            rval & lease ();
+            rval & release ();
             bool references ( rval * needle ) const;
 
-            V & compact ();
+            void compact ();
 
             operator bool () const;
             bool operator== ( const rval * that ) const;
@@ -43,31 +44,31 @@ namespace rill {
 
     };
 
-    class numval : public rval<numval> {
+    class numval : public rval {
 
         protected:
             union {
-                long i;
-                unsigned long u;
-                double f;
+                IXX i;
+                UXX u;
+                FXX f;
             };
 
         public:
-            numval ( long i );
-            numval ( unsigned long i );
-            numval ( double f );
+            numval ( IXX i );
+            numval ( UXX u );
+            numval ( FXX f );
 
-            long & as_i ();
-            unsigned long & as_u ();
-            double & as_f ();
+            IXX & as_i ();
+            UXX & as_u ();
+            FXX & as_f ();
 
-            const long & as_i () const;
-            const unsigned long & as_u () const;
-            const double & as_f () const;
+            const IXX & as_i () const;
+            const UXX & as_u () const;
+            const FXX & as_f () const;
 
     };
 
-    class strval : public rval<strval>, public string {
+    class strval : public rval, public string {
 
         public:
             strval ();
@@ -78,12 +79,9 @@ namespace rill {
             strval ( const strval & that );
             strval ( strval && that );
 
-            operator string & ();
-            operator const string & () const;
-
     };
 
-    class vecval : public rval<vecval>, public vector<rval*> {
+    class vecval : public rval, public vector<rval*> {
 
         public:
             vecval ();
@@ -93,12 +91,9 @@ namespace rill {
             vecval ( const vecval & that );
             vecval ( vecval && that );
 
-            operator vector<rval*> & ();
-            operator const vector<rval*> & () const;
-
     };
 
-    class mapval : public rval<mapval>, public map<string,rval*> {
+    class mapval : public rval, public map<string,rval*> {
 
         public:
             mapval ();
@@ -108,12 +103,9 @@ namespace rill {
             mapval ( const mapval & that );
             mapval ( mapval && that );
 
-            operator map<strval,rval*> & ();
-            operator const map<strval,rval*> & () const;
-
     };
 
-    class extval : public rval<extval> {
+    class extval : public rval {
 
         virtual operator bool () const;
         virtual bool operator== ( const rval & that ) const;

@@ -8,13 +8,26 @@ namespace rill {
     class string;
     template <typename T> class vector;
     template <typename K, typename V> class map;
+    class strval;
+    class vecval;
+    class extval;
 
     enum rval_type {
-        RVT_NUM,
+        RVT_NIL,
+        RVT_IXX,
+        RVT_UXX,
+        RVT_FXX,
         RVT_STR,
         RVT_VEC,
         RVT_MAP,
         RVT_EXT
+    };
+
+    class collectable {
+
+        protected:
+
+
     };
 
     class rval {
@@ -22,8 +35,16 @@ namespace rill {
         private:
 
             int  _type : 3;
-            int  _ref  : REF_SIZE;
             int  _tag  : TAG_SIZE;
+
+            union {
+                IXX      ixx;
+                UXX      uxx;
+                FXX      fxx;
+                strval * str;
+                vecval * vec;
+                mapval * map;
+            };
 
         protected:
 
@@ -32,39 +53,9 @@ namespace rill {
 
         public:
 
-            rval & lease ();
-            rval & release ();
-            bool references ( rval * needle ) const;
-
-            void compact ();
-
             operator bool () const;
             bool operator== ( const rval * that ) const;
             bool operator!= ( const rval * that ) const;
-
-    };
-
-    class numval : public rval {
-
-        protected:
-            union {
-                IXX i;
-                UXX u;
-                FXX f;
-            };
-
-        public:
-            numval ( IXX i );
-            numval ( UXX u );
-            numval ( FXX f );
-
-            IXX & as_i ();
-            UXX & as_u ();
-            FXX & as_f ();
-
-            const IXX & as_i () const;
-            const UXX & as_u () const;
-            const FXX & as_f () const;
 
     };
 

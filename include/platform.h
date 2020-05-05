@@ -1,8 +1,6 @@
 #ifndef RILL_PLATFORM
 #define RILL_PLATFORM
 
-
-
 namespace rill {
 
     #ifdef RILL_32BIT

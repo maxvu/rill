@@ -16,6 +16,26 @@ typedef enum rval_type {
 
 typedef struct rval {
     rval_type typ;
+    union {
+        IXX ixx;
+        UXX uxx;
+        FXX fxx;
+        struct {
+            char * buf;
+            UXX    len;
+            UXX    cap;
+        } rstr;
+        struct {
+            rval * vls;
+            UXX    len;
+            UXX    cap;
+        } rvec;
+        struct {
+            rval * sts;
+            UXX    occ;
+            UXX    cap;
+        } rmap;
+    };
 } rval;
 
 rval * rval_create ( rval_type typ );
@@ -23,7 +43,7 @@ rval_type rval_type ( rval * val );
 void rval_lease ( rval * val );
 void rval_release ( rval ** val );
 rerr rval_copy ( rval ** dst, rval ** src );
-rerr rval_detach ( rval ** val );
+rerr rval_isolate ( rval ** val );
 void rval_cyclesto ( rval * hay, rval * ndl );
 
 rval * rnum_create ();

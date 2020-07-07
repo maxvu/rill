@@ -1,22 +1,27 @@
 #ifndef RILL_STRING
 #define RILL_STRING
 
+#include "vector.hpp"
+
 namespace rill {
 
     class string {
 
         public:
-            constexpr size_t DEFAULT_SIZE = 31;
-            constexpr float  GROWTH_RATE  = 2.0;
+            constexpr static size_t DEFAULT_SIZE = 31;
+            constexpr static float  GROWTH_RATE  = 2.0;
 
         protected:
-            array<char> _chars;
-            size_t      _length;
+            vector<char> _buffer;
+            size_t       _length;
+
+            void terminate ();
 
         public:
+            string ();
             string ( size_t length );
             string ( const char * that );
-            string ( const array<T> & that );
+            string ( const string & that );
             string ( string && that );
             ~string ();
 
@@ -46,6 +51,12 @@ namespace rill {
 
             operator const char * () const;
             operator char * ();
+
+            char * begin ();
+            const char * begin () const;
+
+            char * end ();
+            const char * end () const;
 
             string substr ( size_t start, size_t len ) const;
             string & clear ();

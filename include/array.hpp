@@ -1,120 +1,137 @@
 #ifndef RILL_ARRAY
 #define RILL_ARRAY
 
+#include <initializer_list>
 #include <algorithm>
 
 #include "error.hpp"
-#include "alloc.hpp"
 
 namespace rill {
 
-    template <typename T> class array {
+    template <typename T>
+    class array {
 
         protected:
-            T *    _members;
-            size_t _length;
 
-            array<T> & allocate ( size_t n ) {
-                if ( !n )
-                    throw arg_error();
-                if ( _members )
-                    deallocate();
-                _members = alloc_n<T>( n );
-                _length  = n;
-                return *this;
-            }
+        T *    _members;
+        size_t _length;
 
-            array<T> & deallocate () {
-                if ( _members ) {
-                    dealloc_n<T>( _members );
-                    _length = 0;
-                }
-                return *this;
+        array<T> & init ( size_t length ) {
+            if ( !length )
+                throw arg_error();
+            if ( length != _length ) {
+                deinit();
+                _members = new T[ length ];
+                _length = length;
             }
+            return *this;
+        }
+
+        array<T> & deinit () {
+            if ( _members )
+                delete[] _members;
+            _length = 0;
+            return *this;
+        }
 
         public:
-            array () : array( 0 ) {}
 
-            array ( size_t length ) : _members( nullptr ), _length( 0 ) {
-                if ( length )
-                    allocate( length );
+        array () : array( 0 ) {}
+
+        array ( size_t length ) : _members( nullptr ), _length( 0 ) {
+            if ( length )
+                init( length );
+        }
+
+        array ( const array<T> & that ) : array( that.length() ) {
+            *this = that;
+        }
+
+        array ( array<T> && that ) : array( 0 ) {
+            *this = that;
+        }
+
+        array ( std::initializer_list<T> list ) : array( list.size() ) {
+            auto it = list.begin();
+            auto  j = 0;
+            while ( it != list.end() ) {
+                _members[ j ] = *it;
+                it++;
             }
+        }
 
-            array ( const array<T> & that ) : array( that.length() ) {
-                *this = that;
+        ~array () { deinit(); }
+
+        size_t length () const { return _length; }
+
+        operator bool () const { return _length; }
+
+        T & operator[] ( size_t index ) {
+            return _members[ index ];
+        }
+
+        const T & operator[] ( size_t index ) const {
+            return _members[ index ];
+        }
+
+        array<T> & operator= ( const array<T> & that ) {
+            if ( !that )
+                return deinit();
+            if ( _length && _length != that.length() ) {
+                deinit();
+                init( that.length() );
             }
+            std::copy(
+                that._members,
+                that._members + that._length,
+                _members
+            );
+            _length = that.length();
+            return *this;
+        }
 
-            array ( array<T> && that ) {
-                deallocate();
-                _members = that._members;
-                _length = that.length();
-                that._members = 0;
-                that._length  = 0;
-            }
+        array<T> & operator= ( array<T> && that ) {
+            deinit();
+            _members = that._members;
+            _length  = that._length;
+            that._members = nullptr;
+            that._length = 0;
+            return *this;
+        }
 
-            ~array () {
-                deallocate();
-            }
+        bool operator== ( const array<T> & that ) const {
+            if ( _length != that.length() )
+                return false;
+            for ( auto i = 0; i < _length; i++ )
+                if ( *this[ i ] != that[ i ] )
+                    return false;
+            return true;
+        }
 
-            array<T> & operator= ( const array<T> & that ) {
-                if ( !that )
-                    return deallocate();
-                else if ( !*this && that )
-                    allocate( that.length() );
-                else if ( length() != that.length() ) {
-                    deallocate();
-                    allocate( that.length() );
-                }
+        bool operator!= ( const array<T> & that ) const {
+            return !( *this == that );
+        }
 
-                std::copy( that.begin(), that.end(), begin() );
-                return *this;
-            }
+        array<T> & fill ( const T & value ) {
+            for ( auto i = 0; i < _length; i++ )
+                _members[ i ] = value;
+            return *this;
+        }
 
-            array<T> & operator= ( array<T> && that ) {
-                deallocate();
-                _members = that._members;
-                _length  = that._length;
-                that._members = nullptr;
-                that._length = 0;
-                return *this;
-            }
+        array<T> & swap ( const array<T> & that ) {
+            array tmp( *this );
+            *this = that;
+            that = tmp;
+            return *this;
+        }
 
-            size_t length () const {
-                return _length;
-            }
-
-            operator bool () {
-                return _length;
-            }
-
-            const T & operator[] ( size_t index ) const {
-                if ( index >= _length )
-                    throw arg_error();
-                return _members[ index ];
-            }
-
-            T & operator[] ( size_t index ) {
-                if ( index >= _length )
-                    throw arg_error();
-                return _members[ index ];
-            }
-
-            array<T> & set_all ( const T & val ) {
-                if ( !*this )
-                    throw usage_error();
-                for ( auto i = 0; i < _length; i++ )
-                    _members[ i ] = T;
-                return *this;
-            }
-
-            operator const T * () const { return _members; }
-            operator T * () { return _members; }
-
-            T * begin () { return _members; }
-            T * end () { return _members[ _length - 1 ]; }
+        operator T* () { return _members; }
+        operator const T* () const { return _members; }
 
     };
 
 }
+
+
 
 #endif

@@ -1,61 +1,89 @@
 #include "rval.h"
+#include "rval_impl.h"
 
-void rixx_get  ( rval * num, IXX * out, rerr * err ) {
-    if ( !err ) return;
-    if ( !num ) { *err = RERR_ARG_NULL; return; }
-    UXX typ;
-    rval_type( num, &typ, err );
-    if ( !rerr_ok( err ) ) return;
-    
+typedef struct rnum {
+    UXX hed;
+    union {
+        IXX ixx;
+        UXX uxx;
+        FXX fxx;
+    };
+} rnum;
 
+rerr rixx_get  ( rval * num, IXX * out ) {
+    if ( !num || !out ) return
+        RERR_ARG_NULL;
+    char typ;
+    rerr err;
+    if ( ( err = rval_type( num, &typ ) ) )
+        return err;
+    if ( typ > RVT_FXX )
+        return RERR_ARG_TYPE;
+    *out = ( ( rnum * ) num )->ixx;
+    return RERR_OK;
 }
 
-void rixx_set  ( rval * num, IXX   i,   rerr * err ) {
-    if ( !err ) return;
-    if ( !num ) { *err = RERR_ARG_NULL; return; }
-    UXX typ;
-    rval_type( num, &typ, err );
-    if ( !rerr_ok( err ) ) return;
-    
-
+rerr rixx_set  ( rval * num, IXX   i ) {
+    if ( !num ) return
+        RERR_ARG_NULL;
+    char typ;
+    rerr err;
+    if ( ( err = rval_type( num, &typ ) ) )
+        return err;
+    if ( typ > RVT_FXX )
+        return RERR_ARG_TYPE;
+    ( ( rnum * ) num )->ixx = i;
+    return RERR_OK;
 }
 
-void ruxx_get  ( rval * num, UXX * out, rerr * err ) {
-    if ( !err ) return;
-    if ( !num ) { *err = RERR_ARG_NULL; return; }
-    UXX typ;
-    rval_type( num, &typ, err );
-    if ( !rerr_ok( err ) ) return;
-    
-
+rerr ruxx_get  ( rval * num, UXX * out ) {
+    if ( !num || !out ) return
+        RERR_ARG_NULL;
+    char typ;
+    rerr err;
+    if ( ( err = rval_type( num, &typ ) ) )
+        return err;
+    if ( typ > RVT_FXX )
+        return RERR_ARG_TYPE;
+    *out = ( ( rnum * ) num )->uxx;
+    return RERR_OK;
 }
 
-void ruxx_set  ( rval * num, UXX   u,   rerr * err ) {
-    if ( !err ) return;
-    if ( !num ) { *err = RERR_ARG_NULL; return; }
-    UXX typ;
-    rval_type( num, &typ, err );
-    if ( !rerr_ok( err ) ) return;
-    
-
+rerr ruxx_set  ( rval * num, UXX   u ) {
+    if ( !num ) return
+        RERR_ARG_NULL;
+    char typ;
+    rerr err;
+    if ( ( err = rval_type( num, &typ ) ) )
+        return err;
+    if ( typ > RVT_FXX )
+        return RERR_ARG_TYPE;
+    ( ( rnum * ) num )->uxx = u;
+    return RERR_OK;
 }
 
-void rfxx_get  ( rval * num, FXX * out, rerr * err ) {
-    if ( !err ) return;
-    if ( !num ) { *err = RERR_ARG_NULL; return; }
-    UXX typ;
-    rval_type( num, &typ, err );
-    if ( !rerr_ok( err ) ) return;
-    
-
+rerr rfxx_get  ( rval * num, FXX * out ) {
+    if ( !num || out ) return
+        RERR_ARG_NULL;
+    char typ;
+    rerr err;
+    if ( ( err = rval_type( num, &typ ) ) )
+        return err;
+    if ( typ > RVT_FXX )
+        return RERR_ARG_TYPE;
+    *out = ( ( rnum * ) num )->fxx;
+    return RERR_OK;
 }
 
-void rfxx_set  ( rval * num, FXX   f,   rerr * err ) {
-    if ( !err ) return;
-    if ( !num ) { *err = RERR_ARG_NULL; return; }
-    UXX typ;
-    rval_type( num, &typ, err );
-    if ( !rerr_ok( err ) ) return;
-    
-
+rerr rfxx_set  ( rval * num, FXX   f ) {
+    if ( !num ) return
+        RERR_ARG_NULL;
+    char typ;
+    rerr err;
+    if ( ( err = rval_type( num, &typ ) ) )
+        return err;
+    if ( typ > RVT_FXX )
+        return RERR_ARG_TYPE;
+    ( ( rnum * ) num )->fxx = f;
+    return RERR_OK;
 }

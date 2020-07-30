@@ -7,8 +7,8 @@
     #define FXX float
     #define RVAL_HEADER_TAG_SIZE 21
 #else
-    #define IXX int
-    #define UXX unsigned int
+    #define IXX long
+    #define UXX unsigned long
     #define FXX double
     #define RVAL_HEADER_TAG_SIZE 53
 #endif

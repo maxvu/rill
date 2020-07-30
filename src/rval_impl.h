@@ -5,12 +5,12 @@ struct rval {
     UXX hed;
 };
 
-void rvhed_set_typ ( rval * val, UXX typ, rerr * err );
-void rvhed_get_typ ( rval * val, UXX * typ, rerr * err );
-void rvhed_set_tag ( rval * val, UXX tag, rerr * err );
-void rvhed_get_tag ( rval * val, UXX * tag, rerr * err );
-void rvhed_inc_ref ( rval * val, rerr * err );
-void rvhed_dec_ref ( rval * val, rerr * err );
+char rvh_get_typ ( rval * val, UXX * typ );
+rerr rvh_set_typ ( rval * val, UXX typ );
+rerr rvh_get_tag ( rval * val, UXX * tag );
+rerr rvh_set_tag ( rval * val, UXX tag );
+rerr rvh_inc_ref ( rval * val );
+rerr rvh_dec_ref ( rval * val );
 
 // 4 for type
 // 7 for ref

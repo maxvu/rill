@@ -4,72 +4,82 @@
 #include "platform.h"
 #include "rerr.h"
 
+typedef enum rval_types {
+    RVT_IXX = 0,
+    RVT_UXX = 1,
+    RVT_FXX = 2,
+    RVT_STR = 3,
+    RVT_VEC = 4,
+    RVT_MAP = 5,
+    RVT_EXT = 6
+} rval_types;
+
 typedef struct rval rval;
 
-void rval_type     ( rval *  val, char *  typ, rerr * err );
-void rval_copy     ( rval ** dst, rval *  src, rerr * err );
-void rval_clone    ( rval ** out, rval *  src, rerr * err );
-void rval_move     ( rval ** dst, rval ** src, rerr * err );
-void rval_contains ( rval *  ndl, rval *  hay, rerr * err );
-void rval_ref      ( rval ** val, rerr *  err );
-void rval_deref    ( rval ** val, rerr *  err );
+rerr rval_type     ( rval *  val, UXX  *  typ );
+rerr rval_copy     ( rval ** dst, rval *  src );
+rerr rval_clone    ( rval ** out, rval *  src );
+rerr rval_move     ( rval ** dst, rval ** src );
+rerr rval_contains ( rval *  ndl, rval *  hay );
+rerr rval_ref      ( rval ** val );
+rerr rval_deref    ( rval ** val );
 
-void rixx_get  ( rval * num, IXX * out, rerr * err );
-void rixx_set  ( rval * num, IXX   i,   rerr * err );
-void ruxx_get  ( rval * num, UXX * out, rerr * err );
-void ruxx_set  ( rval * num, UXX   u,   rerr * err );
-void rfxx_get  ( rval * num, FXX * out, rerr * err );
-void rfxx_set  ( rval * num, FXX   f,   rerr * err );
+rerr rixx_get  ( rval * num, IXX * out );
+rerr rixx_set  ( rval * num, IXX   i );
+rerr ruxx_get  ( rval * num, UXX * out );
+rerr ruxx_set  ( rval * num, UXX   u );
+rerr rfxx_get  ( rval * num, FXX * out );
+rerr rfxx_set  ( rval * num, FXX   f );
 
-void rstr_create  ( UXX     cap, rval ** out, rerr * err );
-void rstr_len     ( rval *  str, UXX  *  out, rerr * err );
-void rstr_reserve ( rval ** str, UXX     cap, rerr * err );
-void rstr_compact ( rval ** str, rerr *  err );
-void rstr_cpy     ( rval ** dst, rval *  src, rerr * err );
-void rstr_cat     ( rval ** dst, rval *  src, rerr * err );
-void rstr_cmp     ( rval *  a,   rval *  b,   rerr * err );
-void rstr_cpyc    ( rval ** str, char *  src, rerr * err );
-void rstr_catc    ( rval ** str, char *  src, rerr * err );
-void rstr_cmpc    ( rval *  str, char *  src, rerr * err );
-void rstr_repeat  ( rval ** str, UXX     n,   rerr * err );
-void rstr_clear   ( rval *  str, rerr *  err );
-void rstr_destroy ( rval ** str, rerr *  err );
+rerr rstr_create  ( UXX     cap, rval ** out );
+rerr rstr_len     ( rval *  str, UXX  *  out );
+rerr rstr_reserve ( rval ** str, UXX     cap );
+rerr rstr_compact ( rval ** str );
+rerr rstr_cpy     ( rval ** dst, rval *  src );
+rerr rstr_cat     ( rval ** dst, rval *  src );
+rerr rstr_cmp     ( rval *  a,   rval *  b );
+rerr rstr_cpyc    ( rval ** str, char *  src );
+rerr rstr_catc    ( rval ** str, char *  src );
+rerr rstr_cmpc    ( rval *  str, char *  src );
+rerr rstr_repeat  ( rval ** str, UXX     n   );
+rerr rstr_clear   ( rval *  str );
+rerr rstr_destroy ( rval ** str );
 
-void rvec_create  ( rval ** vec, UXX     cap, rerr * err );
-void rvec_len     ( rval *  vec, UXX  *  out, rerr * err );
-void rvec_reserve ( rval ** vec, UXX     cap, rerr * err );
-void rvec_compact ( rval ** vec, rerr *  err );
-void rvec_push    ( rval ** vec, rval *  itm, rerr * err );
-void rvec_pop     ( rval *  vec, rval ** out, rerr * err );
-void rvec_get     ( rval *  vec, UXX     idx, rval ** itm, rerr * err );
-void rvec_set     ( rval *  vec, UXX     idx, rval *  itm, rerr * err );
-void rvec_shift   ( rval *  vec, rval ** itm, rerr * err );
-void rvec_unshift ( rval ** vec, rval *  itm, rerr * err );
-void rvec_reverse ( rval ** vec, rerr *  err );
-void rvec_clear   ( rval *  vec, rerr *  err );
-void rvec_destroy ( rval ** vec, rerr *  err );
+rerr rvec_create  ( rval ** vec, UXX     cap );
+rerr rvec_len     ( rval *  vec, UXX  *  out );
+rerr rvec_reserve ( rval ** vec, UXX     cap );
+rerr rvec_compact ( rval ** vec  );
+rerr rvec_push    ( rval ** vec, rval *  itm );
+rerr rvec_pop     ( rval *  vec, rval ** out );
+rerr rvec_get     ( rval *  vec, UXX     idx, rval ** itm );
+rerr rvec_set     ( rval *  vec, UXX     idx, rval *  itm );
+rerr rvec_shift   ( rval *  vec, rval ** itm );
+rerr rvec_unshift ( rval ** vec, rval *  itm );
+rerr rvec_reverse ( rval ** vec  );
+rerr rvec_clear   ( rval *  vec  );
+rerr rvec_destroy ( rval ** vec  );
 
-void rmap_create  ( rval ** map, UXX    cap, rerr * err );
-void rmap_size    ( rval ** map, UXX  * siz, rerr * err );
-void rmap_reserve ( rval ** map, UXX    cap, rerr * err );
-void rmap_compact ( rval ** map, rerr * err );
-void rmap_get     ( rval *  map, rval * key, rval ** out, rerr * err );
-void rmap_set     ( rval ** map, rval * key, rval *  val, rerr * err );
-void rmap_pop     ( rval *  map, rval * key, rval *  val, rerr * err );
-void rmap_keys    ( rval ** map, rval * kys, rerr *  err );
-void rmap_vals    ( rval ** map, rval * vls, rerr *  err );
-void rmap_merge   ( rval ** dst, rval * src, rerr *  err );
-void rmap_clear   ( rval *  map, rerr * err );
-void rmap_destroy ( rval ** map, rerr * err );
+rerr rmap_create  ( rval ** map, UXX    cap );
+rerr rmap_size    ( rval ** map, UXX  * siz );
+rerr rmap_reserve ( rval ** map, UXX    cap );
+rerr rmap_compact ( rval ** map );
+rerr rmap_get     ( rval *  map, rval * key, rval ** out );
+rerr rmap_set     ( rval ** map, rval * key, rval *  val );
+rerr rmap_pop     ( rval *  map, rval * key, rval *  val );
+rerr rmap_keys    ( rval ** map, rval * kys );
+rerr rmap_vals    ( rval ** map, rval * vls );
+rerr rmap_merge   ( rval ** dst, rval * src );
+rerr rmap_clear   ( rval *  map );
+rerr rmap_destroy ( rval ** map );
 
 typedef struct rmap_it rmap_it;
 
-void rmap_begin   ( rval * map, rmap_it * it, rerr * err );
-void rmapit_next  ( rmap_it * it, rerr * err );
-void rmapit_ok    ( rmap_it * it, rerr * err );
-void rmapit_key   ( rmap_it * it, rval ** key, rerr * err );
-void rmapit_val   ( rmap_it * it, rval ** val, rerr * err );
-void rmapit_del   ( rmap_it * it, rerr * err );
-void rmapit_set   ( rmap_it * it, rval * val,  rerr * err );
+rerr rmap_begin   ( rval * map, rmap_it * it );
+rerr rmapit_next  ( rmap_it * it );
+rerr rmapit_ok    ( rmap_it * it );
+rerr rmapit_key   ( rmap_it * it, rval ** key );
+rerr rmapit_val   ( rmap_it * it, rval ** val );
+rerr rmapit_del   ( rmap_it * it );
+rerr rmapit_set   ( rmap_it * it, rval * val );
 
 #endif

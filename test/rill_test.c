@@ -2,8 +2,8 @@
 #include <signal.h>
 #include <stdio.h>
 
-const char * GREEN = "\x1B[32m";
-const char * RED   = "\x1B[31m";
+const char * GREEN = "\e[0;32m";
+const char * RED   = "\e[0;91m";
 const char * RESET = "\x1B[0m";
 
 typedef struct rts {
@@ -86,7 +86,7 @@ void rts_end_test ( rts * ts ) {
 void rts_report_all ( rts * ts ) {
     fprintf(
         stderr,
-        "\n\n%s%lu run\n%lu passed%s\n",
+        "\n%s%lu run\n%lu passed%s\n",
         color_of( ts->cur_run, ts->cur_pass ),
         ts->n_run,
         ts->cur_pass,

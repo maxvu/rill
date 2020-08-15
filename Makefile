@@ -1,10 +1,12 @@
 CC := clang
-CC_FLAG = -Wall -std=c11 -I include/ -I src/
+CC_FLAG = -Wall -std=c99 -I include/ -I src/
 
-INCLUDE_DIR := include
-SRC_DIR     := src
-BUILD_DIR   := build
-BIN_DIR     := bin
+INCLUDE_DIR  := include
+SRC_DIR      := src
+BUILD_DIR    := build
+BIN_DIR      := bin
+TEST_DIR     := test
+COVERAGE_DIR := coverage
 
 ENTRYPOINTS     := $(SRC_DIR)/main.c $(SRC_DIR)/test_main.c
 SOURCES         := $(filter-out $(ENTRYPOINTS), $(wildcard $(SRC_DIR)/*.c))
@@ -18,8 +20,9 @@ DEBUG_COMPILE_BINARY = $(CC) $(CC_FLAG) -O0 -g
 DEBUG_COMPILE_OBJECT = $(CC) $(CC_FLAG) -c -O0 -g
 
 TEST_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.test.o,$(SOURCES))
-TEST_COMPILE_BINARY = $(CC) $(CC_FLAG) -O0 -g --coverage
-TEST_COMPILE_OBJECT = $(CC) $(CC_FLAG) -c -O0 -g -fprofile-arcs -ftest-coverage
+TEST_SOURCES = $(TEST_DIR)/main.c $(TEST_DIR)/rill_test.c
+TEST_COMPILE_BINARY = $(CC) $(CC_FLAG) -O0 -g --coverage -fprofile-arcs \
+	-I $(TEST_DIR)/
 
 .PHONY : release
 
@@ -44,24 +47,37 @@ $(BUILD_DIR)/%.debug.o : $(SRC_DIR)/%.c | $(BUILD_DIR)/
 
 # 'test' tag, binary and objects
 test : $(BIN_DIR)/rill.test
-$(BIN_DIR)/rill.test : $(TEST_OBJECTS) $(SRC_DIR)/test_main.c | $(BIN_DIR)/
+$(BIN_DIR)/rill.test : $(TEST_OBJECTS) $(TEST_SOURCES) | $(BIN_DIR)/
 	$(TEST_COMPILE_BINARY) $^ -o $@
 $(BUILD_DIR)/%.test.o : $(SRC_DIR)/%.c | $(BUILD_DIR)/
-	$(TEST_COMPILE_OBJECT) $^ -o $@
+	$(CC) $(CC_FLAG) -c -O0 -g --coverage -fprofile-arcs \
+	-I $(TEST_DIR)/ \
+	$^ -o $@
 
 # Aggregate the coverage output into a single file.
+$(COVERAGE_DIR)/ :
+	mkdir -p $@
 COVERAGE_INFO = $(BUILD_DIR)/coverage.info
-$(COVERAGE_INFO) : test
+$(COVERAGE_INFO) : test | $(BUILD_DIR)/
+	mv ./*.gcno $(BUILD_DIR)/
+	# mv ./build/*.gcno $(BUILD_DIR)/
 	bin/rill.test
-	geninfo $(BUILD_DIR) -b $(SRC_DIR) -o $(BUILD_DIR)/coverage.info
+	mv ./*.gcda $(BUILD_DIR)/
+	# mv ./build/*.gcda $(BUILD_DIR)/
+	llvm-cov gcov $(BUILD_DIR)/*.gcno $(BUILD_DIR)/*.gdca
+	mv ./*.gcov $(BUILD_DIR)/
+	lcov --directory build/ --capture -o $@ \
+		--gcov-tool $(realpath ./test/llvm-gcov.sh)
+
+coverage-info : $(COVERAGE_INFO)
 
 # Turn the coverage file into a browsable, HTML index.
-coverage-html : $(COVERAGE_INFO)
-	genhtml $^ -o $(BUILD_DIR)/coverage-html
+coverage-html : $(COVERAGE_INFO) | $(COVERAGE_DIR)
+	genhtml $(COVERAGE_INFO) -o $(COVERAGE_DIR)/
 
 # Open that browsable index in a graphical environment.
 coverage-launch : coverage-html
-	xdg-open $(BUILD_DIR)/coverage-html/index.htm
+	xdg-open $(COVERAGE_DIR)/html/index.htm
 
 debug-makefile :
 	@echo INCLUDE_DIR $(INCLUDE_DIR)
@@ -80,5 +96,8 @@ debug-makefile :
 	@echo TEST_COMPILE_BINARY $(TEST_COMPILE_BINARY)
 	@echo TEST_COMPILE_OBJECT $(TEST_COMPILE_OBJECT)
 
+plan : $(SOURCES)
+	$(CC) $(CC_FLAG) -M $^
+
 clean :
-	rm -rf $(BIN_DIR) $(BUILD_DIR)
+	rm -rf $(BIN_DIR) $(BUILD_DIR) $(COVERAGE_DIR)

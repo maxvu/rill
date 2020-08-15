@@ -3,12 +3,12 @@
 
 #include "platform.h"
 
-typedef enum rerr : char {
+typedef enum rerr : UXX {
     RERR_OK       = 0,
-    RERR_SYS_MEM  = 16,
-    RERR_SYS_OVRF = 17,
-    RERR_ARG_NULL = 64,
-    RERR_ARG_TYPE = 65
+    RERR_MEM  = 16,
+    RERR_OVRF = 17,
+    RERR_NULL = 64,
+    RERR_TYPE = 65
 } rerr;
 
 char rerr_ok              ( rerr err );

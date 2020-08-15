@@ -24,6 +24,7 @@ rerr rval_contains ( rval *  ndl, rval *  hay );
 rerr rval_ref      ( rval ** val );
 rerr rval_deref    ( rval ** val );
 
+rerr rnum_create ( rval ** out );
 rerr rixx_get  ( rval * num, IXX * out );
 rerr rixx_set  ( rval * num, IXX   i );
 rerr ruxx_get  ( rval * num, UXX * out );

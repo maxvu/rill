@@ -12,13 +12,13 @@ const char * rerr_explain ( rerr err ) {
         case RERR_MEM:
             return "memory allocation error";
         break;
-        case RERR_ARG_NULL:
+        case RERR_NULL:
             return "unexpected null argument";
         break;
-        case RERR_ARG_TYPE:
+        case RERR_TYPE:
             return "unexpected wrongly-typed argument";
         break;
-        case RERR_ARG_OVRF:
+        case RERR_OVRF:
             return "unexpected overflow";
         break;
         default:

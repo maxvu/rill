@@ -11,19 +11,6 @@ COVERAGE_DIR := coverage
 ENTRYPOINTS     := $(SRC_DIR)/main.c $(SRC_DIR)/test_main.c
 SOURCES         := $(filter-out $(ENTRYPOINTS), $(wildcard $(SRC_DIR)/*.c))
 
-RELEASE_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.release.o,$(SOURCES))
-RELEASE_COMPILE_BINARY = $(CC) $(CC_FLAG) -O3
-RELEASE_COMPILE_OBJECT = $(CC) $(CC_FLAG) -c -O3
-
-DEBUG_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.debug.o,$(SOURCES))
-DEBUG_COMPILE_BINARY = $(CC) $(CC_FLAG) -O0 -g
-DEBUG_COMPILE_OBJECT = $(CC) $(CC_FLAG) -c -O0 -g
-
-TEST_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.test.o,$(SOURCES))
-TEST_SOURCES = $(TEST_DIR)/main.c $(TEST_DIR)/rill_test.c
-TEST_COMPILE_BINARY = $(CC) $(CC_FLAG) -O0 -g --coverage -fprofile-arcs \
-	-I $(TEST_DIR)/
-
 .PHONY : release
 
 $(BIN_DIR)/ :
@@ -33,68 +20,51 @@ $(BUILD_DIR)/ :
 
 # 'release' tag, binary and objects
 release : $(BIN_DIR)/rill
+RELEASE_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.release.o,$(SOURCES))
 $(BIN_DIR)/rill : $(RELEASE_OBJECTS) $(SRC_DIR)/main.c | $(BIN_DIR)/
-	$(RELEASE_COMPILE_BINARY) $^ -o $@
+	$(CC) $(CC_FLAG) -O3 $^ -o $@
 $(BUILD_DIR)/%.release.o : $(SRC_DIR)/%.c | $(BUILD_DIR)/
-	$(RELEASE_COMPILE_OBJECT) $^ -o $@
+	$(CC) $(CC_FLAG) -c -O3 $^ -o $@
 
 # 'debug' tag, binary and objects
 debug : $(BIN_DIR)/rill.debug
+DEBUG_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.debug.o,$(SOURCES))
 $(BIN_DIR)/rill.debug : $(DEBUG_OBJECTS) $(SRC_DIR)/main.c | $(BIN_DIR)/
-	$(DEBUG_COMPILE_BINARY) $^ -o $@
+	$(CC) $(CC_FLAG) -O0 -g $^ -o $@
 $(BUILD_DIR)/%.debug.o : $(SRC_DIR)/%.c | $(BUILD_DIR)/
-	$(DEBUG_COMPILE_OBJECT) $^ -o $@
+	$(CC) $(CC_FLAG) -c -O0 -g $^ -o $@
 
 # 'test' tag, binary and objects
 test : $(BIN_DIR)/rill.test
+TEST_OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.test.o,$(SOURCES))
+TEST_SOURCES = $(TEST_DIR)/main.c $(TEST_DIR)/rill_test.c
 $(BIN_DIR)/rill.test : $(TEST_OBJECTS) $(TEST_SOURCES) | $(BIN_DIR)/
-	$(TEST_COMPILE_BINARY) $^ -o $@
+	$(CC) $(CC_FLAG) -O0 -g -I $(TEST_DIR)/ $^ -o $@
 $(BUILD_DIR)/%.test.o : $(SRC_DIR)/%.c | $(BUILD_DIR)/
-	$(CC) $(CC_FLAG) -c -O0 -g --coverage -fprofile-arcs \
-	-I $(TEST_DIR)/ \
-	$^ -o $@
+	$(CC) $(CC_FLAG) -c -O0 -g -I $(TEST_DIR)/ $^ -o $@
 
-# Aggregate the coverage output into a single file.
+# 'test-coverage' tag -- test, but with profiling and coverage options
+test-coverage : $(COVERAGE_DIR)/index.htm
+COVERAGE_OBJECTS = \
+	$(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.test-coverage.o,$(SOURCES))
+$(BIN_DIR)/rill.test-coverage : $(COVERAGE_OBJECTS) $(TEST_SOURCES) | $(BIN_DIR)/
+	$(CC) $(CC_FLAG) $^ -o $@ -O0 -g --coverage -fprofile-arcs
+$(BUILD_DIR)/%.test-coverage.o : $(SRC_DIR)/%.c | $(BUILD_DIR)/
+	$(CC) $(CC_FLAG) -c -O0 -g --coverage -fprofile-arcs -I $(TEST_DIR)/ \
+	$^ -o $@
 $(COVERAGE_DIR)/ :
 	mkdir -p $@
 COVERAGE_INFO = $(BUILD_DIR)/coverage.info
-$(COVERAGE_INFO) : test | $(BUILD_DIR)/
+$(COVERAGE_INFO) : $(BIN_DIR)/rill.test-coverage | $(BUILD_DIR)/
 	mv ./*.gcno $(BUILD_DIR)/
-	# mv ./build/*.gcno $(BUILD_DIR)/
-	bin/rill.test
+	bin/rill.test-coverage
 	mv ./*.gcda $(BUILD_DIR)/
-	# mv ./build/*.gcda $(BUILD_DIR)/
 	llvm-cov gcov $(BUILD_DIR)/*.gcno $(BUILD_DIR)/*.gdca
 	mv ./*.gcov $(BUILD_DIR)/
 	lcov --directory build/ --capture -o $@ \
 		--gcov-tool $(realpath ./test/llvm-gcov.sh)
-
-coverage-info : $(COVERAGE_INFO)
-
-# Turn the coverage file into a browsable, HTML index.
-coverage-html : $(COVERAGE_INFO) | $(COVERAGE_DIR)
+$(COVERAGE_DIR)/index.htm : $(COVERAGE_INFO) | $(COVERAGE_DIR)/
 	genhtml $(COVERAGE_INFO) -o $(COVERAGE_DIR)/
-
-# Open that browsable index in a graphical environment.
-coverage-launch : coverage-html
-	xdg-open $(COVERAGE_DIR)/html/index.htm
-
-debug-makefile :
-	@echo INCLUDE_DIR $(INCLUDE_DIR)
-	@echo SRC_DIR $(SRC_DIR)
-	@echo BUILD_DIR $(BUILD_DIR)
-	@echo BIN_DIR $(BIN_DIR)
-	@echo ENTRYPOINTS $(ENTRYPOINTS)
-	@echo SOURCES $(SOURCES)
-	@echo RELEASE_OBJECTS $(RELEASE_OBJECTS)
-	@echo RELEASE_COMPILE_BINARY $(RELEASE_COMPILE_BINARY)
-	@echo RELEASE_COMPILE_OBJECT $(RELEASE_COMPILE_OBJECT)
-	@echo DEBUG_OBJECTS $(DEBUG_OBJECTS)
-	@echo DEBUG_COMPILE_BINARY $(DEBUG_COMPILE_BINARY)
-	@echo DEBUG_COMPILE_OBJECT $(DEBUG_COMPILE_OBJECT)
-	@echo TEST_OBJECTS $(TEST_OBJECTS)
-	@echo TEST_COMPILE_BINARY $(TEST_COMPILE_BINARY)
-	@echo TEST_COMPILE_OBJECT $(TEST_COMPILE_OBJECT)
 
 plan : $(SOURCES)
 	$(CC) $(CC_FLAG) -M $^

@@ -1,6 +1,8 @@
 #include "rval.h"
 #include "rval_impl.h"
 
+#include <stdlib.h>
+
 typedef struct rnum {
     UXX hed;
     union {
@@ -10,10 +12,19 @@ typedef struct rnum {
     };
 } rnum;
 
-rerr rixx_get  ( rval * num, IXX * out ) {
+rerr rnum_create ( rval ** out ) {
+    rval * num = malloc( sizeof( rnum ) );
+    if ( !num )
+        return RERR_MEM;
+    rnum_seti( num, 0 );
+    *out = num;
+    return RERR_OK;
+}
+
+rerr rnum_geti  ( rval * num, IXX * out ) {
     if ( !num || !out ) return
         RERR_NULL;
-    char typ;
+    UXX typ;
     rerr err;
     if ( ( err = rval_type( num, &typ ) ) )
         return err;
@@ -23,10 +34,10 @@ rerr rixx_get  ( rval * num, IXX * out ) {
     return RERR_OK;
 }
 
-rerr rixx_set  ( rval * num, IXX   i ) {
+rerr rnum_seti  ( rval * num, IXX   i ) {
     if ( !num ) return
         RERR_NULL;
-    char typ;
+    UXX typ;
     rerr err;
     if ( ( err = rval_type( num, &typ ) ) )
         return err;
@@ -36,10 +47,10 @@ rerr rixx_set  ( rval * num, IXX   i ) {
     return RERR_OK;
 }
 
-rerr ruxx_get  ( rval * num, UXX * out ) {
+rerr rnum_getu  ( rval * num, UXX * out ) {
     if ( !num || !out ) return
         RERR_NULL;
-    char typ;
+    UXX typ;
     rerr err;
     if ( ( err = rval_type( num, &typ ) ) )
         return err;
@@ -49,10 +60,10 @@ rerr ruxx_get  ( rval * num, UXX * out ) {
     return RERR_OK;
 }
 
-rerr ruxx_set  ( rval * num, UXX   u ) {
+rerr rnum_setu  ( rval * num, UXX   u ) {
     if ( !num ) return
         RERR_NULL;
-    char typ;
+    UXX typ;
     rerr err;
     if ( ( err = rval_type( num, &typ ) ) )
         return err;
@@ -62,10 +73,10 @@ rerr ruxx_set  ( rval * num, UXX   u ) {
     return RERR_OK;
 }
 
-rerr rfxx_get  ( rval * num, FXX * out ) {
+rerr rnum_getf  ( rval * num, FXX * out ) {
     if ( !num || out ) return
         RERR_NULL;
-    char typ;
+    UXX typ;
     rerr err;
     if ( ( err = rval_type( num, &typ ) ) )
         return err;
@@ -75,10 +86,10 @@ rerr rfxx_get  ( rval * num, FXX * out ) {
     return RERR_OK;
 }
 
-rerr rfxx_set  ( rval * num, FXX   f ) {
+rerr rnum_setf  ( rval * num, FXX   f ) {
     if ( !num ) return
         RERR_NULL;
-    char typ;
+    UXX typ;
     rerr err;
     if ( ( err = rval_type( num, &typ ) ) )
         return err;

@@ -4,7 +4,7 @@
 #include "platform.h"
 #include "rerr.h"
 
-typedef enum rval_types {
+enum rval_types : UXX {
     RVT_IXX = 0,
     RVT_UXX = 1,
     RVT_FXX = 2,
@@ -12,7 +12,7 @@ typedef enum rval_types {
     RVT_VEC = 4,
     RVT_MAP = 5,
     RVT_EXT = 6
-} rval_types;
+};
 
 typedef struct rval rval;
 
@@ -24,13 +24,13 @@ rerr rval_contains ( rval *  ndl, rval *  hay );
 rerr rval_ref      ( rval ** val );
 rerr rval_deref    ( rval ** val );
 
-rerr rnum_create ( rval ** out );
-rerr rixx_get  ( rval * num, IXX * out );
-rerr rixx_set  ( rval * num, IXX   i );
-rerr ruxx_get  ( rval * num, UXX * out );
-rerr ruxx_set  ( rval * num, UXX   u );
-rerr rfxx_get  ( rval * num, FXX * out );
-rerr rfxx_set  ( rval * num, FXX   f );
+rerr rnum_create  ( rval ** out );
+rerr rnum_geti    ( rval * num, IXX * out );
+rerr rnum_seti    ( rval * num, IXX   i );
+rerr rnum_getu    ( rval * num, UXX * out );
+rerr rnum_setu    ( rval * num, UXX   u );
+rerr rnum_getf    ( rval * num, FXX * out );
+rerr rnum_setf    ( rval * num, FXX   f );
 
 rerr rstr_create  ( UXX     cap, rval ** out );
 rerr rstr_len     ( rval *  str, UXX  *  out );

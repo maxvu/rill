@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "rill_test.h"
 
+#include "rval.h"
+
 int main ( int argc, char ** argv ) {
     rts * ts = rts_create();
     if ( !ts ) {
@@ -13,6 +15,7 @@ int main ( int argc, char ** argv ) {
     #define RILL_TEST_END           rts_report_test( ts ); rts_end_test( ts );
 
     #include "000-sanity.c"
+    #include "010-rnum.c"
 
     rts_report_all( ts );
     return !rts_successful( ts );

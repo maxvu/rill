@@ -6,10 +6,10 @@ typedef struct rmap_slot {
     rval * val;
 } rmap_slot;
 
-typedef struct rmap_it {
+struct rmap_it {
     rmap_slot * pos;
     rmap_slot * end;
-} rmap_it;
+};
 
 rerr rmap_create  ( rval ** map, UXX    cap );
 rerr rmap_size    ( rval ** map, UXX  * siz );

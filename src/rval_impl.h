@@ -1,19 +1,23 @@
 #ifndef RILL_RVAL_IMPL
 #define RILL_RVAL_IMPL
 
+typedef struct rval_head {
+    UXX typ : 3;
+    UXX ref : RVAL_HEADER_REF_SIZE;
+    UXX tag : RVAL_HEADER_TAG_SIZE;
+} rval_head;
+
 struct rval {
-    UXX hed;
+    rval_head hed;
 };
 
-char rvh_get_typ ( rval * val, UXX * typ );
-rerr rvh_set_typ ( rval * val, UXX typ );
-rerr rvh_get_tag ( rval * val, UXX * tag );
-rerr rvh_set_tag ( rval * val, UXX tag );
-rerr rvh_inc_ref ( rval * val );
-rerr rvh_dec_ref ( rval * val );
+// Exit immediately if err is defect upon function entry.
+#define RILL_PROPAGATE_ERR( RETVAL ) if ( err && *err != RERR_OK ) return RETVAL;
 
-// 4 for type
-// 7 for ref
-// 53/19 for tag
+// On null arg, set appropriate code and exit.
+#define RILL_ASSERT_NOT_NULL( ID, RETVAL ) if ( !ID ) { if ( err ) *err = RERR_NULL; return RETVAL; }
+
+// On wrong type, set appropriate code and exit.
+#define RILL_ASSERT_TYPE( ID, TYP, RET ) ;
 
 #endif

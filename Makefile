@@ -1,5 +1,5 @@
 CC := clang
-CC_FLAG = -Wall -std=c99 -I include/ -I src/
+CC_FLAG = -Wall -std=c11 -I include/ -I src/
 
 INCLUDE_DIR  := include
 SRC_DIR      := src

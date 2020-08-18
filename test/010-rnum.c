@@ -1,14 +1,17 @@
 RILL_TEST_BEGIN ( "rval / rnum / create, set" ) {
 
     {
-        rval * rnum;
-        INSIST( rnum_create( &rnum ) == RERR_OK );
+        rerr err;
+        rval * rnum = rnum_create( &err );
+        INSIST( err == RERR_OK );
         INSIST( rnum != NULL );
         IXX out;
-        rnum_seti( rnum, 32 );
-        rnum_geti( rnum, &out );
+        rnum_seti( rnum, 32, &err );
+        INSIST( err == RERR_OK );
+        rnum_geti( rnum, out, &err );
+        INSIST( err == RERR_OK );
         INSIST( out == 31 );
-        rval_deref( &rnum );
+        rval_deref( rnum );
     }
 
 } RILL_TEST_END

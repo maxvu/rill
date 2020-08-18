@@ -2,9 +2,10 @@
 #include "rval_impl.h"
 
 #include <stdlib.h>
+#include <math.h>
 
 typedef struct rnum {
-    UXX hed;
+    rval_head hed;
     union {
         IXX ixx;
         UXX uxx;
@@ -12,89 +13,59 @@ typedef struct rnum {
     };
 } rnum;
 
-rerr rnum_create ( rval ** out ) {
-    rval * num = malloc( sizeof( rnum ) );
-    if ( !num )
-        return RERR_MEM;
-    rnum_seti( num, 0 );
-    *out = num;
-    return RERR_OK;
+rval * rnum_create ( rerr * err ) {
+    rnum * num = malloc( sizeof( rnum ) );
+    if ( !num ) {
+        if ( err ) *err = RERR_MEM;
+        return NULL;
+    }
+    rval_head hed = {
+        .typ = RVT_NUM,
+        .ref = 1,
+        .tag = 0
+    };
+    num->hed = hed;
+    return ( rval * ) num;
 }
 
-rerr rnum_geti  ( rval * num, IXX * out ) {
-    if ( !num || !out ) return
-        RERR_NULL;
-    UXX typ;
-    rerr err;
-    if ( ( err = rval_type( num, &typ ) ) )
-        return err;
-    if ( typ > RVT_FXX )
-        return RERR_TYPE;
-    *out = ( ( rnum * ) num )->ixx;
-    return RERR_OK;
+IXX    rnum_geti   ( rval * num, rerr * err ) {
+    RILL_PROPAGATE_ERR( 0 );
+    RILL_ASSERT_NOT_NULL( num, 0 );
+    RILL_ASSERT_TYPE( num, RVT_NUM, 0 );
+    return ( ( rnum * ) num )->ixx;
 }
 
-rerr rnum_seti  ( rval * num, IXX   i ) {
-    if ( !num ) return
-        RERR_NULL;
-    UXX typ;
-    rerr err;
-    if ( ( err = rval_type( num, &typ ) ) )
-        return err;
-    if ( typ > RVT_FXX )
-        return RERR_TYPE;
+void   rnum_seti   ( rval * num, IXX    i,  rerr * err ) {
+    RILL_PROPAGATE_ERR();
+    RILL_ASSERT_NOT_NULL( num, );
+    RILL_ASSERT_TYPE( num, RVT_NUM, );
     ( ( rnum * ) num )->ixx = i;
-    return RERR_OK;
 }
 
-rerr rnum_getu  ( rval * num, UXX * out ) {
-    if ( !num || !out ) return
-        RERR_NULL;
-    UXX typ;
-    rerr err;
-    if ( ( err = rval_type( num, &typ ) ) )
-        return err;
-    if ( typ > RVT_FXX )
-        return RERR_TYPE;
-    *out = ( ( rnum * ) num )->uxx;
-    return RERR_OK;
+UXX    rnum_getu   ( rval * num, rerr * err ) {
+    RILL_PROPAGATE_ERR( 0 );
+    RILL_ASSERT_NOT_NULL( num, 0 );
+    RILL_ASSERT_TYPE( num, RVT_NUM, 0 );
+    return ( ( rnum * ) num )->uxx;
 }
 
-rerr rnum_setu  ( rval * num, UXX   u ) {
-    if ( !num ) return
-        RERR_NULL;
-    UXX typ;
-    rerr err;
-    if ( ( err = rval_type( num, &typ ) ) )
-        return err;
-    if ( typ > RVT_FXX )
-        return RERR_TYPE;
+void   rnum_setu   ( rval * num, UXX    u,  rerr * err ) {
+    RILL_PROPAGATE_ERR();
+    RILL_ASSERT_NOT_NULL( num, );
+    RILL_ASSERT_TYPE( num, RVT_NUM, );
     ( ( rnum * ) num )->uxx = u;
-    return RERR_OK;
 }
 
-rerr rnum_getf  ( rval * num, FXX * out ) {
-    if ( !num || out ) return
-        RERR_NULL;
-    UXX typ;
-    rerr err;
-    if ( ( err = rval_type( num, &typ ) ) )
-        return err;
-    if ( typ > RVT_FXX )
-        return RERR_TYPE;
-    *out = ( ( rnum * ) num )->fxx;
-    return RERR_OK;
+FXX    rnum_getf   ( rval * num, rerr * err ) {
+    RILL_PROPAGATE_ERR( 0 );
+    RILL_ASSERT_NOT_NULL( num, NAN );
+    RILL_ASSERT_TYPE( num, RVT_NUM, NAN );
+    return ( ( rnum * ) num )->fxx;
 }
 
-rerr rnum_setf  ( rval * num, FXX   f ) {
-    if ( !num ) return
-        RERR_NULL;
-    UXX typ;
-    rerr err;
-    if ( ( err = rval_type( num, &typ ) ) )
-        return err;
-    if ( typ > RVT_FXX )
-        return RERR_TYPE;
+void   rnum_setf   ( rval * num, FXX    f,  rerr * err ) {
+    RILL_PROPAGATE_ERR();
+    RILL_ASSERT_NOT_NULL( num, );
+    RILL_ASSERT_TYPE( num, RVT_NUM, );
     ( ( rnum * ) num )->fxx = f;
-    return RERR_OK;
 }

@@ -1,11 +1,20 @@
 #include "rerr.h"
 
-char rerr_ok ( rerr err ) {
-    return err == RERR_OK;
+char rerr_ok ( rerr * err ) {
+    if ( !err )
+        return 0;
+    return *err == RERR_OK;
 }
 
-const char * rerr_explain ( rerr err ) {
-    switch ( err ) {
+void rerr_reset           ( rerr * err ) {
+    if ( err ) *err = RERR_OK;
+}
+
+const char * rerr_explain ( rerr * err ) {
+    const char * unknown = "unknown error";
+    if ( !err )
+        return unknown;
+    switch ( *err ) {
         case RERR_OK:
             return "ok";
         break;
@@ -13,16 +22,16 @@ const char * rerr_explain ( rerr err ) {
             return "memory allocation error";
         break;
         case RERR_NULL:
-            return "unexpected null argument";
+            return "null argument";
         break;
         case RERR_TYPE:
-            return "unexpected wrongly-typed argument";
+            return "wrong-type argument";
         break;
         case RERR_OVRF:
-            return "unexpected overflow";
+            return "overflow";
         break;
         default:
-            return "unknown error";
+            return unknown;
         break;
     }
 }

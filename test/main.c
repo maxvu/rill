@@ -2,6 +2,7 @@
 #include "rill_test.h"
 
 #include "rval.h"
+#include "rnum.h"
 
 int main ( int argc, char ** argv ) {
     rts * ts = rts_create();

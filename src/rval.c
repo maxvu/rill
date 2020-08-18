@@ -6,98 +6,68 @@
 #include <assert.h>
 #include <stddef.h>
 
-rerr rvh_set_typ ( rval * val, UXX typ ) {
-    if ( !val )
-        return RERR_NULL;
-    val->hed &= ~0xFF;
-    val->hed |= typ & 0xFF;
-    return RERR_OK;
+UXX    rval_type     ( rval * val, rerr * err ) {
+    RILL_PROPAGATE_ERR( 0 );
+    RILL_ASSERT_NOT_NULL( val, 0 );
+    return val->hed.typ;
 }
 
-char rvh_get_typ ( rval * val, UXX * typ ) {
-    if ( !val )
-        return RERR_NULL;
-    return val->hed & 0xFF;
-}
+rval * rval_clone    ( rval * src, rerr * err ) {
+    RILL_PROPAGATE_ERR( NULL );
+    RILL_ASSERT_NOT_NULL( src, NULL );
+    switch ( rval_type( src, NULL ) ) { // TODO: rval_clone
+        case RVT_NUM: break;
+        case RVT_STR: break;
+        case RVT_VEC: break;
+        case RVT_MAP: break;
+        case RVT_EXT: break;
+        default:
+            if ( err ) *err = RERR_TYPE;
+            return NULL;
 
-rerr rvh_get_tag ( rval * val, UXX * tag ) {
-    if ( !val || !tag )
-        return RERR_NULL;
-    *tag = ( val->hed >> 4 ) & 0x7F;
-    return RERR_OK;
-}
-
-rerr rvh_set_tag ( rval * val, UXX tag ) {
-    if ( !val )
-        return RERR_NULL;
-    val->hed &= ~( ~0 >> 11 );
-    val->hed |= tag << 11;
-    return RERR_OK;
-}
-
-rerr rvh_get_ref ( rval * val, UXX * ref ) {
-    if ( !val )
-        return RERR_NULL;
-    *ref = ( val->hed >> 4 ) & 0x7F;
-    return RERR_OK;
-}
-
-rerr rvh_inc_ref ( rval * val ) {
-    if ( !val )
-        return RERR_NULL;
-    UXX ref = ( val->hed >> 4 ) & 0x7F;
-    if ( ++ref > 0x7F )
-        return RERR_OVRF;
-    val->hed &= ~( 0x7F << 4 );
-    val->hed |= ( ref << 4 );
-    return RERR_OK;
-}
-
-rerr rvh_dec_ref ( rval * val ) {
-    if ( !val )
-        return RERR_NULL;
-    UXX ref = ( val->hed >> 4 ) & 0x7F;
-    if ( --ref > 0x7F )
-        return RERR_OVRF;
-    val->hed &= ~( 0x7F << 4 );
-    val->hed |= ( ref << 4 );
-    return RERR_OK;
-}
-
-rerr rval_type ( rval * val, UXX * typ ) {
-    if ( !val || !typ )
-        return RERR_NULL;
-    rerr err = rvh_get_typ( val, typ );
-    return err;
-}
-
-rerr rval_copy ( rval ** dst, rval *  src ) {
-    if ( !dst || src )
-        return RERR_NULL;
-    *dst = src;
-    rvh_inc_ref( *dst );
-    return RERR_OK;
-}
-
-rerr rval_clone ( rval ** out, rval * src );
-
-rerr rval_move ( rval ** dst, rval ** src ) {
-    if ( !dst || !src )
-        return RERR_NULL;
-    *dst = *src;
-    *src = NULL;
-    return RERR_OK;
-}
-
-rerr rval_contains ( rval *  ndl, rval *  hay );
-rerr rval_ref      ( rval ** val );
-
-rerr rval_deref    ( rval ** val ) {
-    if ( !rval )
-        return RERR_NULL;
-    UXX * ref;
-    rvh_get_ref( *val )
-    switch ( *val->type ) {
-        case
     }
+    return NULL;
+}
+
+IXX   rval_contains ( rval * hay, rval * ndl, rerr * err ) {
+    RILL_PROPAGATE_ERR( 0 );
+    RILL_ASSERT_NOT_NULL( hay, 0 );
+    RILL_ASSERT_NOT_NULL( ndl, 0 );
+    switch ( rval_type( hay, NULL ) ) { // TODO: rval_contains
+        case RVT_NUM: break;
+        case RVT_STR: break;
+        case RVT_VEC: break;
+        case RVT_MAP: break;
+        case RVT_EXT: break;
+        default:
+            if ( err ) *err = RERR_TYPE;
+            return 0;
+    }
+    return 0;
+}
+
+rval * rval_ref      ( rval * val, rerr * err ) {
+    RILL_PROPAGATE_ERR( NULL );
+    RILL_ASSERT_NOT_NULL( val, NULL );
+    UXX ref = val->hed.ref;
+    UXX inc = ref + 1;
+    if ( inc > ref ) {
+        val->hed.ref = inc;
+        return val;
+    }
+    rval * cln = rval_clone( val, err );
+    if ( rerr_ok( err ) )
+        return cln;
+    return NULL;
+}
+
+void   rval_deref    ( rval * val, rerr * err ) {
+    RILL_PROPAGATE_ERR();
+    RILL_ASSERT_NOT_NULL( val, );
+    UXX ref = val->hed.ref - 1;
+    if ( ref == 0 - 1 ) {
+        if ( err ) *err = RERR_OVRF;
+        return;
+    }
+    val->hed.ref = ref;
 }

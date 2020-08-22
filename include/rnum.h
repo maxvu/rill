@@ -17,10 +17,10 @@ typedef struct rval rval;
 
 rval * rnum_create ( rerr * err );
 IXX    rnum_geti   ( rval * num, rerr * err );
-void   rnum_seti   ( rval * num, IXX    i,  rerr * err );
+rval * rnum_seti   ( rval * num, IXX    i,  rerr * err );
 UXX    rnum_getu   ( rval * num, rerr * err );
-void   rnum_setu   ( rval * num, UXX    u,  rerr * err );
+rval * rnum_setu   ( rval * num, UXX    u,  rerr * err );
 FXX    rnum_getf   ( rval * num, rerr * err );
-void   rnum_setf   ( rval * num, FXX    f,  rerr * err );
+rval * rnum_setf   ( rval * num, FXX    f,  rerr * err );
 
 #endif

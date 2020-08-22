@@ -1,8 +1,13 @@
 #include <stdio.h>
+#include <signal.h>
+#include <string.h>
 #include "rill_test.h"
 
 #include "rval.h"
 #include "rnum.h"
+#include "rstr.h"
+#include "rvec.h"
+#include "rmap.h"
 
 int main ( int argc, char ** argv ) {
     rts * ts = rts_create();
@@ -17,7 +22,11 @@ int main ( int argc, char ** argv ) {
 
     #include "000-sanity.c"
     #include "010-rnum.c"
+    #include "020-rstr.c"
 
     rts_report_all( ts );
-    return !rts_successful( ts );
+    int ok = rts_successful( ts );
+
+    rts_destroy( ts );
+    return ok ? 0 : 1;
 }

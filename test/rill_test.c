@@ -40,6 +40,8 @@ int rts_begin_test ( rts * ts, const char * name ) {
         return 0;
     }
     ts->cur_name = name;
+    ts->cur_run = 0;
+    ts->cur_pass = 0;
     return 1;
 }
 
@@ -48,11 +50,14 @@ int rts_assert ( rts * ts, int cond, const char * txt ) {
         fprintf( stderr, "rill test: null argument\n" );
         return 0;
     }
-    if ( cond )
+    ts->cur_run++;
+    if ( cond ) {
+        ts->cur_pass++;
         return 1;
+    }
     fprintf( stderr, "%s%s%s\n", RED, ts->cur_name, RESET );
     fprintf( stderr, "    %s%s%s\n", RED, txt, RESET );
-    raise( SIGINT );
+    raise( SIGINT ); // crude way to make gdb break
     return 1;
 }
 
@@ -63,7 +68,7 @@ void rts_report_test ( rts * ts ) {
     }
     fprintf(
         stderr,
-        "%s%s ( %lu / %lu )%s\n",
+        "%s%s %lu / %lu %s\n",
         color_of( ts->cur_run, ts->cur_pass ),
         ts->cur_name,
         ts->cur_run,
@@ -79,15 +84,13 @@ void rts_end_test ( rts * ts ) {
     }
     ts->n_run += ts->cur_run;
     ts->n_pass += ts->cur_pass;
-    ts->cur_run = 0;
-    ts->cur_pass = 0;
 }
 
 void rts_report_all ( rts * ts ) {
     fprintf(
         stderr,
-        "\n%s%lu run\n%lu passed%s\n",
-        color_of( ts->cur_run, ts->cur_pass ),
+        "\n%s%lu run, %lu passed%s\n",
+        color_of( ts->n_run, ts->n_pass ),
         ts->n_run,
         ts->cur_pass,
         RESET
@@ -98,4 +101,8 @@ int rts_successful ( rts * ts ) {
     if ( !ts )
         return 0;
     return ts->n_run == ts->n_pass;
+}
+
+void rts_destroy ( rts * ts ) {
+    free( ts );
 }

@@ -18,6 +18,5 @@ void   rvec_get     ( rval * vec, UXX    idx, rerr * err );
 void   rvec_set     ( rval * vec, UXX    idx, rval * itm, rerr * err );
 void   rvec_reverse ( rval * vec, rerr * err );
 void   rvec_clear   ( rval * vec, rerr * err );
-void   rvec_destroy ( rval * vec, rerr * err );
 
 #endif

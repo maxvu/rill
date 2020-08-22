@@ -11,6 +11,44 @@ struct rval {
     rval_head hed;
 };
 
+typedef struct rnum {
+    rval_head hed;
+    union {
+        IXX ixx;
+        UXX uxx;
+        FXX fxx;
+    };
+} rnum;
+
+typedef struct rstr {
+    rval_head hed;
+    UXX       len;
+    UXX       cap;
+    char      buf[];
+} rstr;
+
+typedef struct rvec {
+    rval_head hed;
+    UXX       len;
+    UXX       cap;
+    rval *    vls[];
+} rvec;
+
+typedef struct rmap_slot {
+    rval * key;
+    rval * val;
+} rmap_slot;
+
+typedef struct rmap {
+    rval_head hed;
+    UXX       occ;
+    UXX       cap;
+    rmap_slot bnk[];
+} rmap;
+
+void   rvec_destroy ( rval * vec );
+void   rmap_destroy ( rval * map );
+
 // Exit immediately if err is defect upon function entry.
 #define RILL_PROPAGATE_ERR( RETVAL ) if ( err && *err != RERR_OK ) return RETVAL;
 
@@ -19,5 +57,7 @@ struct rval {
 
 // On wrong type, set appropriate code and exit.
 #define RILL_ASSERT_TYPE( ID, TYP, RET ) ;
+
+
 
 #endif

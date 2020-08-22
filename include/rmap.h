@@ -18,7 +18,7 @@ void   rmap_keys    ( rval * map, rval ** kys, rerr * err );
 void   rmap_vals    ( rval * map, rval ** vls, rerr * err );
 void   rmap_merge   ( rval * dst, rval *  src, rerr * err );
 void   rmap_clear   ( rval * map, rerr *  err );
-void   rmap_destroy ( rval * map, rerr *  err );
+
 
 typedef struct rmap_it rmap_it;
 

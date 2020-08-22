@@ -7,3 +7,4 @@ void rts_report_test ( rts * ts );
 void rts_end_test ( rts * ts );
 void rts_report_all ( rts * ts );
 int rts_successful ( rts * ts );
+void rts_destroy ( rts * ts );

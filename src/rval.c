@@ -1,10 +1,15 @@
 #include "platform.h"
 #include "rerr.h"
 #include "rval.h"
+#include "rnum.h"
+#include "rstr.h"
+#include "rvec.h"
+#include "rmap.h"
 #include "rval_impl.h"
 
 #include <assert.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 UXX    rval_type     ( rval * val, rerr * err ) {
     RILL_PROPAGATE_ERR( 0 );
@@ -61,12 +66,19 @@ rval * rval_ref      ( rval * val, rerr * err ) {
     return NULL;
 }
 
-void   rval_deref    ( rval * val, rerr * err ) {
-    RILL_PROPAGATE_ERR();
-    RILL_ASSERT_NOT_NULL( val, );
+void   rval_deref    ( rval * val ) {
+    if ( !val )
+        return;
     UXX ref = val->hed.ref - 1;
-    if ( ref == 0 - 1 ) {
-        if ( err ) *err = RERR_OVRF;
+    UXX typ = val->hed.typ;
+    if ( ref == 0 ) {
+        switch ( typ ) {
+            case RVT_NUM:
+            case RVT_STR: free( val ); break;
+            // case RVT_VEC: rvec_destroy( val ); break;
+            // case RVT_MAP: rmap_destroy( val ); break;
+            default: 0; break; /* TODO: deref unenumerated types */
+        }
         return;
     }
     val->hed.ref = ref;

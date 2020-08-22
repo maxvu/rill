@@ -18,6 +18,6 @@ UXX    rval_type     ( rval * val, rerr * err );
 rval * rval_clone    ( rval * src, rerr * err );
 IXX    rval_contains ( rval * hay, rval * ndl, rerr * err );
 rval * rval_ref      ( rval * val, rerr * err );
-void   rval_deref    ( rval * val, rerr * err );
+void   rval_deref    ( rval * val );
 
 #endif

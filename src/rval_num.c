@@ -6,7 +6,7 @@ void rixx_get  ( rval * num, IXX * out, rerr * err ) {
     UXX typ;
     rval_type( num, &typ, err );
     if ( !rerr_ok( err ) ) return;
-    
+
 
 }
 
@@ -16,8 +16,6 @@ void rixx_set  ( rval * num, IXX   i,   rerr * err ) {
     UXX typ;
     rval_type( num, &typ, err );
     if ( !rerr_ok( err ) ) return;
-    
-
 }
 
 void ruxx_get  ( rval * num, UXX * out, rerr * err ) {
@@ -26,8 +24,6 @@ void ruxx_get  ( rval * num, UXX * out, rerr * err ) {
     UXX typ;
     rval_type( num, &typ, err );
     if ( !rerr_ok( err ) ) return;
-    
-
 }
 
 void ruxx_set  ( rval * num, UXX   u,   rerr * err ) {
@@ -36,7 +32,7 @@ void ruxx_set  ( rval * num, UXX   u,   rerr * err ) {
     UXX typ;
     rval_type( num, &typ, err );
     if ( !rerr_ok( err ) ) return;
-    
+
 
 }
 
@@ -46,7 +42,7 @@ void rfxx_get  ( rval * num, FXX * out, rerr * err ) {
     UXX typ;
     rval_type( num, &typ, err );
     if ( !rerr_ok( err ) ) return;
-    
+
 
 }
 
@@ -56,6 +52,6 @@ void rfxx_set  ( rval * num, FXX   f,   rerr * err ) {
     UXX typ;
     rval_type( num, &typ, err );
     if ( !rerr_ok( err ) ) return;
-    
+
 
 }
